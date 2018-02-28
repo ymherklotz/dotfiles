@@ -1,0 +1,796 @@
+#+TITLE: Emacs Settings
+#+DATE: <2017-08-11 Fri>
+#+AUTHOR: Yann Herklotz
+#+EMAIL: ymherklotz@gmail.com
+
+** Interface
+*** Setup
+
+Server so that a client can connect to it.
+#+BEGIN_SRC emacs-lisp
+  (setq server-socket-file "/tmp/emacs1000/server")
+  (setq server-socket-dir "/tmp/emacs1000")
+  (unless (file-exists-p server-socket-file)
+    (server-start))
+#+END_SRC
+
+Threshold for faster startup.
+#+BEGIN_SRC emacs-lisp
+  (setq gc-cons-threshold 500000000)
+#+END_SRC
+
+Disable UI that starts when starting emacs and also set the y or n instead of
+yes or no.
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (fset 'yes-or-no-p 'y-or-n-p)
+  (diminish 'abbrev-mode)
+#+END_SRC
+
+Move the backup files into the temporaty directory so that they are out of the way.
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t)))
+#+END_SRC
+
+** Text edit
+*** Editor
+
+Editor specific options such as adding line numbers and showing 
+#+BEGIN_SRC emacs-lisp
+  (show-paren-mode 'expression)
+  (global-set-key (kbd "<f5>") 'revert-buffer)
+#+END_SRC
+
+Revert the buffer automatically when a file changes on disc. This is
+useful when monitoring a file such as a log file. It will also do this silently.
+#+BEGIN_SRC emacs-lisp
+  (global-auto-revert-mode 1)
+  (setq auto-revert-verbose nil)
+#+END_SRC
+
+Disable tabs, I want to move towards only using spaces everywhere as that is my
+preferred style.
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+  (setq-default python-indent-offset 4)
+#+END_SRC
+
+*** Font
+
+Set the font to monaco. It has to use the xft syntax, otherwise it doesn't render properly.
+#+BEGIN_SRC emacs-lisp
+  (set-default-font "Monaco-9") ;;; set default font
+  (setq default-frame-alist '((font . "Monaco-9"))) ;;; set default font for emacs --daemon and emacsclient
+#+END_SRC
+
+** Languages
+*** Bison
+
+Bison mode for bison files. Only used this for my university course when writing a compiler.
+#+BEGIN_SRC emacs-lisp
+;;  (use-package bison-mode
+;;    :ensure t)
+#+END_SRC
+
+*** C++
+
+Setting up CC mode with a hook that uses my settings.
+#+BEGIN_SRC emacs-lisp
+  (use-package cc-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+    (setq c-default-style "linux"
+          c-basic-offset 4
+          c-indent-level 4)
+    (defun my-c++-mode-hook ()
+      (c-set-offset 'inline-open 0)
+      (c-set-offset 'inline-close 0)
+      (c-set-offset 'innamespace 0)
+      (c-set-offset 'arglist-cont-nonempty 8)
+      (setq indent-tabs-mode nil))
+    (add-hook 'c-mode-hook 'my-c++-mode-hook)
+    (add-hook 'c++-mode-hook 'my-c++-mode-hook)
+
+    (define-key c-mode-map (kbd "C-c C-c") 'comment-or-uncomment-region))
+#+END_SRC
+
+Adding C headers to company backend for completion.
+#+BEGIN_SRC emacs-lisp
+  (use-package irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
+
+    (defun my-irony-mode-hook ()
+      (define-key irony-mode-map [remap completion-at-point]
+        'irony-completion-at-point-async)
+      (define-key irony-mode-map [remap complete-symbol]
+        'irony-completion-at-point-async))
+    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+
+  (use-package company-irony
+    :ensure t)
+
+  (use-package flycheck-irony
+    :ensure t
+    :config
+    (add-hook 'c++-mode-hook #'flycheck-irony-setup))
+
+  (use-package company-c-headers
+    :ensure t
+    :config
+    (add-to-list 'company-backends 'company-c-headers)
+    (add-to-list 'company-backends 'company-irony)
+
+    (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
+#+END_SRC
+
+Using clang format to format the region that is currently being selected (need to install
+clang format script).
+#+BEGIN_SRC emacs-lisp
+  (use-package clang-format
+    :ensure t
+    :config
+    (global-set-key (kbd "C-c i") 'clang-format-region)
+    (global-set-key (kbd "C-c u") 'clang-format-buffer))
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rtags
+    :ensure t
+    :config
+    (rtags-enable-standard-keybindings))
+
+  ;; (use-package ivy-rtags
+  ;;   :ensure t
+  ;;   :config
+  ;;   (setq rtags-use-ivy t))
+#+END_SRC
+
+*** Clojure
+
+Using Cider for clojure environment.
+#+BEGIN_SRC emacs-lisp
+  (use-package cider
+    :ensure t
+    :config
+    (setq cider-repl-display-help-banner nil))
+#+END_SRC
+
+Adding hook to clojure mode to enable strict parentheses mode.
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+    :ensure t
+    :init
+    (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode))
+#+END_SRC
+
+*** Dot
+
+#+BEGIN_SRC emacs-lisp
+  (use-package graphviz-dot-mode
+    :ensure t
+    :bind
+    (("C-c y p" . graphviz-dot-preview)))
+#+END_SRC
+
+*** Emacs Lisp
+
+Adding strict parentheses to emacs lisp.
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
+#+END_SRC
+
+*** F#
+
+F# mode for uni work.
+#+BEGIN_SRC emacs-lisp
+  (use-package fsharp-mode
+    :ensure t)
+#+END_SRC
+
+*** GMPL
+
+#+BEGIN_SRC emacs-lisp
+  (use-package gmpl-mode
+    :ensure t
+    :config
+    (add-to-list 'auto-mode-alist '("\\.mod\\'" . gmpl-mode)))
+#+END_SRC
+
+*** Haskell
+
+Haskell mode with company mode completion.
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode
+    :ensure t
+    :config
+    (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+    (add-hook 'haskell-mode-hook
+            (lambda ()
+              (set (make-local-variable 'company-backends)
+                   (append '((company-capf company-dabbrev-code))
+                           company-backends)))))
+#+END_SRC
+
+*** Matlab
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package matlab-mode
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-to-list
+  ;;    'auto-mode-alist
+  ;;    '("\\.m$" . matlab-mode))
+  ;;   (setq matlab-indent-function t)
+  ;;   (setq matlab-shell-command "matlab")
+  ;;   (setq matlab-shell-command-switches (list "-nodesktop")))
+#+END_SRC
+
+*** Org
+
+Agenda
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files (quote ("~/Dropbox/Org")))
+
+  (defun y/append-to-list (list-var elements)
+    "Append ELEMENTS to the end of LIST-VAR.
+
+  The return value is the new value of LIST-VAR."
+    (unless (consp elements)
+      (error "ELEMENTS must be a list"))
+    (let ((list (symbol-value list-var)))
+      (if list
+          (setcdr (last list) elements)
+        (set list-var elements)))
+    (symbol-value list-var))
+
+  (setq org-icalendar-store-UID t)
+  (setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo todo-start))
+  (setq org-icalendar-use-deadline'(even-if-not-todo todo-due event-if-todo))
+
+  (use-package org-gcal
+    :ensure t
+    :config
+    (setq org-gcal-client-id "56042666758-7tq2364l4glivj0hdsd3p3f2cd9cucq1.apps.googleusercontent.com"
+        org-gcal-client-secret "Zn47gN5ImfeMsNbmWQbPtv3w"
+        org-gcal-file-alist '(("ymherklotz@gmail.com" .  "~/Dropbox/Org/personal.org")
+                              ("p8po34fuo3vv1ugrjki895aetg@group.calendar.google.com" .  "~/Dropbox/Org/project.org"))))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+Publishing to website.
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-twbs
+    :ensure t
+    :config
+    (setq org-publish-project-alist
+        '(("org-notes"
+           :base-directory "~/Documents/Org/Website"
+           :publishing-directory "~/Documents/Website"
+           :publishing-function org-twbs-publish-to-html
+           :with-sub-superscript nil
+           ))))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+Set global keys for org mode to access agenda.
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-cb" 'org-iswitchb)
+#+END_SRC
+
+#+RESULTS:
+: org-iswitchb
+
+Set up ob for executing code blocks
+#+BEGIN_SRC emacs-lisp
+  (require 'ob)
+  ;; Babel settings, enabling languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (js . t)
+     (java . t)
+     (haskell . t)
+     (python . t)
+     (ruby . t)
+     (sh . t)
+     (org . t)
+     (matlab . t)
+     (ditaa . t)
+     (clojure . t)
+     ))
+  (setq org-image-actual-width nil)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+#+END_SRC
+
+*** Python
+
+Elpy package for python.
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :config
+    (elpy-enable)
+    (setq py-python-command "python3")
+    (setq python-shell-interpreter "python3"))
+
+  (with-eval-after-load 'python
+    (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_"))))
+#+END_SRC
+
+*** Jekyll
+
+#+BEGIN_SRC emacs-lisp
+  ;; (setq org-publish-project-alist
+  ;;       '(("org-yh-portfolio"
+  ;;          ;; Path to your org files.
+  ;;          :base-directory "/home/yannherklotz/Github/yh-portfolio/org/"
+  ;;          :base-extension "org"
+
+  ;;          ;; Path to your Jekyll project.
+  ;;          :publishing-directory "/home/yannherklotz/Github/yh-portfolio/"
+  ;;          :recursive t
+  ;;          :publishing-function org-html-publish-to-html
+  ;;          :headline-levels 4
+  ;;          :html-extension "html"
+  ;;          :body-only t
+  ;;          :with-toc nil)
+
+  ;;         ("org-static-yh-portfolio"
+  ;;          :base-directory "/home/yannherklotz/Github/yh-portfolio/org/"
+  ;;          :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf\\|php"
+  ;;          :publishing-directory "/home/yannherklotz/Github/yh-portfolio/"
+  ;;          :recursive t
+  ;;          :publishing-function org-publish-attachment
+  ;;          :with-toc nil)
+
+  ;;         ("yh-portfolio" :components ("org-yh-portfolio" "org-static-yh-portfolio"))))
+#+END_SRC
+
+*** JSON
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+#+END_SRC
+
+*** Markdown
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+
+#+END_SRC
+
+*** YAML
+
+    #+BEGIN_SRC emacs-lisp
+
+      (use-package yaml-mode
+        :ensure t)
+         
+    #+END_SRC
+
+** Packages
+*** Ace Windows
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package ace-window
+    :ensure t
+    :bind (("C-x o" . ace-window)))
+
+#+END_SRC
+
+*** All the icons
+
+#+BEGIN_SRC emacs-lisp
+  (use-package all-the-icons
+    :ensure t)
+#+END_SRC
+
+*** Avy
+
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :config
+    (global-set-key (kbd "C-:") 'avy-goto-char)
+    (global-set-key (kbd "C-'") 'avy-goto-char-2))
+#+END_SRC
+*** CMake
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package cmake-mode
+    :config
+    (setq auto-mode-alist
+          (append
+           '(("CMakeLists\\.txt\\'" . cmake-mode))
+           '(("\\.cmake\\'" . cmake-mode))
+           auto-mode-alist))
+    (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
+
+#+END_SRC
+
+*** Company
+
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (add-hook 'after-init-hook 'global-company-mode)
+    
+    (setq company-backends (delete 'company-semantic company-backends))
+    
+    (define-key c-mode-map (kbd "C-c n") 'company-complete)
+    (define-key c++-mode-map (kbd "C-c n") 'company-complete)
+    (setq company-dabbrev-downcase 0))
+#+END_SRC
+
+*** Flycheck
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package flycheck
+    :ensure t
+    :diminish flycheck-mode
+    :init (global-flycheck-mode))
+
+#+END_SRC
+
+*** GLSL
+
+#+BEGIN_SRC emacs-lisp
+
+  (use-package glsl-mode
+    :ensure t)
+
+#+END_SRC
+
+*** Helm
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm
+    :ensure t
+    :config
+    (require 'helm-config)
+    (helm-mode 1))
+
+  (use-package helm-projectile
+    :ensure t
+    :config
+    (helm-projectile-on))
+
+  (use-package helm-ag
+    :ensure t)
+
+  (global-set-key (kbd "M-x") 'helm-M-x)
+  (global-set-key (kbd "C-x C-f") 'helm-find-files)
+  (global-set-key (kbd "C-x b") 'helm-mini)
+  (global-set-key (kbd "C-c h") 'helm-command-prefix)
+  (global-set-key (kbd "C-s") 'helm-occur)
+  (global-unset-key (kbd "C-x c"))
+
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB work in terminal
+  (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+#+END_SRC
+
+#+RESULTS:
+: helm-select-action
+
+*** Hungry Delete
+
+#+BEGIN_SRC emacs-lisp
+  (use-package hungry-delete
+    :ensure t
+    :config
+    (global-hungry-delete-mode))
+#+END_SRC
+
+*** Ivy / Swiper / Counsel
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package counsel
+  ;;   :ensure t
+  ;;   :bind
+  ;;   (("M-y" . counsel-yank-pop)
+  ;;    :map ivy-minibuffer-map
+  ;;    ("M-y" . ivy-next-line)))
+
+  ;; (use-package ivy
+  ;;   :ensure t
+  ;;   :diminish ivy-mode
+  ;;   :bind (("C-x b" . ivy-switch-buffer))
+  ;;   :config
+  ;;   (ivy-mode 1)
+  ;;   (setq ivy-use-virtual-buffers t)
+  ;;   (setq ivy-display-style 'fancy))
+
+  ;; (use-package swiper
+  ;;   :ensure t
+  ;;   :bind (("C-s" . swiper)
+  ;;          ("C-r" . swiper)
+  ;;          ("C-c C-r" . ivy-resume)
+  ;;          ("M-x" . counsel-M-x)
+  ;;          ("C-x C-f" . counsel-find-file))
+  ;;   :config
+  ;;   (progn
+  ;;     (ivy-mode 1)
+  ;;     (setq ivy-use-virtual-buffers t)
+  ;;     (setq ivy-display-style 'fancy)
+  ;;     (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+  ;;     ))
+#+END_SRC
+
+*** Magit
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :bind (("C-x g" . magit-status)))
+#+END_SRC
+
+*** Multiple Cursors
+
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :bind (("C->" . mc/mark-next-like-this)
+           ("C-<" . mc/mark-previous-like-this)
+           ("C-c C-<" . mc/mark-all-like-this)))
+#+END_SRC
+
+*** Org Bullets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+
+*** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish projectile-mode
+    :config
+    (projectile-global-mode 1)
+    (setq projectile-indexing-method 'alien)
+    (setq projectile-enable-caching t))
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (counsel-projectile-mode t))
+#+END_SRC
+
+*** SmartParens
+
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :bind (("M-[" . sp-backward-unwrap-sexp)
+           ("M-]" . sp-unwrap-sexp)
+           ("C-M-f" . sp-forward-sexp)
+           ("C-M-b" . sp-backward-sexp)
+           ("C-M-d" . sp-down-sexp)
+           ("C-M-a" . sp-backward-down-sexp)
+           ("C-M-e" . sp-up-sexp)
+           ("C-M-u" . sp-backward-up-sexp)
+           ("C-M-t" . sp-transpose-sexp)
+           ("C-M-n" . sp-next-sexp)
+           ("C-M-p" . sp-previous-sexp)
+           ("C-M-k" . sp-kill-sexp)
+           ("C-M-w" . sp-copy-sexp)
+           ("C-<right>" . sp-forward-slurp-sexp)
+           ("C-<left>" . sp-forward-barf-sexp)
+           ("C-M-<left>" . sp-backward-slurp-sexp)
+           ("C-M-<right>" . sp-backward-barf-sexp)
+           ("M-D" . sp-splice-sexp)
+           ("C-]" . sp-select-next-thing-exchange)
+           ("C-<left_bracket>" . sp-select-previous-thing)
+           ("C-M-]" . sp-select-next-thing)
+           ("M-F" . sp-forward-symbol)
+           ("M-B" . sp-backward-symbol))
+    :init
+    (require 'smartparens-config)
+    (show-smartparens-global-mode +1)
+    (smartparens-global-mode 1)
+
+    (add-hook 'minibuffer-setup-hook 'turn-on-smartparens-strict-mode)
+
+    (sp-with-modes '(c-mode c++-mode)
+      (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
+      (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
+                                                ("* ||\n[i]" "RET")))))
+#+END_SRC
+
+*** Speed Type
+
+#+BEGIN_SRC emacs-lisp
+  (use-package speed-type :ensure t)
+#+END_SRC
+*** Themes
+
+#+BEGIN_SRC emacs-lisp
+  (use-package color-theme-sanityinc-tomorrow
+    :ensure t)
+
+  ;; (use-package leuven-theme
+  ;;   :ensure t)
+
+  ;; (use-package zenburn-theme
+  ;;   :ensure t)
+
+  ;; (use-package gruvbox-theme
+  ;;   :ensure t)
+
+  ;; (use-package material-theme
+  ;;   :ensure t)
+
+  ;; (use-package monokai-theme
+  ;;   :ensure t)
+
+  ;; (use-package plan9-theme
+  ;;   :ensure t)
+
+  ;; (use-package doom-themes
+  ;;    :ensure t)
+
+  (use-package telephone-line
+    :ensure t
+    :init
+    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
+          telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
+          telephone-line-primary-right-separator 'telephone-line-cubed-right
+          telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
+    (setq telephone-line-height 24
+          telephone-line-evil-use-short-tag t))
+
+  (if (daemonp)
+      (add-hook 'after-make-frame-functions
+                (lambda (frame)
+                  (select-frame frame)
+                  (load-theme 'sanityinc-tomorrow-night t)
+                  (telephone-line-mode 1)
+                  (toggle-scroll-bar -1)))
+    (progn (load-theme 'sanityinc-tomorrow-night t)
+           (telephone-line-mode 1)
+           (toggle-scroll-bar -1)))
+#+END_SRC
+
+#+RESULTS:
+: t
+
+*** Undo Tree
+
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :diminish undo-tree-mode
+    :config
+    (global-undo-tree-mode))
+#+END_SRC
+
+*** Whitespace
+
+#+BEGIN_SRC emacs-lisp
+  (use-package whitespace
+    :bind (("C-x w" . whitespace-mode)))
+#+END_SRC
+
+*** Yasnippets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :diminish yas-minor-mode
+    :init
+    (yas-global-mode 1))
+#+END_SRC
+
+** My Code
+
+#+BEGIN_SRC emacs-lisp
+  (defun y/swap-windows ()
+    "Swaps two windows and leaves the cursor in the original one"
+    (interactive)
+    (ace-swap-window)
+    (aw-flip-window))
+
+  (defun y/fsharp-reload-file ()
+    "Reloads the whole file when in fsharp mode."
+    (interactive)
+    (fsharp-eval-region (point-min) (point-max)))
+
+  (defun y/exit-emacs-client ()
+    "consistent exit emacsclient.
+     if not in emacs client, echo a message in minibuffer, don't exit emacs.
+     if in server mode
+        and editing file, do C-x # server-edit
+        else do C-x 5 0 delete-frame"
+    (interactive)
+    (if server-buffer-clients
+        (server-edit)
+      (delete-frame)))
+
+  (defun y/beautify-json ()
+    (interactive)
+    (let ((b (if mark-active (min (point) (mark)) (point-min)))
+          (e (if mark-active (max (point) (mark)) (point-max))))
+      (shell-command-on-region b e
+       "python -m json.tool" (current-buffer) t)))
+#+END_SRC
+
+#+RESULTS:
+: y/beautify-json
+
+Setting up my keybindings
+#+BEGIN_SRC emacs-lisp
+  (define-prefix-command 'y-map)
+  (global-set-key (kbd "C-c y") 'y-map)
+
+  (define-key y-map (kbd "s") 'y/swap-windows)
+  (global-set-key (kbd "C-c q") 'y/exit-emacs-client)
+  (define-key y-map (kbd "j") 'y/beautify-json)
+
+  (add-hook 'fsharp-mode-hook
+            (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
+
+Registers
+#+BEGIN_SRC emacs-lisp
+  (set-register ?e (cons 'file "~/.emacs.d/myinit.org"))
+  (set-register ?n (cons 'file "~/Dropbox/Org/note.org"))
+  (set-register ?s (cons 'file "~/Dropbox/Org/schedule.org"))
+  (set-register ?p (cons 'file "~/Dropbox/Org/project.org"))
+#+END_SRC
+
+#+RESULTS:
+: (file . ~/Dropbox/Org/project.org)
+
+** Setting GC value
+
+#+BEGIN_SRC emacs-lisp
+
+  (setq gc-cons-threshold 10000000)
+
+#+END_SRC
+
