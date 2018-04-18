@@ -77,7 +77,6 @@ yes or no.
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
-  (diminish 'abbrev-mode)
 #+END_SRC
 
 Move the backup files into the temporaty directory so that they are out of the way.
