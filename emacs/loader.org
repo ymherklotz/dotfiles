@@ -77,6 +77,7 @@ yes or no.
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
+  (diminish 'abbrev-mode)
 #+END_SRC
 
 Move the backup files into the temporaty directory so that they are out of the way.
@@ -123,6 +124,15 @@ using the emacsclient.
 #+BEGIN_SRC emacs-lisp
   (set-default-font "Monaco-9") ;;; set default font
   (setq default-frame-alist '((font . "Monaco-9"))) ;;; set default font for emacs --daemon and emacsclient
+#+END_SRC
+
+
+* Mail
+
+#+BEGIN_SRC emacs-lisp
+  (require 'mu4e)
+
+  (setq mu4e-maildir (expand-file-name "~/.mail/gmail"))
 #+END_SRC
 
 
@@ -392,6 +402,32 @@ Wrap words when in text mode.
 My emacs configuration is mostly focused on programming, therefore there is a lot of different
 language support.
 
+** Version Control and Project Management
+*** Magit
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :ensure t
+    :bind (("C-x g" . magit-status)))
+#+END_SRC
+
+*** Projectile
+
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish projectile-mode
+    :config
+    (projectile-global-mode 1)
+    (setq projectile-indexing-method 'alien)
+    (setq projectile-enable-caching t))
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (counsel-projectile-mode t))
+#+END_SRC
+
 ** Language Support
 
 *** C++
@@ -469,10 +505,10 @@ language support.
      :config
      (rtags-enable-standard-keybindings))
 
-   ;; (use-package ivy-rtags
-   ;;   :ensure t
-   ;;   :config
-   ;;   (setq rtags-use-ivy t))
+   (use-package ivy-rtags
+     :ensure t
+     :config
+     (setq rtags-use-ivy t))
  #+END_SRC
 
 *** Clojure
@@ -534,14 +570,7 @@ language support.
 
  #+BEGIN_SRC emacs-lisp
    (use-package haskell-mode
-     :ensure t
-     :config
-     (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-     (add-hook 'haskell-mode-hook
-             (lambda ()
-               (set (make-local-variable 'company-backends)
-                    (append '((company-capf company-dabbrev-code))
-                            company-backends)))))
+     :ensure t)
  #+END_SRC
 
 *** Org
@@ -675,7 +704,7 @@ language support.
         :ensure t)
     #+END_SRC
 
- 
+
 ** Completion Support
 
 *** Company
@@ -692,17 +721,14 @@ language support.
     (define-key c++-mode-map (kbd "C-c n") 'company-complete)
     (setq company-dabbrev-downcase 0))
 #+END_SRC
-
 *** Flycheck
 
-
+Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
-
   (use-package flycheck
     :ensure t
     :diminish flycheck-mode
     :init (global-flycheck-mode))
-
 #+END_SRC
 
 *** Yasnippets
@@ -714,33 +740,6 @@ language support.
     :diminish yas-minor-mode
     :init
     (yas-global-mode 1))
-#+END_SRC
-
-
-** Version Control and Project Management
-*** Magit
-
-#+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t
-    :bind (("C-x g" . magit-status)))
-#+END_SRC
-
-*** Projectile
-
-#+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :diminish projectile-mode
-    :config
-    (projectile-global-mode 1)
-    (setq projectile-indexing-method 'alien)
-    (setq projectile-enable-caching t))
-
-  (use-package counsel-projectile
-    :ensure t
-    :config
-    (counsel-projectile-mode t))
 #+END_SRC
 
 
