@@ -100,6 +100,7 @@ yes or no.
 
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
+  (setq vc-follow-symlinks t)
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -357,6 +358,7 @@ Setting up ~smtp~ to send messages using gmail.
 *** Undo Tree
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
+    :ensure t
     :diminish undo-tree-mode
     :config
     (global-undo-tree-mode))
