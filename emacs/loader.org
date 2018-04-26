@@ -5,7 +5,6 @@
 #+STARTUP: indent
 
 * Introduction
-
 This is my GNU Emacs Configuration that is mostly focused on C++ development, but
 also has support for Python, F#, Haskell and Clojure.
 
@@ -14,9 +13,17 @@ also has support for Python, F#, Haskell and Clojure.
   (setq user-mail-address "ymherklotz@gmail.com")
 #+END_SRC
 
-
 * Interface
 ** Setup
+Defining all the package repositories that are going to be used.
+
+- ~gnu~ :: The default package repository for emacs
+- ~melpa~ :: Contains a lot of additional packages for emacs that are made by
+             the community.
+- ~melpa-stable~ :: The stable melpa repository that only contains that full versions
+                    for packages. This repository will be used for packages that maybe
+                    get updated often, so that they do not break the config.
+- ~org~ :: org package repository that contains many packages to extend org-mode.
 
 #+BEGIN_SRC emacs-lisp
   (require 'package)
@@ -25,27 +32,34 @@ also has support for Python, F#, Haskell and Clojure.
   (defvar melpa '("melpa" . "https://melpa.org/packages/"))
   (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
   (defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
+#+END_SRC
 
-  ;; Add marmalade to package repos
+These packages are then added to the list of package archives.
+
+#+BEGIN_SRC emacs-lisp
   (setq package-archives nil)
   (add-to-list 'package-archives melpa-stable t)
   (add-to-list 'package-archives melpa t)
   (add-to-list 'package-archives gnu t)
   (add-to-list 'package-archives org-elpa t)
+#+END_SRC
 
+Initialise the packages and if the directories don't exist, create them.
+
+#+BEGIN_SRC emacs-lisp
   (setq package-enable-at-startup nil)
-  (add-to-list 'package-archives
-               '("melpa" . "https://melpa.org/packages/"))
-  (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-
   (package-initialize)
 
   (unless (and (file-exists-p (concat init-dir "elpa/archives/gnu"))
                (file-exists-p (concat init-dir "elpa/archives/melpa"))
-               (file-exists-p (concat init-dir "elpa/archives/melpa-stable")))
+               (file-exists-p (concat init-dir "elpa/archives/melpa-stable"))
+               (file-exists-p (concat init-dir "elpa/archives/org")))
     (package-refresh-contents))
+#+END_SRC
 
-  ;; Bootstrap `use-package'
+Use ~use-package~ to manage other packages, and improve load times.
+
+#+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
@@ -69,17 +83,6 @@ Threshold for faster startup.
   (setq gc-cons-threshold 500000000)
 #+END_SRC
 
-Disable UI that starts when starting emacs and also set the y or n instead of
-yes or no.
-
-#+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-message t)
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
-  (fset 'yes-or-no-p 'y-or-n-p)
-  (diminish 'abbrev-mode)
-#+END_SRC
-
 Move the backup files into the temporaty directory so that they are out of the way.
 
 #+BEGIN_SRC emacs-lisp
@@ -90,8 +93,19 @@ Move the backup files into the temporaty directory so that they are out of the w
 #+END_SRC
 
 ** Editor
-
 Editor specific options such as adding line numbers and showing.
+
+Disable UI that starts when starting emacs and also set the y or n instead of
+yes or no.
+
+#+BEGIN_SRC emacs-lisp
+  (setq inhibit-startup-message t)
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+  (fset 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+Make it easier to refresh the buffer by setting it to ~<f5>~.
 
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode 'expression)
@@ -115,8 +129,12 @@ preferred style. This is just personal preference though.
   (setq-default python-indent-offset 4)
 #+END_SRC
 
-** Font
 
+#+BEGIN_SRC emacs-lisp
+  (setq line-number-display-limit 2000000)
+#+END_SRC
+
+** Font
 Set the font to monaco. It has to use the xft syntax, otherwise it doesn't render properly.
 The font is also set twice, so that it is properly set when using emacs normally or
 using the emacsclient.
@@ -126,57 +144,70 @@ using the emacsclient.
   (setq default-frame-alist '((font . "Monaco-9"))) ;;; set default font for emacs --daemon and emacsclient
 #+END_SRC
 
-
 * Mail
+~mu4e~ is automatically in the load path when installed through a package manager.
+
+For archlinux, the command to install mu4e is:
+
+#+BEGIN_SRC shell
+pacman -S mu
+#+END_SRC
+
+which comes with mu.
 
 #+BEGIN_SRC emacs-lisp
   (require 'mu4e)
+#+END_SRC
 
-  ;; use mu4e for e-mail in emacs
+Set the email client to be mu4e in emacs, and set the correct 
+mail directory. As I am downloading all the mailboxes, there will be duplicates,
+which can be ignored in searches by setting ~mu4e-headers-skip-duplicates~.
+
+Also delete messages when they are sent, and don't copy them over to the 
+sent directory, as Gmail will do that for us.
+
+To download the mail using imap, I use ~mbsync~, which downloads all mail with the
+~-a~ flag.
+
+Finally, remove buffers when an email has been sent.
+
+#+BEGIN_SRC emacs-lisp
   (setq mail-user-agent 'mu4e-user-agent)
-
-  ;; default
   (setq mu4e-maildir "~/.mail")
-
   (setq mu4e-headers-skip-duplicates t)
+  (setq mu4e-sent-messages-behavior 'delete)
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq message-kill-buffer-on-exit t)
+#+END_SRC
 
+Setting the directories that I use and set shortcuts to them.
+
+#+BEGIN_SRC emacs-lisp
   (setq mu4e-drafts-folder "/gmail/[Gmail]/Drafts")
   (setq mu4e-sent-folder   "/gmail/[Gmail]/Sent Mail")
   (setq mu4e-trash-folder  "/gmail/[Gmail]/Trash")
-
-  ;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-  (setq mu4e-sent-messages-behavior 'delete)
-
-  ;; (See the documentation for `mu4e-sent-messages-behavior' if you have
-  ;; additional non-Gmail addresses and want assign them different
-  ;; behavior.)
-
-  ;; setup some handy shortcuts
-  ;; you can quickly switch to your Inbox -- press ``ji''
-  ;; then, when you want archive some messages, move them to
-  ;; the 'All Mail' folder by pressing ``ma''.
 
   (setq mu4e-maildir-shortcuts
         '( ("/gmail/Inbox"               . ?i)
            ("/gmail/[Gmail]/Sent Mail"   . ?s)
            ("/gmail/[Gmail]/Trash"       . ?t)
            ("/gmail/[Gmail]/All Mail"    . ?a)))
+#+END_SRC
 
-  ;; allow for updating mail using 'U' in the main view:
-  (setq mu4e-get-mail-command "mbsync -a")
+Setting the name and email, with the signature.
 
-  ;; something about ourselves
+#+BEGIN_SRC emacs-lisp
   (setq
    user-mail-address "ymherklotz@gmail.com"
    user-full-name  "Yann Herklotz"
    mu4e-compose-signature
    (concat
     "Yann Herklotz\n"))
+#+END_SRC
 
-  ;; sending mail -- replace USERNAME with your gmail username
-  ;; also, make sure the gnutls command line utils are installed
-  ;; package 'gnutls-bin' in Debian/Ubuntu
+Setting up ~smtp~ to send messages using gmail.
 
+#+BEGIN_SRC emacs-lisp
   (require 'smtpmail)
   (setq message-send-mail-function 'smtpmail-send-it
         starttls-use-gnutls t
@@ -186,30 +217,10 @@ using the emacsclient.
         smtpmail-default-smtp-server "smtp.gmail.com"
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587)
-
-  ;; alternatively, for emacs-24 you can use:
-  ;;(setq message-send-mail-function 'smtpmail-send-it
-  ;;     smtpmail-stream-type 'starttls
-  ;;     smtpmail-default-smtp-server "smtp.gmail.com"
-  ;;     smtpmail-smtp-server "smtp.gmail.com"
-  ;;     smtpmail-smtp-service 587)
-
-  ;; don't keep message buffers around
-  (setq message-kill-buffer-on-exit t)
 #+END_SRC
-
 
 * Utility
-
-** Diminish modes
-
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish
-    :ensure t)
-#+END_SRC
-
 ** Discover-ability
-
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :ensure t
@@ -217,19 +228,14 @@ using the emacsclient.
     :config
     (which-key-mode))
 #+END_SRC
-
 ** Navigation
-
 *** Ace Windows
-
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :ensure t
     :bind (("C-x o" . ace-window)))
 #+END_SRC
-
 *** Avy
-
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :config
@@ -237,7 +243,6 @@ using the emacsclient.
     (global-set-key (kbd "C-'") 'avy-goto-char-2))
 #+END_SRC
 *** Helm
-
 #+BEGIN_SRC emacs-lisp
   (use-package helm
     :ensure t
@@ -281,38 +286,28 @@ using the emacsclient.
   (define-key global-map (kbd "C-x r p")               'helm-projects-history)
   (define-key global-map (kbd "C-x r c") 'helm-addressbook-bookmarks)
 #+END_SRC
-
 ** Visual
-
 *** All the icons
-
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons
     :ensure t)
 #+END_SRC
-
 *** Org Bullets
-
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
     :config
     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+END_SRC
-
 ** Editing
-
 *** Hungry Delete
-
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
     :ensure t
     :config
     (global-hungry-delete-mode))
 #+END_SRC
-
 *** Multiple Cursors
-
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
@@ -320,9 +315,7 @@ using the emacsclient.
            ("C-<" . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this)))
 #+END_SRC
-
 *** SmartParens
-
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :ensure t
@@ -361,26 +354,19 @@ using the emacsclient.
       (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
                                                 ("* ||\n[i]" "RET")))))
 #+END_SRC
-
 *** Undo Tree
-
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
     :diminish undo-tree-mode
     :config
     (global-undo-tree-mode))
 #+END_SRC
-
 *** Whitespace
-
-
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
 #+END_SRC
-
 ** Misc
-
 Reduce the ringing in emacs.
 
 #+BEGIN_SRC emacs-lisp
@@ -391,11 +377,8 @@ Reduce the ringing in emacs.
   (setq visible-bell nil)
 #+END_SRC
 
-
 * Writing
-
 ** Spellcheck in emacs
-
 #+BEGIN_SRC emacs-lisp
   (defun spell-buffer-german ()
     (interactive)
@@ -418,9 +401,7 @@ Reduce the ringing in emacs.
     :bind (("C-c N" . spell-buffer-dutch)
            ("C-c n" . spell-buffer-english)))
 #+END_SRC
-
 ** Word Wrapping
-
 Wrap words when in text mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -430,9 +411,7 @@ Wrap words when in text mode.
                      (visual-line-mode 1)
                      )))
 #+END_SRC
-
 ** Markdown
-
  Markdown is the standard for writing documentation. This snippet loads
  GFM (Github Flavoured Markdown) style.
 
@@ -446,23 +425,17 @@ Wrap words when in text mode.
      :init (setq markdown-command "multimarkdown"))
  #+END_SRC
 
-
 * Programming
-
 My emacs configuration is mostly focused on programming, therefore there is a lot of different
 language support.
-
 ** Version Control and Project Management
 *** Magit
-
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
     :bind (("C-x g" . magit-status)))
 #+END_SRC
-
 *** Projectile
-
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :ensure t
@@ -477,12 +450,8 @@ language support.
     :config
     (counsel-projectile-mode t))
 #+END_SRC
-
-
 ** Language Support
-
 *** C++
-
  Setting up CC mode with a hook that uses my settings.
 
  #+BEGIN_SRC emacs-lisp
@@ -561,10 +530,7 @@ language support.
      :config
      (setq rtags-use-ivy t))
  #+END_SRC
-
 *** Clojure
-
-
  Using Cider for clojure environment.
 
  #+BEGIN_SRC emacs-lisp
@@ -582,9 +548,7 @@ language support.
      :init
      (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode))
  #+END_SRC
-
 *** CMake
-
 #+BEGIN_SRC emacs-lisp
 
   (use-package cmake-mode
@@ -597,35 +561,27 @@ language support.
     (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
 
 #+END_SRC
-
 *** Emacs Lisp
-
  Adding strict parentheses to emacs lisp.
 
  #+BEGIN_SRC emacs-lisp
    (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
  #+END_SRC
-
 *** F#
-
  F# mode for uni work.
 
  #+BEGIN_SRC emacs-lisp
    (use-package fsharp-mode
      :ensure t)
  #+END_SRC
-
 *** Haskell
-
  Haskell mode with company mode completion.
 
  #+BEGIN_SRC emacs-lisp
    (use-package haskell-mode
      :ensure t)
  #+END_SRC
-
 *** Org
-
  Agenda setup for org mode, pointing to the write files.
 
  #+BEGIN_SRC emacs-lisp
@@ -705,9 +661,7 @@ language support.
  #+BEGIN_SRC emacs-lisp
    (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
  #+END_SRC
-
 *** Python
-
  Elpy package for python, which provides an IDE type environment for python.
 
  #+BEGIN_SRC emacs-lisp
@@ -728,45 +682,33 @@ language support.
           (get-buffer-process (current-buffer))
           nil "_"))))
  #+END_SRC
-
 *** JSON
-
  JSON files should be opened in js-mode.
 
  #+BEGIN_SRC emacs-lisp
    (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
  #+END_SRC
 *** Shell
-
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
-
 *** Rust
-
  Rust mode for rust development.
 
  #+BEGIN_SRC emacs-lisp
    (use-package rust-mode
      :ensure t)
  #+END_SRC
-
 *** YAML
-
-
  YAML mode for work and working with yaml files
 
     #+BEGIN_SRC emacs-lisp
       (use-package yaml-mode
         :ensure t)
     #+END_SRC
-
-
 ** Completion Support
-
 *** Company
-
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
@@ -780,7 +722,6 @@ language support.
     (setq company-dabbrev-downcase 0))
 #+END_SRC
 *** Flycheck
-
 Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -788,10 +729,7 @@ Enabling global flycheck support.
     :diminish flycheck-mode
     :init (global-flycheck-mode))
 #+END_SRC
-
 *** Yasnippets
-
-
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :ensure t
@@ -800,9 +738,7 @@ Enabling global flycheck support.
     (yas-global-mode 1))
 #+END_SRC
 
-
 * Look and Feel
-
 #+BEGIN_SRC emacs-lisp
   ;; (use-package color-theme-sanityinc-tomorrow
   ;;   :ensure t)
@@ -850,9 +786,7 @@ Enabling global flycheck support.
            (toggle-scroll-bar -1)))
 #+END_SRC
 
-
 * My Code
-
 #+BEGIN_SRC emacs-lisp
   (defun y/swap-windows ()
     "Swaps two windows and leaves the cursor in the original one"
@@ -911,76 +845,9 @@ Registers
   (set-register ?p (cons 'file "~/Dropbox/Org/project.org"))
 #+END_SRC
 
-#+RESULTS:
-: (file . ~/Dropbox/Org/project.org)
-
-
 * Conclusion
-
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
-
   (setq gc-cons-threshold 10000000)
-
-#+END_SRC
-
-
-* Not used anymore
-** Ivy / Swiper / Counsel
-
-#+BEGIN_SRC
-    (use-package counsel
-      :ensure t
-      :bind
-      (("M-x" . counsel-M-x)
-       ("M-y" . counsel-yank-pop)
-       :map ivy-minibuffer-map
-       ("M-y" . ivy-next-line)))
-
-     (use-package swiper
-       :pin melpa-stable
-       :diminish ivy-mode
-       :ensure t
-       :bind*
-       (("C-s" . swiper)
-        ("C-c C-r" . ivy-resume)
-        ("C-x C-f" . counsel-find-file)
-        ("C-c h f" . counsel-describe-function)
-        ("C-c h v" . counsel-describe-variable)
-        ("C-c i u" . counsel-unicode-char)
-        ("M-i" . counsel-imenu)
-        ("C-c g" . counsel-git)
-        ("C-c j" . counsel-git-grep)
-        ("C-c k" . counsel-ag)
-  ;;      ("C-c l" . scounsel-locate)
-  )
-       :config
-       (progn
-         (ivy-mode 1)
-         (setq ivy-use-virtual-buffers t)
-         (define-key read-expression-map (kbd "C-r") #'counsel-expression-history)
-         (ivy-set-actions
-          'counsel-find-file
-          '(("d" (lambda (x) (delete-file (expand-file-name x)))
-             "delete"
-             )))
-         (ivy-set-actions
-          'ivy-switch-buffer
-          '(("k"
-             (lambda (x)
-               (kill-buffer x)
-               (ivy--reset-state ivy-last))
-             "kill")
-            ("j"
-             ivy--switch-buffer-other-window-action
-             "other window")))))
-
-    (use-package counsel-projectile
-      :ensure t
-      :config
-      (counsel-projectile-mode))
-
-    (use-package ivy-hydra :ensure t)
-
 #+END_SRC
