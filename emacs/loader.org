@@ -425,9 +425,90 @@ Wrap words when in text mode.
      :init (setq markdown-command "multimarkdown"))
  #+END_SRC
 
+** Org
+ Agenda setup for org mode, pointing to the write files.
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-agenda-files (quote ("~/Dropbox/Org")))
+
+   (defun y/append-to-list (list-var elements)
+     "Append ELEMENTS to the end of LIST-VAR.
+
+   The return value is the new value of LIST-VAR."
+     (unless (consp elements)
+       (error "ELEMENTS must be a list"))
+     (let ((list (symbol-value list-var)))
+       (if list
+           (setcdr (last list) elements)
+         (set list-var elements)))
+     (symbol-value list-var))
+
+   (setq org-icalendar-store-UID t)
+   (setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo todo-start))
+   (setq org-icalendar-use-deadline'(even-if-not-todo todo-due event-if-todo))
+
+   (use-package org-gcal
+     :ensure t
+     :config
+     (setq org-gcal-client-id "56042666758-7tq2364l4glivj0hdsd3p3f2cd9cucq1.apps.googleusercontent.com"
+         org-gcal-client-secret "Zn47gN5ImfeMsNbmWQbPtv3w"
+         org-gcal-file-alist '(("ymherklotz@gmail.com" .  "~/Dropbox/Org/personal.org")
+                               ("p8po34fuo3vv1ugrjki895aetg@group.calendar.google.com" .  "~/Dropbox/Org/project.org"))))
+ #+END_SRC
+
+ Publishing to website.
+
+ #+BEGIN_SRC emacs-lisp
+   (use-package ox-twbs
+     :ensure t
+     :config
+     (setq org-publish-project-alist
+         '(("org-notes"
+            :base-directory "~/Documents/Org/Website"
+            :publishing-directory "~/Documents/Website"
+            :publishing-function org-twbs-publish-to-html
+            :with-sub-superscript nil
+            ))))
+ #+END_SRC
+
+ Set global keys for org mode to access agenda.
+
+ #+BEGIN_SRC emacs-lisp
+   (global-set-key "\C-cl" 'org-store-link)
+   (global-set-key "\C-ca" 'org-agenda)
+   (global-set-key "\C-cc" 'org-capture)
+   (global-set-key "\C-cb" 'org-iswitchb)
+ #+END_SRC
+
+  Set up ob for executing code blocks
+  
+ #+BEGIN_SRC emacs-lisp
+   (require 'ob)
+   ;; Babel settings, enabling languages
+   (org-babel-do-load-languages
+    'org-babel-load-languages
+    '((emacs-lisp . t)
+      (js . t)
+      (java . t)
+      (haskell . t)
+      (python . t)
+      (ruby . t)
+      (sh . t)
+      (org . t)
+      (matlab . t)
+      (ditaa . t)
+      (clojure . t)
+      ))
+   (setq org-image-actual-width nil)
+ #+END_SRC
+
+ #+BEGIN_SRC emacs-lisp
+   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+ #+END_SRC
 * Programming
 My emacs configuration is mostly focused on programming, therefore there is a lot of different
 language support.
+
 ** Version Control and Project Management
 *** Magit
 #+BEGIN_SRC emacs-lisp
@@ -435,6 +516,7 @@ language support.
     :ensure t
     :bind (("C-x g" . magit-status)))
 #+END_SRC
+
 *** Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
@@ -450,6 +532,7 @@ language support.
     :config
     (counsel-projectile-mode t))
 #+END_SRC
+
 ** Language Support
 *** C++
  Setting up CC mode with a hook that uses my settings.
@@ -567,6 +650,7 @@ language support.
  #+BEGIN_SRC emacs-lisp
    (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
  #+END_SRC
+ 
 *** F#
  F# mode for uni work.
 
@@ -580,86 +664,6 @@ language support.
  #+BEGIN_SRC emacs-lisp
    (use-package haskell-mode
      :ensure t)
- #+END_SRC
-*** Org
- Agenda setup for org mode, pointing to the write files.
-
- #+BEGIN_SRC emacs-lisp
-   (setq org-agenda-files (quote ("~/Dropbox/Org")))
-
-   (defun y/append-to-list (list-var elements)
-     "Append ELEMENTS to the end of LIST-VAR.
-
-   The return value is the new value of LIST-VAR."
-     (unless (consp elements)
-       (error "ELEMENTS must be a list"))
-     (let ((list (symbol-value list-var)))
-       (if list
-           (setcdr (last list) elements)
-         (set list-var elements)))
-     (symbol-value list-var))
-
-   (setq org-icalendar-store-UID t)
-   (setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo todo-start))
-   (setq org-icalendar-use-deadline'(even-if-not-todo todo-due event-if-todo))
-
-   (use-package org-gcal
-     :ensure t
-     :config
-     (setq org-gcal-client-id "56042666758-7tq2364l4glivj0hdsd3p3f2cd9cucq1.apps.googleusercontent.com"
-         org-gcal-client-secret "Zn47gN5ImfeMsNbmWQbPtv3w"
-         org-gcal-file-alist '(("ymherklotz@gmail.com" .  "~/Dropbox/Org/personal.org")
-                               ("p8po34fuo3vv1ugrjki895aetg@group.calendar.google.com" .  "~/Dropbox/Org/project.org"))))
- #+END_SRC
-
- Publishing to website.
-
- #+BEGIN_SRC emacs-lisp
-   (use-package ox-twbs
-     :ensure t
-     :config
-     (setq org-publish-project-alist
-         '(("org-notes"
-            :base-directory "~/Documents/Org/Website"
-            :publishing-directory "~/Documents/Website"
-            :publishing-function org-twbs-publish-to-html
-            :with-sub-superscript nil
-            ))))
- #+END_SRC
-
- Set global keys for org mode to access agenda.
-
- #+BEGIN_SRC emacs-lisp
-   (global-set-key "\C-cl" 'org-store-link)
-   (global-set-key "\C-ca" 'org-agenda)
-   (global-set-key "\C-cc" 'org-capture)
-   (global-set-key "\C-cb" 'org-iswitchb)
- #+END_SRC
-
-  Set up ob for executing code blocks
-  
- #+BEGIN_SRC emacs-lisp
-   (require 'ob)
-   ;; Babel settings, enabling languages
-   (org-babel-do-load-languages
-    'org-babel-load-languages
-    '((emacs-lisp . t)
-      (js . t)
-      (java . t)
-      (haskell . t)
-      (python . t)
-      (ruby . t)
-      (sh . t)
-      (org . t)
-      (matlab . t)
-      (ditaa . t)
-      (clojure . t)
-      ))
-   (setq org-image-actual-width nil)
- #+END_SRC
-
- #+BEGIN_SRC emacs-lisp
-   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
  #+END_SRC
 *** Python
  Elpy package for python, which provides an IDE type environment for python.
@@ -693,20 +697,7 @@ language support.
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
-*** Rust
- Rust mode for rust development.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package rust-mode
-     :ensure t)
- #+END_SRC
-*** YAML
- YAML mode for work and working with yaml files
-
-    #+BEGIN_SRC emacs-lisp
-      (use-package yaml-mode
-        :ensure t)
-    #+END_SRC
 ** Completion Support
 *** Company
 #+BEGIN_SRC emacs-lisp
@@ -721,6 +712,7 @@ language support.
     (define-key c++-mode-map (kbd "C-c n") 'company-complete)
     (setq company-dabbrev-downcase 0))
 #+END_SRC
+
 *** Flycheck
 Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
@@ -729,6 +721,7 @@ Enabling global flycheck support.
     :diminish flycheck-mode
     :init (global-flycheck-mode))
 #+END_SRC
+
 *** Yasnippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
