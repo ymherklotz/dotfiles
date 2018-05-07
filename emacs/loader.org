@@ -800,7 +800,7 @@ Registers
   (set-register ?p (cons 'file "~/Dropbox/Org/project.org"))
 #+END_SRC
 
-* COMMENT Conclusion
+* Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
