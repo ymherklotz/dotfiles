@@ -28,10 +28,10 @@ Defining all the package repositories that are going to be used.
 #+BEGIN_SRC emacs-lisp
   (require 'package)
 
-  (defvar gnu '("gnu" . "https://elpa.gnu.org/packages/"))
-  (defvar melpa '("melpa" . "https://melpa.org/packages/"))
+  (defvar gnu          '("gnu"          . "https://elpa.gnu.org/packages/"))
+  (defvar melpa        '("melpa"        . "https://melpa.org/packages/"))
   (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-  (defvar org-elpa '("org" . "http://orgmode.org/elpa/"))
+  (defvar org-elpa     '("org"          . "http://orgmode.org/elpa/"))
 #+END_SRC
 
 These packages are then added to the list of package archives.
@@ -201,32 +201,32 @@ Finally, remove buffers when an email has been sent.
              :name "Gmail"
              :match-func (lambda (msg)
                            (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
-             :vars '((user-mail-address . "ymherklotz@gmail.com")
-                     (user-full-name . "Yann Herklotz")
-                     (mu4e-sent-folder . "/gmail/[Gmail]/Sent Mail")
-                     (mu4e-drafts-folder . "/gmail/[Gmail]/Drafts")
-                     (mu4e-trash-folder . "/gmail/[Gmail]/Trash")
-                     (mu4e-refile-folder . "/gmail/[Gmail]/All Mail")
-                     (smtpmail-smt-user . "ymherklotz@gmail.com")
-                     (smtpmail-local-domain . "gmail.com")
+             :vars '((user-mail-address            . "ymherklotz@gmail.com")
+                     (user-full-name               . "Yann Herklotz")
+                     (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
+                     (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
+                     (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
+                     (mu4e-refile-folder           . "/gmail/[Gmail]/All Mail")
+                     (smtpmail-smt-user            . "ymherklotz@gmail.com")
+                     (smtpmail-local-domain        . "gmail.com")
                      (smtpmail-default-smtp-server . "smtp.gmail.com")
-                     (smtpmail-smtp-server . "smtp.gmail.com")
-                     (smtpmail-smtp-service . 587)))
+                     (smtpmail-smtp-server         . "smtp.gmail.com")
+                     (smtpmail-smtp-service        . 587)))
            ,(make-mu4e-context
              :name "Imperial"
              :match-func (lambda (msg)
                            (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
-             :vars '((user-mail-address . "ymh15@ic.ac.uk")
-                     (user-full-name . "Yann Herklotz")
-                     (mu4e-sent-folder . "/imperial/Sent")
-                     (mu4e-drafts-folder . "/imperial/Drafts")
-                     (mu4e-trash-folder . "/imperial/Trash")
-                     (mu4e-refile-folder . "/imperial/Archive")
-                     (smtpmail-smt-user . "ymh15@ic.ac.uk")
-                     (smtpmail-local-domain . "cc.ic.ac.uk")
+             :vars '((user-mail-address            . "ymh15@ic.ac.uk")
+                     (user-full-name               . "Yann Herklotz")
+                     (mu4e-sent-folder             . "/imperial/Sent")
+                     (mu4e-drafts-folder           . "/imperial/Drafts")
+                     (mu4e-trash-folder            . "/imperial/Trash")
+                     (mu4e-refile-folder           . "/imperial/Archive")
+                     (smtpmail-smt-user            . "ymh15@ic.ac.uk")
+                     (smtpmail-local-domain        . "cc.ic.ac.uk")
                      (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
-                     (smtpmail-smtp-server . "smtp.cc.ic.ac.uk")
-                     (smtpmail-smtp-service . 587)))))
+                     (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
+                     (smtpmail-smtp-service        . 587)))))
 #+END_SRC
 
 Setting up ~smtp~ to send messages using gmail.
@@ -327,8 +327,8 @@ Setting up ~smtp~ to send messages using gmail.
 *** Multiple Cursors
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
-    :bind (("C->" . mc/mark-next-like-this)
-           ("C-<" . mc/mark-previous-like-this)
+    :bind (("C->"     . mc/mark-next-like-this)
+           ("C-<"     . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this)))
 #+END_SRC
 
