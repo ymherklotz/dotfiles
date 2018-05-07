@@ -791,9 +791,6 @@ Setting up my keybindings
   (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
 
-#+RESULTS:
-| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
-
 Registers
 #+BEGIN_SRC emacs-lisp
   (set-register ?e (cons 'file "~/.emacs.d/myinit.org"))
