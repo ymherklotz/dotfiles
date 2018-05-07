@@ -307,7 +307,7 @@ Setting up ~smtp~ to send messages using gmail.
   (define-key global-map (kbd "M-g g")                 'helm-grep-do-git-grep)
   (define-key global-map (kbd "M-g i")                 'helm-gid)
   (define-key global-map (kbd "C-x r p")               'helm-projects-history)
-  (define-key global-map (kbd "C-x r c") 'helm-addressbook-bookmarks)
+  (define-key global-map (kbd "C-x r c")               'helm-addressbook-bookmarks)
 #+END_SRC
 
 ** Visual
@@ -547,7 +547,6 @@ Adding C headers to company backend for completion.
 
 #+BEGIN_SRC emacs-lisp
   (use-package irony
-
     :config
     (add-hook 'c++-mode-hook 'irony-mode)
     (add-hook 'c-mode-hook 'irony-mode)
