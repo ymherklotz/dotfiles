@@ -335,7 +335,6 @@ Setting up ~smtp~ to send messages using gmail.
 *** SmartParens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
-
     :bind (("M-[" . sp-backward-unwrap-sexp)
            ("M-]" . sp-unwrap-sexp)
            ("C-M-f" . sp-forward-sexp)
