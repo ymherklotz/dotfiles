@@ -794,10 +794,10 @@ Setting up my keybindings
 
 Registers
 #+BEGIN_SRC emacs-lisp
-  (set-register ?e (cons 'file "~/.emacs.d/myinit.org"))
+  (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
   (set-register ?n (cons 'file "~/Dropbox/Org/note.org"))
-  (set-register ?s (cons 'file "~/Dropbox/Org/schedule.org"))
-  (set-register ?p (cons 'file "~/Dropbox/Org/project.org"))
+  (set-register ?t (cons 'file "~/Dropbox/Org/todo.org"))
+  (set-register ?h (cons 'file "~/Dropbox/Org/today.org"))
 #+END_SRC
 
 * Conclusion
