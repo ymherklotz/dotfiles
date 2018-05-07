@@ -3,7 +3,7 @@
 #+AUTHOR: Yann Herklotz
 #+EMAIL: ymherklotz@gmail.com
 
-* Introduction
+** Introduction
 This is my GNU Emacs Configuration that is mostly focused on C++ development,
 but also has support for Python, F#, Haskell and Clojure.
 
@@ -12,8 +12,8 @@ but also has support for Python, F#, Haskell and Clojure.
   (setq user-mail-address "ymherklotz@gmail.com")
 #+END_SRC
 
-* Interface
-** Setup
+** Interface
+*** Setup
 Defining all the package repositories that are going to be used.
 
 - ~gnu~ :: The default package repository for emacs
@@ -95,7 +95,7 @@ way.
         `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
-** Editor
+*** Editor
 Editor specific options such as adding line numbers and showing.
 
 Disable UI that starts when starting emacs and also set the y or n instead of
@@ -139,7 +139,7 @@ preferred style. This is just personal preference though.
   (setq line-number-display-limit 2000000)
 #+END_SRC
 
-** Font
+*** Font
 Set the font to monaco. It has to use the xft syntax, otherwise it doesn't
 render properly.  The font is also set twice, so that it is properly set when
 using emacs normally or using the emacsclient.
@@ -149,8 +149,8 @@ using emacs normally or using the emacsclient.
   (setq default-frame-alist '((font . "Monaco-11"))) ;;; set default font for emacs --daemon and emacsclient
 #+END_SRC
 
-* Social
-** Mail
+** Social
+*** Mail
 ~mu4e~ is automatically in the load path when installed through a package
 manager.
 
@@ -237,8 +237,8 @@ Setting up ~smtp~ to send messages using gmail.
         starttls-use-gnutls t)
 #+END_SRC
 
-* Utility
-** Discover-ability
+** Utility
+*** Discover-ability
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
     :diminish which-key-mode
@@ -246,14 +246,14 @@ Setting up ~smtp~ to send messages using gmail.
     (which-key-mode))
 #+END_SRC
 
-** Navigation
-*** Ace Windows
+*** Navigation
+**** Ace Windows
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
     :bind (("C-x o" . ace-window)))
 #+END_SRC
 
-*** Avy
+**** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :config
@@ -261,7 +261,7 @@ Setting up ~smtp~ to send messages using gmail.
     (global-set-key (kbd "C-'") 'avy-goto-char-2))
 #+END_SRC
 
-*** Helm
+**** Helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
     :config 
@@ -310,21 +310,21 @@ Setting up ~smtp~ to send messages using gmail.
   (define-key global-map (kbd "C-x r c")               'helm-addressbook-bookmarks)
 #+END_SRC
 
-** Visual
-*** All the icons
+*** Visual
+**** All the icons
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
 #+END_SRC
 
-** Editing
-*** Hungry Delete
+*** Editing
+**** Hungry Delete
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
     :config
     (global-hungry-delete-mode))
 #+END_SRC
 
-*** Multiple Cursors
+**** Multiple Cursors
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :bind (("C->"     . mc/mark-next-like-this)
@@ -332,7 +332,7 @@ Setting up ~smtp~ to send messages using gmail.
            ("C-c C-<" . mc/mark-all-like-this)))
 #+END_SRC
 
-*** SmartParens
+**** SmartParens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :bind (("M-["              . sp-backward-unwrap-sexp)
@@ -370,7 +370,7 @@ Setting up ~smtp~ to send messages using gmail.
       (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
                                                 ("* ||\n[i]" "RET")))))
 #+END_SRC
-*** Undo Tree
+**** Undo Tree
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
 
@@ -379,13 +379,13 @@ Setting up ~smtp~ to send messages using gmail.
     (global-undo-tree-mode))
 #+END_SRC
 
-*** Whitespace
+**** Whitespace
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
 #+END_SRC
 
-** Misc
+*** Misc
 Reduce the ringing in emacs.
 
 #+BEGIN_SRC emacs-lisp
@@ -396,8 +396,8 @@ Reduce the ringing in emacs.
   (setq visible-bell nil)
 #+END_SRC
 
-* Writing
-** Spellcheck in emacs
+** Writing
+*** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
   (defun spell-buffer-german ()
     (interactive)
@@ -421,7 +421,7 @@ Reduce the ringing in emacs.
            ("C-c n" . spell-buffer-english)))
 #+END_SRC
 
-** Word Wrapping
+*** Word Wrapping
 Wrap words when in text mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -431,7 +431,7 @@ Wrap words when in text mode.
                      (visual-line-mode 1))))
 #+END_SRC
 
-** Markdown
+*** Markdown
 Markdown is the standard for writing documentation. This snippet loads GFM
 (Github Flavoured Markdown) style.
 
@@ -444,7 +444,7 @@ Markdown is the standard for writing documentation. This snippet loads GFM
     :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
-** Org
+*** Org
 
 Agenda setup for org mode, pointing to the write files.
 
@@ -492,20 +492,20 @@ Set up ob for executing code blocks
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
 #+END_SRC
 
-* Programming
+** Programming
 My emacs configuration is mostly focused on programming, therefore there is a
 lot of different language support.
 
-** Version Control and Project Management
+*** Version Control and Project Management
 
-*** Magit
+**** Magit
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit    
     :bind (("C-x g" . magit-status)))
 #+END_SRC
 
-*** Projectile
+**** Projectile
 
 #+BEGIN_SRC emacs-lisp
   (use-package projectile    
@@ -518,9 +518,9 @@ lot of different language support.
   (use-package helm-projectile)
 #+END_SRC
 
-** Language Support
+*** Language Support
 
-*** C++
+**** C++
 
 Setting up CC mode with a hook that uses my settings.
 
@@ -591,7 +591,7 @@ to install clang format script).
     (rtags-enable-standard-keybindings))
 #+END_SRC
 
-** Clojure
+*** Clojure
 Using Cider for clojure environment.
 
 #+BEGIN_SRC emacs-lisp
@@ -610,7 +610,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
     (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode))
 #+END_SRC
 
-*** CMake
+**** CMake
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode
     :config
@@ -622,21 +622,21 @@ Adding hook to clojure mode to enable strict parentheses mode.
     (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
 #+END_SRC
 
-*** Emacs Lisp
+**** Emacs Lisp
 Adding strict parentheses to emacs lisp.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
 #+END_SRC
 
-*** F#
+**** F#
 F# mode for uni work.
 
 #+BEGIN_SRC emacs-lisp
   (use-package fsharp-mode)
 #+END_SRC
 
-*** Haskell
+**** Haskell
 
 Haskell mode with company mode completion.
 
@@ -644,7 +644,7 @@ Haskell mode with company mode completion.
   (use-package haskell-mode)
 #+END_SRC
 
-*** Python
+**** Python
 Elpy package for python, which provides an IDE type environment for python.
 
 #+BEGIN_SRC emacs-lisp
@@ -665,21 +665,21 @@ Elpy package for python, which provides an IDE type environment for python.
          nil "_"))))
 #+END_SRC
 
-*** JSON
+**** JSON
 JSON files should be opened in js-mode.
 
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
 #+END_SRC
 
-*** Shell
+**** Shell
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
 
-** Completion Support
-*** Company
+*** Completion Support
+**** Company
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :config
@@ -692,7 +692,7 @@ JSON files should be opened in js-mode.
     (setq company-dabbrev-downcase 0))
 #+END_SRC
 
-*** Flycheck
+**** Flycheck
 Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -700,7 +700,7 @@ Enabling global flycheck support.
     :init (global-flycheck-mode))
 #+END_SRC
 
-*** Yasnippets
+**** Yasnippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :diminish yas-minor-mode
@@ -708,7 +708,7 @@ Enabling global flycheck support.
     (yas-global-mode 1))
 #+END_SRC
 
-* Look and Feel
+** Look and Feel
 #+BEGIN_SRC emacs-lisp
   ;; (use-package color-theme-sanityinc-tomorrow)
 
@@ -745,7 +745,7 @@ Enabling global flycheck support.
            (toggle-scroll-bar -1)))
 #+END_SRC
 
-* My Code
+** My Code
 #+BEGIN_SRC emacs-lisp
   (defun y/swap-windows ()
     "Swaps two windows and leaves the cursor in the original one"
@@ -798,7 +798,7 @@ Registers
   (set-register ?h (cons 'file "~/Dropbox/Org/today.org"))
 #+END_SRC
 
-* Conclusion
+** Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
