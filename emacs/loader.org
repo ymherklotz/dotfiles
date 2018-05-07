@@ -4,8 +4,8 @@
 #+EMAIL: ymherklotz@gmail.com
 
 * Introduction
-This is my GNU Emacs Configuration that is mostly focused on C++ development, but
-also has support for Python, F#, Haskell and Clojure.
+This is my GNU Emacs Configuration that is mostly focused on C++ development,
+but also has support for Python, F#, Haskell and Clojure.
 
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Yann Herklotz")
@@ -18,10 +18,11 @@ Defining all the package repositories that are going to be used.
 
 - ~gnu~ :: The default package repository for emacs
 - ~melpa~ :: Contains a lot of additional packages for emacs that are made by
-the community.
-- ~melpa-stable~ :: The stable melpa repository that only contains that full versions
-for packages. This repository will be used for packages that maybe
-get updated often, so that they do not break the config.
+             the community.
+- ~melpa-stable~ :: The stable melpa repository that only contains that full
+                    versions for packages. This repository will be used for
+                    packages that maybe get updated often, so that they do not
+                    break the config.
 - ~org~ :: org package repository that contains many packages to extend org-mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -68,8 +69,8 @@ Use ~use-package~ to manage other packages, and improve load times.
   (setq use-package-always-ensure t)
 #+END_SRC
 
-Server so that a client can connect to it. This makes using emacs much smoother, as frames
-can be opened using the emacsclient.
+Server so that a client can connect to it. This makes using emacs much smoother,
+as frames can be opened using the emacsclient.
 
 #+BEGIN_SRC emacs-lisp
   (setq server-socket-file "/tmp/emacs1000/server")
@@ -84,7 +85,8 @@ Threshold for faster startup.
   (setq gc-cons-threshold 500000000)
 #+END_SRC
 
-Move the backup files into the temporaty directory so that they are out of the way.
+Move the backup files into the temporaty directory so that they are out of the
+way.
 
 #+BEGIN_SRC emacs-lisp
   (setq backup-directory-alist
@@ -114,8 +116,8 @@ Make it easier to refresh the buffer by setting it to ~<f5>~.
   (global-set-key (kbd "<f5>") 'revert-buffer)
 #+END_SRC
 
-Revert the buffer automatically when a file changes on disc. This is
-useful when monitoring a file such as a log file. It will also do this silently.
+Revert the buffer automatically when a file changes on disc. This is useful when
+monitoring a file such as a log file. It will also do this silently.
 
 #+BEGIN_SRC emacs-lisp
   (global-auto-revert-mode 1)
@@ -138,9 +140,9 @@ preferred style. This is just personal preference though.
 #+END_SRC
 
 ** Font
-Set the font to monaco. It has to use the xft syntax, otherwise it doesn't render properly.
-The font is also set twice, so that it is properly set when using emacs normally or
-using the emacsclient.
+Set the font to monaco. It has to use the xft syntax, otherwise it doesn't
+render properly.  The font is also set twice, so that it is properly set when
+using emacs normally or using the emacsclient.
 
 #+BEGIN_SRC emacs-lisp
   (set-default-font "Monaco-11") ;;; set default font
@@ -149,7 +151,8 @@ using the emacsclient.
 
 * Social
 ** Mail
-~mu4e~ is automatically in the load path when installed through a package manager.
+~mu4e~ is automatically in the load path when installed through a package
+manager.
 
 For archlinux, the command to install mu4e is:
 
@@ -163,15 +166,15 @@ which comes with mu.
   (require 'mu4e)
 #+END_SRC
 
-Set the email client to be mu4e in emacs, and set the correct 
-mail directory. As I am downloading all the mailboxes, there will be duplicates,
-which can be ignored in searches by setting ~mu4e-headers-skip-duplicates~.
+Set the email client to be mu4e in emacs, and set the correct mail directory. As
+I am downloading all the mailboxes, there will be duplicates, which can be
+ignored in searches by setting ~mu4e-headers-skip-duplicates~.
 
-Also delete messages when they are sent, and don't copy them over to the 
-sent directory, as Gmail will do that for us.
+Also delete messages when they are sent, and don't copy them over to the sent
+directory, as Gmail will do that for us.
 
-To download the mail using imap, I use ~mbsync~, which downloads all mail with the
-~-a~ flag.
+To download the mail using imap, I use ~mbsync~, which downloads all mail with
+the ~-a~ flag.
 
 Finally, remove buffers when an email has been sent.
 
@@ -430,8 +433,8 @@ Wrap words when in text mode.
 #+END_SRC
 
 ** Markdown
-Markdown is the standard for writing documentation. This snippet loads
-GFM (Github Flavoured Markdown) style.
+Markdown is the standard for writing documentation. This snippet loads GFM
+(Github Flavoured Markdown) style.
 
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
@@ -491,8 +494,8 @@ Set up ob for executing code blocks
 #+END_SRC
 
 * Programming
-My emacs configuration is mostly focused on programming, therefore there is a lot of different
-language support.
+My emacs configuration is mostly focused on programming, therefore there is a
+lot of different language support.
 
 ** Version Control and Project Management
 
@@ -573,8 +576,8 @@ Adding C headers to company backend for completion.
     (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
 #+END_SRC
 
-Using clang format to format the region that is currently being selected (need to install
-clang format script).
+Using clang format to format the region that is currently being selected (need
+to install clang format script).
 
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
@@ -723,8 +726,6 @@ Enabling global flycheck support.
 
   ;; (use-package plan9-theme)
 
-  ;; (use-package doom-themes)
-
   (use-package telephone-line
     :init
     (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
@@ -799,7 +800,7 @@ Registers
   (set-register ?p (cons 'file "~/Dropbox/Org/project.org"))
 #+END_SRC
 
-* Conclusion
+* COMMENT Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
