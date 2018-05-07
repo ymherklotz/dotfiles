@@ -2,7 +2,6 @@
 #+DATE: <2017-08-11 Fri>
 #+AUTHOR: Yann Herklotz
 #+EMAIL: ymherklotz@gmail.com
-#+STARTUP: indent
 
 * Introduction
 This is my GNU Emacs Configuration that is mostly focused on C++ development, but
@@ -19,10 +18,10 @@ Defining all the package repositories that are going to be used.
 
 - ~gnu~ :: The default package repository for emacs
 - ~melpa~ :: Contains a lot of additional packages for emacs that are made by
-             the community.
+the community.
 - ~melpa-stable~ :: The stable melpa repository that only contains that full versions
-                    for packages. This repository will be used for packages that maybe
-                    get updated often, so that they do not break the config.
+for packages. This repository will be used for packages that maybe
+get updated often, so that they do not break the config.
 - ~org~ :: org package repository that contains many packages to extend org-mode.
 
 #+BEGIN_SRC emacs-lisp
@@ -65,6 +64,8 @@ Use ~use-package~ to manage other packages, and improve load times.
     (package-install 'use-package))
 
   (require 'use-package)
+
+  (setq use-package-always-ensure t)
 #+END_SRC
 
 Server so that a client can connect to it. This makes using emacs much smoother, as frames
@@ -74,7 +75,7 @@ can be opened using the emacsclient.
   (setq server-socket-file "/tmp/emacs1000/server")
   (setq server-socket-dir "/tmp/emacs1000")
   (unless (file-exists-p server-socket-file)
-    (server-start))
+  (server-start))
 #+END_SRC
 
 Threshold for faster startup.
@@ -128,6 +129,7 @@ preferred style. This is just personal preference though.
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
   (setq-default python-indent-offset 4)
+  (setq-default fill-column 80)
 #+END_SRC
 
 
@@ -141,17 +143,18 @@ The font is also set twice, so that it is properly set when using emacs normally
 using the emacsclient.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Monaco-9") ;;; set default font
-  (setq default-frame-alist '((font . "Monaco-9"))) ;;; set default font for emacs --daemon and emacsclient
+  (set-default-font "Monaco-11") ;;; set default font
+  (setq default-frame-alist '((font . "Monaco-11"))) ;;; set default font for emacs --daemon and emacsclient
 #+END_SRC
 
-* Mail
+* Social
+** Mail
 ~mu4e~ is automatically in the load path when installed through a package manager.
 
 For archlinux, the command to install mu4e is:
 
 #+BEGIN_SRC shell
-pacman -S mu
+  pacman -S mu
 #+END_SRC
 
 which comes with mu.
@@ -179,31 +182,48 @@ Finally, remove buffers when an email has been sent.
   (setq mu4e-sent-messages-behavior 'delete)
   (setq mu4e-get-mail-command "mbsync -a")
   (setq message-kill-buffer-on-exit t)
-#+END_SRC
+  (setq mu4e-completing-read-function 'completing-read)
+  (setq mu4e-context-policy 'pick-first)
+  (setq mu4e-confirm-quit nil)
 
-Setting the directories that I use and set shortcuts to them.
-
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-drafts-folder "/gmail/[Gmail]/Drafts")
-  (setq mu4e-sent-folder   "/gmail/[Gmail]/Sent Mail")
-  (setq mu4e-trash-folder  "/gmail/[Gmail]/Trash")
-
+  ;;; Mail directory shortcuts
   (setq mu4e-maildir-shortcuts
-        '( ("/gmail/Inbox"               . ?i)
-           ("/gmail/[Gmail]/Sent Mail"   . ?s)
-           ("/gmail/[Gmail]/Trash"       . ?t)
-           ("/gmail/[Gmail]/All Mail"    . ?a)))
+        '(("/gmail/Inbox" . ?g)
+          ("/imperial/Inbox" . ?i)))
 #+END_SRC
 
-Setting the name and email, with the signature.
-
 #+BEGIN_SRC emacs-lisp
-  (setq
-   user-mail-address "ymherklotz@gmail.com"
-   user-full-name  "Yann Herklotz"
-   mu4e-compose-signature
-   (concat
-    "Yann Herklotz\n"))
+  (setq mu4e-contexts
+        `( ,(make-mu4e-context
+             :name "Gmail"
+             :match-func (lambda (msg)
+                           (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
+             :vars '((user-mail-address . "ymherklotz@gmail.com")
+                     (user-full-name . "Yann Herklotz")
+                     (mu4e-sent-folder . "/gmail/[Gmail]/Sent Mail")
+                     (mu4e-drafts-folder . "/gmail/[Gmail]/Drafts")
+                     (mu4e-trash-folder . "/gmail/[Gmail]/Trash")
+                     (mu4e-refile-folder . "/gmail/[Gmail]/All Mail")
+                     (smtpmail-smt-user . "ymherklotz@gmail.com")
+                     (smtpmail-local-domain . "gmail.com")
+                     (smtpmail-default-smtp-server . "smtp.gmail.com")
+                     (smtpmail-smtp-server . "smtp.gmail.com")
+                     (smtpmail-smtp-service . 587)))
+           ,(make-mu4e-context
+             :name "Imperial"
+             :match-func (lambda (msg)
+                           (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
+             :vars '((user-mail-address . "ymh15@ic.ac.uk")
+                     (user-full-name . "Yann Herklotz")
+                     (mu4e-sent-folder . "/imperial/Sent")
+                     (mu4e-drafts-folder . "/imperial/Drafts")
+                     (mu4e-trash-folder . "/imperial/Trash")
+                     (mu4e-refile-folder . "/imperial/Archive")
+                     (smtpmail-smt-user . "ymh15@ic.ac.uk")
+                     (smtpmail-local-domain . "cc.ic.ac.uk")
+                     (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
+                     (smtpmail-smtp-server . "smtp.cc.ic.ac.uk")
+                     (smtpmail-smtp-service . 587)))))
 #+END_SRC
 
 Setting up ~smtp~ to send messages using gmail.
@@ -211,31 +231,25 @@ Setting up ~smtp~ to send messages using gmail.
 #+BEGIN_SRC emacs-lisp
   (require 'smtpmail)
   (setq message-send-mail-function 'smtpmail-send-it
-        starttls-use-gnutls t
-        smtpmail-starttls-credentials '(("smtp.gmail.com" 587 nil nil))
-        smtpmail-auth-credentials
-        '(("smtp.gmail.com" 587 "ymherklotz@gmail.com" nil))
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587)
+        starttls-use-gnutls t)
 #+END_SRC
 
 * Utility
 ** Discover-ability
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
-    :ensure t
     :diminish which-key-mode
     :config
     (which-key-mode))
 #+END_SRC
+
 ** Navigation
 *** Ace Windows
 #+BEGIN_SRC emacs-lisp
   (use-package ace-window
-    :ensure t
     :bind (("C-x o" . ace-window)))
 #+END_SRC
+
 *** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -243,20 +257,25 @@ Setting up ~smtp~ to send messages using gmail.
     (global-set-key (kbd "C-:") 'avy-goto-char)
     (global-set-key (kbd "C-'") 'avy-goto-char-2))
 #+END_SRC
+
 *** Helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
-    :ensure t
-    :config (require 'helm-config))
+    :config 
+    (require 'helm-config))
 
   (use-package helm-mode
-    :config (helm-mode 1))
+    :ensure helm
+    :config
+    (helm-mode 1))
 
   (use-package helm-utils
+    :ensure helm
     ;; Popup buffer-name or filename in grep/moccur/imenu-all etc...
     :config (helm-popup-tip-mode 1))
 
   (use-package helm-sys
+    :ensure helm
     :commands (helm-top)
     :config (helm-top-poll-mode 1))
 
@@ -287,39 +306,33 @@ Setting up ~smtp~ to send messages using gmail.
   (define-key global-map (kbd "C-x r p")               'helm-projects-history)
   (define-key global-map (kbd "C-x r c") 'helm-addressbook-bookmarks)
 #+END_SRC
+
 ** Visual
 *** All the icons
 #+BEGIN_SRC emacs-lisp
-  (use-package all-the-icons
-    :ensure t)
+  (use-package all-the-icons)
 #+END_SRC
-*** Org Bullets
-#+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :ensure t
-    :config
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-#+END_SRC
+
 ** Editing
 *** Hungry Delete
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
-    :ensure t
     :config
     (global-hungry-delete-mode))
 #+END_SRC
+
 *** Multiple Cursors
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
-    :ensure t
     :bind (("C->" . mc/mark-next-like-this)
            ("C-<" . mc/mark-previous-like-this)
            ("C-c C-<" . mc/mark-all-like-this)))
 #+END_SRC
+
 *** SmartParens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
-    :ensure t
+
     :bind (("M-[" . sp-backward-unwrap-sexp)
            ("M-]" . sp-unwrap-sexp)
            ("C-M-f" . sp-forward-sexp)
@@ -358,16 +371,18 @@ Setting up ~smtp~ to send messages using gmail.
 *** Undo Tree
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
-    :ensure t
+
     :diminish undo-tree-mode
     :config
     (global-undo-tree-mode))
 #+END_SRC
+
 *** Whitespace
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
 #+END_SRC
+
 ** Misc
 Reduce the ringing in emacs.
 
@@ -403,6 +418,7 @@ Reduce the ringing in emacs.
     :bind (("C-c N" . spell-buffer-dutch)
            ("C-c n" . spell-buffer-english)))
 #+END_SRC
+
 ** Word Wrapping
 Wrap words when in text mode.
 
@@ -410,232 +426,191 @@ Wrap words when in text mode.
   (dolist (hook '(text-mode-hook))
     (add-hook hook (lambda ()
                      (flyspell-mode 1)
-                     (visual-line-mode 1)
-                     )))
+                     (visual-line-mode 1))))
 #+END_SRC
-** Markdown
- Markdown is the standard for writing documentation. This snippet loads
- GFM (Github Flavoured Markdown) style.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package markdown-mode
-     :ensure t
-     :commands (markdown-mode gfm-mode)
-     :mode (("README\\.md\\'" . gfm-mode)
-            ("\\.md\\'" . markdown-mode)
-            ("\\.markdown\\'" . markdown-mode))
-     :init (setq markdown-command "multimarkdown"))
- #+END_SRC
+** Markdown
+Markdown is the standard for writing documentation. This snippet loads
+GFM (Github Flavoured Markdown) style.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+END_SRC
 
 ** Org
- Agenda setup for org mode, pointing to the write files.
 
- #+BEGIN_SRC emacs-lisp
-   (setq org-agenda-files (quote ("~/Dropbox/Org")))
+Agenda setup for org mode, pointing to the write files.
 
-   (defun y/append-to-list (list-var elements)
-     "Append ELEMENTS to the end of LIST-VAR.
+#+BEGIN_SRC emacs-lisp
+  (setq org-agenda-files (quote ("~/Dropbox/Org")))
+  (setq org-log-into-drawer t)
+  (setq org-log-done "note")
+  (setq org-hide-leading-stars t)
+  (setq org-confirm-babel-evaluate nil)
+#+END_SRC
 
-   The return value is the new value of LIST-VAR."
-     (unless (consp elements)
-       (error "ELEMENTS must be a list"))
-     (let ((list (symbol-value list-var)))
-       (if list
-           (setcdr (last list) elements)
-         (set list-var elements)))
-     (symbol-value list-var))
+Set global keys for org mode to access agenda.
 
-   (setq org-icalendar-store-UID t)
-   (setq org-icalendar-use-scheduled '(event-if-todo event-if-not-todo todo-start))
-   (setq org-icalendar-use-deadline'(even-if-not-todo todo-due event-if-todo))
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\C-cl" 'org-store-link)
+  (global-set-key "\C-ca" 'org-agenda)
+  (global-set-key "\C-cc" 'org-capture)
+  (global-set-key "\C-cb" 'org-iswitchb)
+#+END_SRC
 
-   (use-package org-gcal
-     :ensure t
-     :config
-     (setq org-gcal-client-id "56042666758-7tq2364l4glivj0hdsd3p3f2cd9cucq1.apps.googleusercontent.com"
-         org-gcal-client-secret "Zn47gN5ImfeMsNbmWQbPtv3w"
-         org-gcal-file-alist '(("ymherklotz@gmail.com" .  "~/Dropbox/Org/personal.org")
-                               ("p8po34fuo3vv1ugrjki895aetg@group.calendar.google.com" .  "~/Dropbox/Org/project.org"))))
- #+END_SRC
+Set up ob for executing code blocks
 
- Publishing to website.
+#+BEGIN_SRC emacs-lisp
+  (require 'ob)
+  ;; Babel settings, enabling languages
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '(
+     (emacs-lisp . t)
+     (js . t)
+     (java . t)
+     (haskell . t)
+     (python . t)
+     (ruby . t)
+     (sh . t)
+     (org . t)
+     (matlab . t)
+     (ditaa . t)
+     (clojure . t)
+     ))
+  (setq org-image-actual-width nil)
+#+END_SRC
 
- #+BEGIN_SRC emacs-lisp
-   (use-package ox-twbs
-     :ensure t
-     :config
-     (setq org-publish-project-alist
-         '(("org-notes"
-            :base-directory "~/Documents/Org/Website"
-            :publishing-directory "~/Documents/Website"
-            :publishing-function org-twbs-publish-to-html
-            :with-sub-superscript nil
-            ))))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+#+END_SRC
 
- Set global keys for org mode to access agenda.
-
- #+BEGIN_SRC emacs-lisp
-   (global-set-key "\C-cl" 'org-store-link)
-   (global-set-key "\C-ca" 'org-agenda)
-   (global-set-key "\C-cc" 'org-capture)
-   (global-set-key "\C-cb" 'org-iswitchb)
- #+END_SRC
-
-  Set up ob for executing code blocks
-  
- #+BEGIN_SRC emacs-lisp
-   (require 'ob)
-   ;; Babel settings, enabling languages
-   (org-babel-do-load-languages
-    'org-babel-load-languages
-    '((emacs-lisp . t)
-      (js . t)
-      (java . t)
-      (haskell . t)
-      (python . t)
-      (ruby . t)
-      (sh . t)
-      (org . t)
-      (matlab . t)
-      (ditaa . t)
-      (clojure . t)
-      ))
-   (setq org-image-actual-width nil)
- #+END_SRC
-
- #+BEGIN_SRC emacs-lisp
-   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
- #+END_SRC
 * Programming
 My emacs configuration is mostly focused on programming, therefore there is a lot of different
 language support.
 
 ** Version Control and Project Management
+
 *** Magit
+
 #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t
+  (use-package magit    
     :bind (("C-x g" . magit-status)))
 #+END_SRC
 
 *** Projectile
+
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
+  (use-package projectile    
     :diminish projectile-mode
     :config
     (projectile-global-mode 1)
     (setq projectile-indexing-method 'alien)
     (setq projectile-enable-caching t))
 
-  (use-package counsel-projectile
-    :ensure t
-    :config
-    (counsel-projectile-mode t))
+  (use-package helm-projectile)
 #+END_SRC
 
 ** Language Support
+
 *** C++
- Setting up CC mode with a hook that uses my settings.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package cc-mode
-     :config
-     (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
-     (setq c-default-style "linux"
-           c-basic-offset 4
-           c-indent-level 4)
-     (defun my-c++-mode-hook ()
-       (c-set-offset 'inline-open 0)
-       (c-set-offset 'inline-close 0)
-       (c-set-offset 'innamespace 0)
-       (c-set-offset 'arglist-cont-nonempty 8)
-       (setq indent-tabs-mode nil))
-     (add-hook 'c-mode-hook 'my-c++-mode-hook)
-     (add-hook 'c++-mode-hook 'my-c++-mode-hook)
+Setting up CC mode with a hook that uses my settings.
 
-     (define-key c-mode-map (kbd "C-c C-c") 'comment-or-uncomment-region))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package cc-mode
+    :config
+    (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+    (setq c-default-style "linux"
+          c-basic-offset 4
+          c-indent-level 4)
+    (defun my-c++-mode-hook ()
+      (c-set-offset 'inline-open 0)
+      (c-set-offset 'inline-close 0)
+      (c-set-offset 'innamespace 0)
+      (c-set-offset 'arglist-cont-nonempty 8)
+      (setq indent-tabs-mode nil))
+    (add-hook 'c-mode-hook 'my-c++-mode-hook)
+    (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 
- Adding C headers to company backend for completion.
+    (define-key c-mode-map (kbd "C-c C-c") 'comment-or-uncomment-region))
+#+END_SRC
 
- #+BEGIN_SRC emacs-lisp
-   (use-package irony
-     :ensure t
-     :config
-     (add-hook 'c++-mode-hook 'irony-mode)
-     (add-hook 'c-mode-hook 'irony-mode)
-     (add-hook 'objc-mode-hook 'irony-mode)
+Adding C headers to company backend for completion.
 
-     (defun my-irony-mode-hook ()
-       (define-key irony-mode-map [remap completion-at-point]
-         'irony-completion-at-point-async)
-       (define-key irony-mode-map [remap complete-symbol]
-         'irony-completion-at-point-async))
-     (add-hook 'irony-mode-hook 'my-irony-mode-hook)
-     (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+BEGIN_SRC emacs-lisp
+  (use-package irony
 
-   (use-package company-irony
-     :ensure t)
+    :config
+    (add-hook 'c++-mode-hook 'irony-mode)
+    (add-hook 'c-mode-hook 'irony-mode)
+    (add-hook 'objc-mode-hook 'irony-mode)
 
-   (use-package flycheck-irony
-     :ensure t
-     :config
-     (add-hook 'c++-mode-hook #'flycheck-irony-setup))
+    (defun my-irony-mode-hook ()
+      (define-key irony-mode-map [remap completion-at-point]
+        'irony-completion-at-point-async)
+      (define-key irony-mode-map [remap complete-symbol]
+        'irony-completion-at-point-async))
+    (add-hook 'irony-mode-hook 'my-irony-mode-hook)
+    (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
-   (use-package company-c-headers
-     :ensure t
-     :config
-     (add-to-list 'company-backends 'company-c-headers)
-     (add-to-list 'company-backends 'company-irony)
+  (use-package company-irony)
 
-     (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
- #+END_SRC
+  (use-package flycheck-irony
+    :config
+    (add-hook 'c++-mode-hook #'flycheck-irony-setup))
 
- Using clang format to format the region that is currently being selected (need to install
- clang format script).
+  (use-package company-c-headers
+    :config
+    (add-to-list 'company-backends 'company-c-headers)
+    (add-to-list 'company-backends 'company-irony)
 
- #+BEGIN_SRC emacs-lisp
-   (use-package clang-format
-     :ensure t
-     :config
-     (global-set-key (kbd "C-c i") 'clang-format-region)
-     (global-set-key (kbd "C-c u") 'clang-format-buffer))
- #+END_SRC
+    (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands))
+#+END_SRC
 
- #+BEGIN_SRC emacs-lisp
-   (use-package rtags
-     :ensure t
-     :config
-     (rtags-enable-standard-keybindings))
+Using clang format to format the region that is currently being selected (need to install
+clang format script).
 
-   (use-package ivy-rtags
-     :ensure t
-     :config
-     (setq rtags-use-ivy t))
- #+END_SRC
-*** Clojure
- Using Cider for clojure environment.
+#+BEGIN_SRC emacs-lisp
+  (use-package clang-format
+    :config
+    (global-set-key (kbd "C-c i") 'clang-format-region)
+    (global-set-key (kbd "C-c u") 'clang-format-buffer))
+#+END_SRC
 
- #+BEGIN_SRC emacs-lisp
-   (use-package cider
-     :ensure t
-     :config
-     (setq cider-repl-display-help-banner nil))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package rtags
+    :pin melpa-stable
+    :config
+    (rtags-enable-standard-keybindings))
+#+END_SRC
 
- Adding hook to clojure mode to enable strict parentheses mode.
+** Clojure
+Using Cider for clojure environment.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package clojure-mode
-     :ensure t
-     :init
-     (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package cider
+    :pin melpa-stable
+    :config
+    (setq cider-repl-display-help-banner nil))
+#+END_SRC
+
+Adding hook to clojure mode to enable strict parentheses mode.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+    :ensure nil
+    :init
+    (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode))
+#+END_SRC
+
 *** CMake
 #+BEGIN_SRC emacs-lisp
-
   (use-package cmake-mode
     :config
     (setq auto-mode-alist
@@ -644,56 +619,58 @@ language support.
            '(("\\.cmake\\'" . cmake-mode))
            auto-mode-alist))
     (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
-
 #+END_SRC
+
 *** Emacs Lisp
- Adding strict parentheses to emacs lisp.
+Adding strict parentheses to emacs lisp.
 
- #+BEGIN_SRC emacs-lisp
-   (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
- #+END_SRC
- 
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
+#+END_SRC
+
 *** F#
- F# mode for uni work.
+F# mode for uni work.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package fsharp-mode
-     :ensure t)
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (use-package fsharp-mode)
+#+END_SRC
+
 *** Haskell
- Haskell mode with company mode completion.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package haskell-mode
-     :ensure t)
- #+END_SRC
+Haskell mode with company mode completion.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package haskell-mode)
+#+END_SRC
+
 *** Python
- Elpy package for python, which provides an IDE type environment for python.
+Elpy package for python, which provides an IDE type environment for python.
 
- #+BEGIN_SRC emacs-lisp
-   (use-package elpy
-     :ensure t
-     :config
-     (elpy-enable)
-     (setq py-python-command "python3")
-     (setq python-shell-interpreter "python3"))
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :config
+    (elpy-enable)
+    (setq py-python-command "python3")
+    (setq python-shell-interpreter "python3"))
 
-   (with-eval-after-load 'python
-     (defun python-shell-completion-native-try ()
-       "Return non-nil if can trigger native completion."
-       (let ((python-shell-completion-native-enable t)
-             (python-shell-completion-native-output-timeout
-              python-shell-completion-native-try-output-timeout))
-         (python-shell-completion-native-get-completions
-          (get-buffer-process (current-buffer))
-          nil "_"))))
- #+END_SRC
+  (with-eval-after-load 'python
+    (defun python-shell-completion-native-try ()
+      "Return non-nil if can trigger native completion."
+      (let ((python-shell-completion-native-enable t)
+            (python-shell-completion-native-output-timeout
+             python-shell-completion-native-try-output-timeout))
+        (python-shell-completion-native-get-completions
+         (get-buffer-process (current-buffer))
+         nil "_"))))
+#+END_SRC
+
 *** JSON
- JSON files should be opened in js-mode.
+JSON files should be opened in js-mode.
 
- #+BEGIN_SRC emacs-lisp
-   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
- #+END_SRC
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
+#+END_SRC
+
 *** Shell
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
@@ -704,7 +681,6 @@ language support.
 *** Company
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :ensure t
     :config
     (add-hook 'after-init-hook 'global-company-mode)
 
@@ -719,7 +695,6 @@ language support.
 Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
-    :ensure t
     :diminish flycheck-mode
     :init (global-flycheck-mode))
 #+END_SRC
@@ -727,7 +702,6 @@ Enabling global flycheck support.
 *** Yasnippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
-    :ensure t
     :diminish yas-minor-mode
     :init
     (yas-global-mode 1))
@@ -735,32 +709,23 @@ Enabling global flycheck support.
 
 * Look and Feel
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package color-theme-sanityinc-tomorrow
-  ;;   :ensure t)
+  ;; (use-package color-theme-sanityinc-tomorrow)
 
-  ;; (use-package leuven-theme
-  ;;   :ensure t)
+  ;; (use-package leuven-theme)
 
-  (use-package zenburn-theme
-    :ensure t)
+  (use-package zenburn-theme)
 
-  ;; (use-package gruvbox-theme
-  ;;   :ensure t)
+  ;; (use-package gruvbox-theme)
 
-  ;; (use-package material-theme
-  ;;   :ensure t)
+  ;; (use-package material-theme)
 
-  ;; (use-package monokai-theme
-  ;;   :ensure t)
+  ;; (use-package monokai-theme)
 
-  ;; (use-package plan9-theme
-  ;;   :ensure t)
+  ;; (use-package plan9-theme)
 
-  ;; (use-package doom-themes
-  ;;    :ensure t)
+  ;; (use-package doom-themes)
 
   (use-package telephone-line
-    :ensure t
     :init
     (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
           telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
@@ -796,10 +761,10 @@ Enabling global flycheck support.
 
   (defun y/exit-emacs-client ()
     "consistent exit emacsclient.
-     if not in emacs client, echo a message in minibuffer, don't exit emacs.
-     if in server mode
-        and editing file, do C-x # server-edit
-        else do C-x 5 0 delete-frame"
+  if not in emacs client, echo a message in minibuffer, don't exit emacs.
+  if in server mode
+  and editing file, do C-x # server-edit
+  else do C-x 5 0 delete-frame"
     (interactive)
     (if server-buffer-clients
         (server-edit)
@@ -810,11 +775,8 @@ Enabling global flycheck support.
     (let ((b (if mark-active (min (point) (mark)) (point-min)))
           (e (if mark-active (max (point) (mark)) (point-max))))
       (shell-command-on-region b e
-       "python -m json.tool" (current-buffer) t)))
+                               "python -m json.tool" (current-buffer) t)))
 #+END_SRC
-
-#+RESULTS:
-: y/beautify-json
 
 Setting up my keybindings
 #+BEGIN_SRC emacs-lisp
@@ -826,7 +788,7 @@ Setting up my keybindings
   (define-key y-map (kbd "j") 'y/beautify-json)
 
   (add-hook 'fsharp-mode-hook
-            (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
+  (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
 
 #+RESULTS:
