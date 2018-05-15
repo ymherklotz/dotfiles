@@ -107,6 +107,7 @@ yes or no.
   (tool-bar-mode -1)
   (menu-bar-mode -1)
   (fset 'yes-or-no-p 'y-or-n-p)
+  (setq global-hl-line-mode t)
 #+END_SRC
 
 Make it easier to refresh the buffer by setting it to ~<f5>~.
@@ -145,8 +146,8 @@ render properly.  The font is also set twice, so that it is properly set when
 using emacs normally or using the emacsclient.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Monaco-11") ;;; set default font
-  (setq default-frame-alist '((font . "Monaco-11"))) ;;; set default font for emacs --daemon and emacsclient
+  (set-default-font "Monaco-11")
+  (setq default-frame-alist '((font . "Monaco-11")))
 #+END_SRC
 
 ** Social
@@ -449,11 +450,14 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (quote ("~/Dropbox/Org")))
+  (setq org-agenda-files (quote ("~/Dropbox/org")))
   (setq org-log-into-drawer t)
   (setq org-log-done "note")
   (setq org-hide-leading-stars t)
   (setq org-confirm-babel-evaluate nil)
+  (setq org-directory (expand-file-name "~/Dropbox/org"))
+  (setq org-default-notes-file
+        (concat org-directory "/notes.org"))
 #+END_SRC
 
 Set global keys for org mode to access agenda.
@@ -463,6 +467,7 @@ Set global keys for org mode to access agenda.
   (global-set-key "\C-ca" 'org-agenda)
   (global-set-key "\C-cc" 'org-capture)
   (global-set-key "\C-cb" 'org-iswitchb)
+  (define-key global-map "\C-cc" 'org-capture)
 #+END_SRC
 
 Set up ob for executing code blocks
@@ -490,6 +495,12 @@ Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
   (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+#+END_SRC
+
+Exporting to html needs htmlize.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package htmlize)
 #+END_SRC
 
 ** Programming
@@ -710,9 +721,13 @@ Enabling global flycheck support.
 
 ** Look and Feel
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package color-theme-sanityinc-tomorrow)
+  (defadvice load-theme 
+      (before theme-dont-propagate activate)
+    (mapcar #'disable-theme custom-enabled-themes))
 
-  ;; (use-package leuven-theme)
+  (use-package color-theme-sanityinc-tomorrow)
+
+  (use-package leuven-theme)
 
   (use-package zenburn-theme)
 
@@ -737,10 +752,10 @@ Enabling global flycheck support.
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'zenburn t)
+                  (load-theme 'sanityinc-tomorrow-bright t)
                   (telephone-line-mode 1)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'zenburn t)
+    (progn (load-theme 'sanityinc-tomorrow-bright t)
            (telephone-line-mode 1)
            (toggle-scroll-bar -1)))
 #+END_SRC
@@ -775,27 +790,48 @@ Enabling global flycheck support.
           (e (if mark-active (max (point) (mark)) (point-max))))
       (shell-command-on-region b e
                                "python -m json.tool" (current-buffer) t)))
+
+  (defun y/set-theme (theme)
+    (load-theme theme t)
+    (telephone-line-mode 1)
+    (toggle-scroll-bar -1))
 #+END_SRC
+
+#+RESULTS:
+: y/set-theme
 
 Setting up my keybindings
 #+BEGIN_SRC emacs-lisp
   (define-prefix-command 'y-map)
   (global-set-key (kbd "C-c y") 'y-map)
 
-  (define-key y-map (kbd "s") 'y/swap-windows)
   (global-set-key (kbd "C-c q") 'y/exit-emacs-client)
+
+  (define-key y-map (kbd "s") 'y/swap-windows)
   (define-key y-map (kbd "j") 'y/beautify-json)
+  (define-key y-map (kbd "1") (lambda ()
+                                (interactive)
+                                (y/set-theme 'sanityinc-tomorrow-bright)))
+  (define-key y-map (kbd "2") (lambda ()
+                                (interactive)
+                                (y/set-theme 'zenburn)))
+  (define-key y-map (kbd "3") (lambda ()
+                                (interactive)
+                                (y/set-theme 'leuven)))
 
   (add-hook 'fsharp-mode-hook
-  (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
+            (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
+
+#+RESULTS:
+| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
 
 Registers
 #+BEGIN_SRC emacs-lisp
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
-  (set-register ?n (cons 'file "~/Dropbox/Org/note.org"))
-  (set-register ?t (cons 'file "~/Dropbox/Org/todo.org"))
-  (set-register ?h (cons 'file "~/Dropbox/Org/today.org"))
+  (set-register ?n (cons 'file "~/Dropbox/org/note.org"))
+  (set-register ?t (cons 'file "~/Dropbox/org/todo.org"))
+  (set-register ?h (cons 'file "~/Dropbox/org/today.org"))
 #+END_SRC
 
 ** Conclusion
