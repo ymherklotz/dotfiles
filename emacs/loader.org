@@ -141,14 +141,16 @@ preferred style. This is just personal preference though.
 #+END_SRC
 
 *** Font
-Set the font to monaco. It has to use the xft syntax, otherwise it doesn't
-render properly.  The font is also set twice, so that it is properly set when
-using emacs normally or using the emacsclient.
+Set the font to Hack, which is an opensource monospace font designed for
+programming and looking at source code.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Monaco-11")
-  (setq default-frame-alist '((font . "Monaco-11")))
+  (set-default-font "Hack-11")
+  (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
+
+#+RESULTS:
+: ((font . Hack-11))
 
 ** Social
 *** Mail
@@ -311,6 +313,12 @@ Setting up ~smtp~ to send messages using gmail.
   (define-key global-map (kbd "C-x r c")               'helm-addressbook-bookmarks)
 #+END_SRC
 
+**** Winner Mode
+
+#+BEGIN_SRC emacs-lisp
+  (setq winner-mode t)
+#+END_SRC
+
 *** Visual
 **** All the icons
 #+BEGIN_SRC emacs-lisp
@@ -387,6 +395,7 @@ Setting up ~smtp~ to send messages using gmail.
 #+END_SRC
 
 *** Misc
+**** Reducing ringing
 Reduce the ringing in emacs.
 
 #+BEGIN_SRC emacs-lisp
@@ -396,7 +405,6 @@ Reduce the ringing in emacs.
   (setq ring-bell-function 'my-bell-function)
   (setq visible-bell nil)
 #+END_SRC
-
 ** Writing
 *** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
@@ -501,6 +509,12 @@ Exporting to html needs htmlize.
 
 #+BEGIN_SRC emacs-lisp
   (use-package htmlize)
+#+END_SRC
+
+*** Writeroom
+
+#+BEGIN_SRC emacs-lisp
+  (use-package writeroom-mode)
 #+END_SRC
 
 ** Programming
@@ -725,11 +739,11 @@ Enabling global flycheck support.
       (before theme-dont-propagate activate)
     (mapcar #'disable-theme custom-enabled-themes))
 
-  (use-package color-theme-sanityinc-tomorrow)
+  ;; (use-package color-theme-sanityinc-tomorrow)
 
-  (use-package leuven-theme)
+  ;; (use-package leuven-theme)
 
-  (use-package zenburn-theme)
+  ;; (use-package zenburn-theme)
 
   ;; (use-package gruvbox-theme)
 
@@ -796,9 +810,6 @@ Enabling global flycheck support.
     (telephone-line-mode 1)
     (toggle-scroll-bar -1))
 #+END_SRC
-
-#+RESULTS:
-: y/set-theme
 
 Setting up my keybindings
 #+BEGIN_SRC emacs-lisp
