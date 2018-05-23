@@ -299,8 +299,7 @@ Setting up ~smtp~ to send messages using gmail.
   (global-set-key (kbd "C-h C-f")                      'helm-apropos)
   (global-set-key (kbd "C-h a")                        'helm-apropos)
   (global-set-key (kbd "C-h C-d")                      'helm-debug-open-last-log)
-  (global-set-key (kbd "C-c i")                        'helm-imenu-in-all-buffers)
-  (global-set-key (kbd "C-s")                          'helm-occur)
+  (global-set-key (kbd "C-c s")                        'helm-occur)
   (define-key global-map [remap jump-to-register]      'helm-register)
   (define-key global-map [remap list-buffers]          'helm-mini)
   (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
@@ -481,6 +480,9 @@ Set global keys for org mode to access agenda.
 Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
+  (load-file "~/.emacs.d/personal/ox-taskjuggler.el")
+  (require 'ox-taskjuggler)
+
   (require 'ob)
   ;; Babel settings, enabling languages
   (org-babel-do-load-languages
@@ -737,7 +739,7 @@ Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (defadvice load-theme 
       (before theme-dont-propagate activate)
-    (mapcar #'disable-theme custom-enabled-themes))
+    (mapc #'disable-theme custom-enabled-themes))
 
   ;; (use-package color-theme-sanityinc-tomorrow)
 
