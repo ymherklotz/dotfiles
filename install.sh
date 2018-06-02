@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
 
-current_dir=$(pwd)
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-extra_opts=" -s "
+EXTRA_OPTS=" -s "
 
 for i in "$@"; do
   case $i in
 
     -f | --force)
-      extra_opts+=" -f "
+      EXTRA_OPTS+=" -f "
       ;;
 
   esac
 done
 
 function ln_configs {
-  ln $extra_opts ${current_dir}/${1} $2
+  ln $EXTRA_OPTS ${SCRIPT_DIR}/${1} $2
 }
 
 echo "installing emacs config..."
@@ -35,3 +35,7 @@ ln_configs i3/config ~/.config/i3/config
 
 echo "installing zsh config"
 ln_configs zsh/.zshrc ~/.zshrc
+ln_configs zsh/.zsh ~/.zsh
+
+echo "installing isync config"
+ln_configs isync/.mbsyncrc ~/.mbsyncrc
