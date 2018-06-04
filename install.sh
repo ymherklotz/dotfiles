@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPT_DIR=$(dirname "$(readlink -f "$0")")
 
 EXTRA_OPTS=" -s "
 
@@ -18,24 +18,24 @@ function ln_configs {
   ln $EXTRA_OPTS ${SCRIPT_DIR}/${1} $2
 }
 
-echo "installing emacs config..."
+echo "Installing emacs config..."
 cp ${current_dir}/emacs/init.el ~/.emacs.d/init.el
 ln_configs emacs/loader.org ~/.emacs.d/loader.org
 
-echo "installing X config"
+echo "Installing X config..."
 ln_configs X/.Xmodmap ~/.Xmodmap
 ln_configs X/.Xresources ~/.Xresources 
 ln_configs X/.xinitrc ~/.xinitrc
 
-echo "installing tmux config"
+echo "Installing tmux config..."
 ln_configs tmux/.tmux.conf ~/.tmux.conf
 
-echo "installing i3 config"
+echo "Installing i3 config..."
 ln_configs i3/config ~/.config/i3/config
 
-echo "installing zsh config"
+echo "Installing zsh config..."
 ln_configs zsh/.zshrc ~/.zshrc
 ln_configs zsh/.zsh ~/.zsh
 
-echo "installing isync config"
+echo "Installing isync config..."
 ln_configs isync/.mbsyncrc ~/.mbsyncrc

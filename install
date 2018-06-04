@@ -1,0 +1,54 @@
+#!/usr/bin/env runhaskell
+-- -*- haskell -*-
+
+import System.Directory ( removeFile
+                        , doesFileExist
+                        , createFileLink
+                        , pathIsSymbolicLink
+                        , copyFile
+                        )
+
+remIf :: FilePath -> IO ()
+remIf dest = do
+  res <- doesFileExist dest
+  rem res dest
+  where
+    rem b dest
+      | b = removeFile dest
+      | otherwise = return ()
+
+forceOp :: (FilePath -> FilePath -> IO ()) -> FilePath -> FilePath -> IO ()
+forceOp op src dest = do
+  remIf dest
+  op fullSrc dest
+  where
+    fullSrc = 
+
+forceCopy :: FilePath -> FilePath -> IO ()
+forceCopy = forceOp copyFile
+
+forceFileSymLink :: FilePath -> FilePath -> IO ()
+forceFileSymLink = forceOp createFileLink
+
+main :: IO ()
+main = do
+  putStrLn "Installing emacs config..."
+  forceCopy "./emacs/init.el" "~/.emacs.d/init.el"
+  forceFileSymLink "./emacs/loader.org" "~/.emacs.d/loader.org"
+
+  putStrLn "Installing X config..."
+  forceFileSymLink "./X/.Xmodmap" "~/.Xmodmap"
+  forceFileSymLink "./X/.Xresources" "~/.Xresources"
+  forceFileSymLink "./X/.xinitrc" "~/.xinitrc"
+
+  putStrLn "Installing tmux config..."
+  forceFileSymLink "./tmux/.tmux.conf" "~/.tmux.conf"
+
+  putStrLn "Installing i3 config..."
+  forceFileSymLink "./i3/config" "~/.config/i3/config"
+
+  putStrLn "Installing zsh config..."
+  forceFileSymLink "./zsh/.zshrc" "~/.zshrc"
+
+  putStrLn "Installing isync config..."
+  forceFileSymLink "./isync/.mbsyncrc" "~/.mbsyncrc"
