@@ -494,7 +494,6 @@ Set up ob for executing code blocks
      (haskell . t)
      (python . t)
      (ruby . t)
-     (sh . t)
      (org . t)
      (matlab . t)
      (ditaa . t)
