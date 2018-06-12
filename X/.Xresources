@@ -209,7 +209,7 @@ URxvt*hold:                             false
 ! URxvt*externalBorder:                 number
 
 ! Internal border of number pixels. This resource is limited to 100
-! URxvt*internalBorder:
+URxvt*internalBorder:                   24
 
 ! The colour of the border around the text area and between the scrollbar and the text.
 ! URxvt*borderColor:                    color
