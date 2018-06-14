@@ -449,7 +449,7 @@ Set up ob for executing code blocks
 #+BEGIN_SRC emacs-lisp
   (use-package ox-taskjuggler
     :ensure nil
-    :load-file "~/.emacs.d/personal/ox-taskjuggler.el")
+    :load-path "~/.emacs.d/personal")
 
   (use-package ob
     :ensure nil
@@ -795,13 +795,16 @@ Setting up my keybindings
   (define-key y-map (kbd "3") (lambda ()
                                 (interactive)
                                 (y/set-theme 'leuven)))
+  (define-key y-map (kbd "4") (lambda ()
+                                (interactive)
+                                (y/set-theme 'ample)))
+  (define-key y-map (kbd "5") (lambda ()
+                                (interactive)
+                                (y/set-theme 'ample-flat)))
 
   (add-hook 'fsharp-mode-hook
             (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
-
-#+RESULTS:
-| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
 
 Registers
 #+BEGIN_SRC emacs-lisp
