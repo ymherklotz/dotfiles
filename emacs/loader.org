@@ -169,10 +169,6 @@ For archlinux, the command to install mu4e is:
 
 which comes with mu.
 
-#+BEGIN_SRC emacs-lisp
-  (require 'mu4e)
-#+END_SRC
-
 Set the email client to be mu4e in emacs, and set the correct mail directory. As
 I am downloading all the mailboxes, there will be duplicates, which can be
 ignored in searches by setting ~mu4e-headers-skip-duplicates~.
@@ -186,62 +182,65 @@ the ~-a~ flag.
 Finally, remove buffers when an email has been sent.
 
 #+BEGIN_SRC emacs-lisp
-  (setq mail-user-agent 'mu4e-user-agent)
-  (setq mu4e-maildir "~/.mail")
-  (setq mu4e-headers-skip-duplicates t)
-  (setq mu4e-sent-messages-behavior 'delete)
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq message-kill-buffer-on-exit t)
-  (setq mu4e-completing-read-function 'completing-read)
-  (setq mu4e-context-policy 'pick-first)
-  (setq mu4e-confirm-quit nil)
+  (use-package mu4e
+    :ensure nil
+    :commands mu4e
+    :config
+    (setq mail-user-agent 'mu4e-user-agent)
+    (setq mu4e-maildir "~/.mail")
+    (setq mu4e-headers-skip-duplicates t)
+    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq message-kill-buffer-on-exit t)
+    (setq mu4e-completing-read-function 'completing-read)
+    (setq mu4e-context-policy 'pick-first)
+    (setq mu4e-confirm-quit nil)
 
   ;;; Mail directory shortcuts
-  (setq mu4e-maildir-shortcuts
-        '(("/gmail/Inbox" . ?g)
-          ("/imperial/Inbox" . ?i)))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (setq mu4e-contexts
-        `( ,(make-mu4e-context
-             :name "Gmail"
-             :match-func (lambda (msg)
-                           (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
-             :vars '((user-mail-address            . "ymherklotz@gmail.com")
-                     (user-full-name               . "Yann Herklotz")
-                     (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
-                     (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
-                     (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
-                     (mu4e-refile-folder           . "/gmail/[Gmail]/All Mail")
-                     (smtpmail-smt-user            . "ymherklotz@gmail.com")
-                     (smtpmail-local-domain        . "gmail.com")
-                     (smtpmail-default-smtp-server . "smtp.gmail.com")
-                     (smtpmail-smtp-server         . "smtp.gmail.com")
-                     (smtpmail-smtp-service        . 587)))
-           ,(make-mu4e-context
-             :name "Imperial"
-             :match-func (lambda (msg)
-                           (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
-             :vars '((user-mail-address            . "ymh15@ic.ac.uk")
-                     (user-full-name               . "Yann Herklotz")
-                     (mu4e-sent-folder             . "/imperial/Sent")
-                     (mu4e-drafts-folder           . "/imperial/Drafts")
-                     (mu4e-trash-folder            . "/imperial/Trash")
-                     (mu4e-refile-folder           . "/imperial/Archive")
-                     (smtpmail-smt-user            . "ymh15@ic.ac.uk")
-                     (smtpmail-local-domain        . "cc.ic.ac.uk")
-                     (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
-                     (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
-                     (smtpmail-smtp-service        . 587)))))
+    (setq mu4e-maildir-shortcuts
+          '(("/gmail/Inbox" . ?g)
+            ("/imperial/Inbox" . ?i)))
+    (setq mu4e-contexts
+          `( ,(make-mu4e-context
+               :name "Gmail"
+               :match-func (lambda (msg)
+                             (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
+               :vars '((user-mail-address            . "ymherklotz@gmail.com")
+                       (user-full-name               . "Yann Herklotz")
+                       (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
+                       (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
+                       (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
+                       (mu4e-refile-folder           . "/gmail/[Gmail]/All Mail")
+                       (smtpmail-smt-user            . "ymherklotz@gmail.com")
+                       (smtpmail-local-domain        . "gmail.com")
+                       (smtpmail-default-smtp-server . "smtp.gmail.com")
+                       (smtpmail-smtp-server         . "smtp.gmail.com")
+                       (smtpmail-smtp-service        . 587)))
+             ,(make-mu4e-context
+               :name "Imperial"
+               :match-func (lambda (msg)
+                             (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
+               :vars '((user-mail-address            . "ymh15@ic.ac.uk")
+                       (user-full-name               . "Yann Herklotz")
+                       (mu4e-sent-folder             . "/imperial/Sent")
+                       (mu4e-drafts-folder           . "/imperial/Drafts")
+                       (mu4e-trash-folder            . "/imperial/Trash")
+                       (mu4e-refile-folder           . "/imperial/Archive")
+                       (smtpmail-smt-user            . "ymh15@ic.ac.uk")
+                       (smtpmail-local-domain        . "cc.ic.ac.uk")
+                       (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
+                       (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
+                       (smtpmail-smtp-service        . 587))))))
 #+END_SRC
 
 Setting up ~smtp~ to send messages using gmail.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'smtpmail)
-  (setq message-send-mail-function 'smtpmail-send-it
-        starttls-use-gnutls t)
+  (use-package smtpmail
+    :ensure nil
+    :config
+    (setq message-send-mail-function 'smtpmail-send-it
+          starttls-use-gnutls t))
 #+END_SRC
 
 ** Utility
@@ -264,23 +263,22 @@ Used to display what every key combination does when starting to enter it.
 **** Avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
-    :config
-    (global-set-key (kbd "C-:") 'avy-goto-char)
-    (global-set-key (kbd "C-'") 'avy-goto-char-2))
+    :bind (("C-:" . avy-goto-char)
+           ("C-'" . avy-goto-char-2)))
 #+END_SRC
 
 **** Ivy
 #+BEGIN_SRC emacs-lisp
     (use-package ivy
       :bind
-      (("C-s"     . 'swiper)
-       ("M-x"     . 'counsel-M-x)
-       ("C-x C-f" . 'counsel-find-file)
-       ("C-c g"   . 'counsel-git)
-       ("C-c j"   . 'counsel-git-grep)
-       ("C-c k"   . 'counsel-ag)
-       ("C-c C-r" . 'ivy-resume)
-       ("C-x b"   . 'counsel-ibuffer))
+      (("C-s"     . swiper)
+       ("M-x"     . counsel-M-x)
+       ("C-x C-f" . counsel-find-file)
+       ("C-c g"   . counsel-git)
+       ("C-c j"   . counsel-git-grep)
+       ("C-c k"   . counsel-ag)
+       ("C-c C-r" . ivy-resume)
+       ("C-x b"   . counsel-ibuffer))
       :config
       (setq ivy-use-virtual-buffers t)
       (setq ivy-count-format "(%d/%d) "))
@@ -300,7 +298,8 @@ Used to display what every key combination does when starting to enter it.
 
 **** Dumb Jump
 #+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump)
+  (use-package dumb-jump
+    :commands dumb-jump)
 #+END_SRC
 
 *** Visual
@@ -343,21 +342,24 @@ Used to display what every key combination does when starting to enter it.
            ("C-M-]"            . sp-select-next-thing)
            ("M-F"              . sp-forward-symbol)
            ("M-B"              . sp-backward-symbol))
-    :init
+    :hook ((minibuffer-setup) . turn-on-smartparens-strict-mode)
+    :config
     (require 'smartparens-config)
     (show-smartparens-global-mode +1)
     (smartparens-global-mode 1)
-
-    (add-hook 'minibuffer-setup-hook 'turn-on-smartparens-strict-mode)
 
     (sp-with-modes '(c-mode c++-mode)
       (sp-local-pair "{" nil :post-handlers '(("||\n[i]" "RET")))
       (sp-local-pair "/*" "*/" :post-handlers '((" | " "SPC")
                                                 ("* ||\n[i]" "RET")))))
 #+END_SRC
+
 **** Undo Tree
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
+    :bind (("C-x u" . undo-tree-visualize)
+           ("C-_"   . undo-tree-undo)
+           ("M-_"   . undo-tree-redo))
     :diminish undo-tree-mode
     :config
     (global-undo-tree-mode))
@@ -367,15 +369,6 @@ Used to display what every key combination does when starting to enter it.
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
-#+END_SRC
-
-*** Misc
-**** Reducing ringing
-Reduce the ringing in emacs.
-#+BEGIN_SRC emacs-lisp
-  (defun my-bell-function ())
-  (setq ring-bell-function 'my-bell-function)
-  (setq visible-bell nil)
 #+END_SRC
 
 ** Writing
@@ -399,7 +392,7 @@ Reduce the ringing in emacs.
 
     ;; (setq ispell-program-name "aspell"
     ;;       ispell-extra-args '("--sug-mode=ultra"))
-    :bind (("C-c N" . spell-buffer-dutch)
+    :bind (("C-c N" . spell-buffer-german)
            ("C-c n" . spell-buffer-english)))
 #+END_SRC
 
@@ -421,13 +414,12 @@ Markdown is the standard for writing documentation. This snippet loads GFM
   (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
+           ("\\.md\\'"       . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
 *** Org
-
 Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
@@ -439,6 +431,7 @@ Agenda setup for org mode, pointing to the write files.
   (setq org-directory (expand-file-name "~/Dropbox/org"))
   (setq org-default-notes-file
         (concat org-directory "/notes.org"))
+  (setq org-image-actual-width nil)
 #+END_SRC
 
 Set global keys for org mode to access agenda.
@@ -454,26 +447,27 @@ Set global keys for org mode to access agenda.
 Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
-  (load-file "~/.emacs.d/personal/ox-taskjuggler.el")
-  (require 'ox-taskjuggler)
+  (use-package ox-taskjuggler
+    :ensure nil
+    :load-file "~/.emacs.d/personal/ox-taskjuggler.el")
 
-  (require 'ob)
-  ;; Babel settings, enabling languages
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '(
-     (emacs-lisp . t)
-     (js . t)
-     (java . t)
-     (haskell . t)
-     (python . t)
-     (ruby . t)
-     (org . t)
-     (matlab . t)
-     (ditaa . t)
-     (clojure . t)
-     ))
-  (setq org-image-actual-width nil)
+  (use-package ob
+    :ensure nil
+    :config
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '(
+       (emacs-lisp . t)
+       (js . t)
+       (java . t)
+       (haskell . t)
+       (python . t)
+       (ruby . t)
+       (org . t)
+       (matlab . t)
+       (ditaa . t)
+       (clojure . t)
+       )))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -483,13 +477,20 @@ Set up ob for executing code blocks
 Exporting to html needs htmlize.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package htmlize)
+  (use-package htmlize
+    :commands (htmlize-file
+               htmlize-buffer
+               htmlize-region
+               htmlize-many-files
+               htmlize-many-files-dired
+               htmlize-region-save-screenshot))
 #+END_SRC
 
 *** Writeroom
 
 #+BEGIN_SRC emacs-lisp
-  (use-package writeroom-mode)
+    (use-package writeroom-mode
+      :commands writeroom-mode)
 #+END_SRC
 
 ** Programming
@@ -576,9 +577,8 @@ to install clang format script).
 
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
-    :config
-    (global-set-key (kbd "C-c i") 'clang-format-region)
-    (global-set-key (kbd "C-c u") 'clang-format-buffer))
+    :bind (("C-c i" . 'clang-format-region)
+           ("C-c u" . 'clang-format-buffer)))
 #+END_SRC
 
 **** Clojure
@@ -586,6 +586,7 @@ Using Cider for clojure environment.
 
 #+BEGIN_SRC emacs-lisp
   (use-package cider
+    :commands cider-mode
     :pin melpa-stable
     :config
     (setq cider-repl-display-help-banner nil))
@@ -600,6 +601,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
 **** CMake
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode
+    :commands cmake-mode
     :config
     (setq auto-mode-alist
           (append
@@ -620,7 +622,8 @@ Adding strict parentheses to emacs lisp.
 F# mode for uni work.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package fsharp-mode)
+  (use-package fsharp-mode
+    :commands fsharp-mode)
 #+END_SRC
 
 **** Haskell
@@ -628,7 +631,8 @@ F# mode for uni work.
 Haskell mode with company mode completion.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package haskell-mode)
+  (use-package haskell-mode
+    :commands haskell-mode)
 #+END_SRC
 
 **** Python
@@ -636,6 +640,7 @@ Elpy package for python, which provides an IDE type environment for python.
 
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
+    :commands python-mode
     :config
     (elpy-enable)
     (setq py-python-command "python3")
@@ -683,15 +688,16 @@ Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :diminish flycheck-mode
-    :init (global-flycheck-mode))
+    :config (global-flycheck-mode))
 #+END_SRC
 
 **** Yasnippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
+    :hook ((org-mode cc-mode) . yas-minor-mode)
     :diminish yas-minor-mode
-    :init
-    (yas-global-mode 1))
+    :config
+    (yas-minor-mode 1))
 #+END_SRC
 
 ** Look and Feel
@@ -750,9 +756,8 @@ Enabling global flycheck support.
 
   (defun y/exit-emacs-client ()
     "consistent exit emacsclient.
-  if not in emacs client, echo a message in minibuffer, don't exit emacs.
-  if in server mode
-  and editing file, do C-x # server-edit
+  if not in emacs client, echo a message in minibuffer, don't exit
+  emacs.  if in server mode and editing file, do C-x # server-edit
   else do C-x 5 0 delete-frame"
     (interactive)
     (if server-buffer-clients
