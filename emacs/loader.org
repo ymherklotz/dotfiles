@@ -311,7 +311,8 @@ Used to display what every key combination does when starting to enter it.
 **** Treemacs
 #+BEGIN_SRC emacs-lisp
   (use-package treemacs
-    :commands treemacs)
+    :commands treemacs
+    :bind (("C-c t" . treemacs)))
 #+END_SRC
 
 *** Editing
