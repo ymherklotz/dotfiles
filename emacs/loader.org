@@ -308,6 +308,12 @@ Used to display what every key combination does when starting to enter it.
   (use-package all-the-icons)
 #+END_SRC
 
+**** Treemacs
+#+BEGIN_SRC emacs-lisp
+  (use-package treemacs
+    :commands treemacs)
+#+END_SRC
+
 *** Editing
 **** Hungry Delete
 #+BEGIN_SRC emacs-lisp
@@ -755,10 +761,10 @@ Enabling global flycheck support.
     (fsharp-eval-region (point-min) (point-max)))
 
   (defun y/exit-emacs-client ()
-    "consistent exit emacsclient.
-  if not in emacs client, echo a message in minibuffer, don't exit
-  emacs.  if in server mode and editing file, do C-x # server-edit
-  else do C-x 5 0 delete-frame"
+    "consistent exit emacsclient. If not in emacs client, echo a
+    message in minibuffer, don't exit emacs. If in server mode and
+    editing file, do C-x # server-edit else do C-x 5 0
+    delete-frame"
     (interactive)
     (if server-buffer-clients
         (server-edit)
