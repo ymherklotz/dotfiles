@@ -156,6 +156,13 @@ programming and looking at source code.
   (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
 
+**** Shell
+#+BEGIN_SRC emacs-lisp
+  (use-package eshell
+    :ensure nil
+    :bind (("C-c e" . eshell)))
+#+END_SRC
+
 ** Social
 *** Mail
 ~mu4e~ is automatically in the load path when installed through a package
