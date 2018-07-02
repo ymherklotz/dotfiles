@@ -68,17 +68,17 @@ URxvt*scrollBar_floating:               false
 ! URxvt*thickness:                      number
 
 ! Turn on/off pseudo-transparency by using the root pixmap as background
-URxvt*transparent:			false
+URxvt*transparent:			            true
 
 ! Tint the transparent background with the given colour. Note that a black tint yields a completely black image while a white tint yields the image unchanged.
 ! URxvt*tintColor:                      white
 
 ! Darken (0 .. 99) or lighten (101 .. 200) the transparent background.  A value of 100 means no shading
-! URxvt*shading:				100
+URxvt*shading:                          80
 
 ! Apply gaussian blur with the specified radius to the transparent background. If a single number is specified, the vertical and horizontal radii are considered to be the same. 
 ! Setting one of the radii to 1 and the other to a large number creates interesting effects on some backgrounds. The maximum radius value is 128. An horizontal or vertical radius of 0 disables blur
-!URxvt*blurRadius:						3
+URxvt*blurRadius:						30
 
 ! Fade the text by the given percentage when focus is lost
 !URxvt*fading:                           20
@@ -108,7 +108,8 @@ URxvt*mouseWheelScrollPage:             false
 ! URxvt*insecure:                       boolean
 
 ! Use the specified colour as the windows background colour [default White]
- URxvt*background:                      [70]#2c2c2c
+URxvt*background:                      #2c2c2c
+
 !urxvt*background: rgba:2c00/2c00/2c00/c800
 
 !  Use the specified colour as the windows foreground colour [default Black]
