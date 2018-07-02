@@ -62,19 +62,6 @@ Use ~use-package~ to manage other packages, and improve load times.
 
   (setq use-package-always-ensure t)
 #+END_SRC
-
-*** Server Configuration
-
-Server so that a client can connect to it. This makes using emacs much smoother,
-as frames can be opened using the emacsclient.
-
-#+BEGIN_SRC emacs-lisp
-  (setq server-socket-file "/tmp/emacs1000/server")
-  (setq server-socket-dir "/tmp/emacs1000")
-  (unless (file-exists-p server-socket-file)
-  (server-start))
-#+END_SRC
-
 *** GC Threshold
 Threshold for faster startup.
 
@@ -251,6 +238,11 @@ Setting up ~smtp~ to send messages using gmail.
 #+END_SRC
 
 ** Utility
+*** Diminish
+#+BEGIN_SRC emacs-lisp
+  (use-package diminish)
+#+END_SRC
+
 *** Discoverability
 Used to display what every key combination does when starting to enter it.
 #+BEGIN_SRC emacs-lisp
@@ -299,14 +291,9 @@ Used to display what every key combination does when starting to enter it.
 **** Beacon mode
 #+BEGIN_SRC emacs-lisp
   (use-package beacon
+    :diminish beacon-mode
     :config
     (beacon-mode 1))
-#+END_SRC
-
-**** Dumb Jump
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :commands dumb-jump)
 #+END_SRC
 
 *** Visual
@@ -326,6 +313,7 @@ Used to display what every key combination does when starting to enter it.
 **** Hungry Delete
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
+    :diminish hungry-delete-mode
     :config
     (global-hungry-delete-mode))
 #+END_SRC
@@ -333,6 +321,7 @@ Used to display what every key combination does when starting to enter it.
 **** SmartParens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
+    :diminish (smartparens-mode smartparens-strict-mode)
     :bind (("M-["              . sp-backward-unwrap-sexp)
            ("M-]"              . sp-unwrap-sexp)
            ("C-M-f"            . sp-forward-sexp)
@@ -368,21 +357,18 @@ Used to display what every key combination does when starting to enter it.
                                                 ("* ||\n[i]" "RET")))))
 #+END_SRC
 
-**** Undo Tree
-#+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :bind (("C-x u" . undo-tree-visualize)
-           ("C-_"   . undo-tree-undo)
-           ("M-_"   . undo-tree-redo))
-    :diminish undo-tree-mode
-    :config
-    (global-undo-tree-mode))
-#+END_SRC
-
 **** Whitespace
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
+#+END_SRC
+
+**** IEdit
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
+    :diminish iedit-mode
+    :bind (("C-;" . iedit-mode))
+    )
 #+END_SRC
 
 ** Writing
@@ -414,10 +400,10 @@ Used to display what every key combination does when starting to enter it.
 Wrap words when in text mode.
 
 #+BEGIN_SRC emacs-lisp
-  (dolist (hook '(text-mode-hook))
-    (add-hook hook (lambda ()
-                     (flyspell-mode 1)
-                     (visual-line-mode 1))))
+  (use-package flyspell
+    :ensure nil
+    :hook ((text-mode) . flyspell-mode)
+    :diminish flyspell)
 #+END_SRC
 
 *** Markdown
@@ -521,10 +507,11 @@ lot of different language support.
 **** Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile    
-    :diminish projectile-mode
     :config
     (projectile-global-mode 1)
-    (setq projectile-enable-caching t))
+    (setq projectile-enable-caching t)
+    (setq projectile-git-submodule-command "")
+    (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
 
   (use-package counsel-projectile
     :config
@@ -601,7 +588,6 @@ Using Cider for clojure environment.
 #+BEGIN_SRC emacs-lisp
   (use-package cider
     :commands cider-mode
-    :pin melpa-stable
     :config
     (setq cider-repl-display-help-banner nil))
 #+END_SRC
@@ -687,6 +673,7 @@ JSON files should be opened in js-mode.
 **** Company
 #+BEGIN_SRC emacs-lisp
   (use-package company
+    :diminish company-mode
     :config
     (add-hook 'after-init-hook 'global-company-mode)
 
@@ -734,25 +721,20 @@ Enabling global flycheck support.
 
   ;; (use-package plan9-theme)
 
-  (use-package telephone-line
-    :init
-    (setq telephone-line-primary-left-separator 'telephone-line-cubed-left
-          telephone-line-secondary-left-separator 'telephone-line-cubed-hollow-left
-          telephone-line-primary-right-separator 'telephone-line-cubed-right
-          telephone-line-secondary-right-separator 'telephone-line-cubed-hollow-right)
-    (setq telephone-line-height 24
-          telephone-line-evil-use-short-tag t))
+  (use-package powerline
+    :config
+    (powerline-default-theme))
 
   (if (daemonp)
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
                   (load-theme 'sanityinc-tomorrow-bright t)
-                  (telephone-line-mode 1)
-                  (toggle-scroll-bar -1)))
+                  (toggle-scroll-bar -1)
+                  (powerline-reset)))
     (progn (load-theme 'sanityinc-tomorrow-bright t)
-           (telephone-line-mode 1)
-           (toggle-scroll-bar -1)))
+           (toggle-scroll-bar -1)
+           (powerline-reset)))
 #+END_SRC
 
 ** My Code
@@ -787,8 +769,8 @@ Enabling global flycheck support.
 
   (defun y/set-theme (theme)
     (load-theme theme t)
-    (telephone-line-mode 1)
-    (toggle-scroll-bar -1))
+    (toggle-scroll-bar -1)
+    (powerline-reset))
 #+END_SRC
 
 Setting up my keybindings
