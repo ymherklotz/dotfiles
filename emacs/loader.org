@@ -663,6 +663,16 @@ JSON files should be opened in js-mode.
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
 #+END_SRC
 
+**** SCSS
+#+BEGIN_SRC emacs-lisp
+  (use-package css-mode
+    :ensure nil
+    :commands (scss-mode
+               css-mode)
+    :config
+    (setq css-indent-offset 2))
+#+END_SRC
+
 **** Shell
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
@@ -674,9 +684,8 @@ JSON files should be opened in js-mode.
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :diminish company-mode
+    :hook ((after-init-hook) . global-company-mode)
     :config
-    (add-hook 'after-init-hook 'global-company-mode)
-
     (setq company-backends (delete 'company-semantic company-backends))
 
     (define-key c-mode-map (kbd "C-c n") 'company-complete)
@@ -720,6 +729,8 @@ Enabling global flycheck support.
   ;; (use-package monokai-theme)
 
   ;; (use-package plan9-theme)
+
+  ;; (use-package gruvbox-theme)
 
   (use-package powerline
     :config
