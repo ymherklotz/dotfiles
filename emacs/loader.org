@@ -732,6 +732,8 @@ Enabling global flycheck support.
 
   ;; (use-package gruvbox-theme)
 
+  ;; (use-package dracula-theme)
+
   (use-package powerline
     :config
     (powerline-default-theme))
@@ -740,10 +742,10 @@ Enabling global flycheck support.
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'sanityinc-tomorrow-bright t)
+                  (load-theme 'dracula t)
                   (toggle-scroll-bar -1)
                   (powerline-reset)))
-    (progn (load-theme 'sanityinc-tomorrow-bright t)
+    (progn (load-theme 'dracula t)
            (toggle-scroll-bar -1)
            (powerline-reset)))
 #+END_SRC
