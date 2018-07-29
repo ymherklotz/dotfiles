@@ -93,7 +93,7 @@ set foldcolumn=1
 syntax enable 
 
 try
-  colorscheme gruvbox
+  colorscheme dracula
 catch
 endtry
 

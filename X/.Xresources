@@ -21,7 +21,7 @@ URxvt*termName:                         rxvt-unicode-256color
 ! Create the window with the specified X window geometry [default 80x24]
 URxvt*geometry:                         100x25
 
-! True: start as a login shell by prepending a - to argv[0] of the shell; option -ls.  False: start as a normal sub-shell [default]; 
+! True: start as a login shell by prepending a - to argv[0] of the shell; option -ls.  False: start as a normal sub-shell [default];
 URxvt*loginShell:                       true
 
 ! Use the specified colour for the scrollbar [default #B2B2B2]
@@ -68,7 +68,7 @@ URxvt*scrollBar_floating:               false
 ! URxvt*thickness:                      number
 
 ! Turn on/off pseudo-transparency by using the root pixmap as background
-URxvt*transparent:			            true
+URxvt*transparent:                      true
 
 ! Tint the transparent background with the given colour. Note that a black tint yields a completely black image while a white tint yields the image unchanged.
 ! URxvt*tintColor:                      white
@@ -76,7 +76,7 @@ URxvt*transparent:			            true
 ! Darken (0 .. 99) or lighten (101 .. 200) the transparent background.  A value of 100 means no shading
 URxvt*shading:                          80
 
-! Apply gaussian blur with the specified radius to the transparent background. If a single number is specified, the vertical and horizontal radii are considered to be the same. 
+! Apply gaussian blur with the specified radius to the transparent background. If a single number is specified, the vertical and horizontal radii are considered to be the same.
 ! Setting one of the radii to 1 and the other to a large number creates interesting effects on some backgrounds. The maximum radius value is 128. An horizontal or vertical radius of 0 disables blur
 URxvt*blurRadius:						30
 
@@ -108,12 +108,12 @@ URxvt*mouseWheelScrollPage:             false
 ! URxvt*insecure:                       boolean
 
 ! Use the specified colour as the windows background colour [default White]
-URxvt*background:                      #2c2c2c
+URxvt*background:                      #282A36
 
 !urxvt*background: rgba:2c00/2c00/2c00/c800
 
 !  Use the specified colour as the windows foreground colour [default Black]
-URxvt*foreground:                       #eaeaea
+URxvt*foreground:                       #F8F8F2
 
 ! Use the specified colour to disp1ay bold characters when the foreground colour is the default.
 ! URxvt*colorBD:                        color
@@ -180,7 +180,7 @@ URxvt*cursorColor:						#cc99cc
 
 
 ! Select the fonts to be used. This is a comma separated list of font names that are checked in order when trying to find glyphs for characters
-URxvt*font:                             xft:Inconsolata for Powerline:pixelsize:12
+URxvt*font:                             xft:Hack:pixelsize=14
 
 ! When font styles are not enabled, or this option is enabled (True default), bold/blink font styles imply high intensity foreground/background colours
 URxvt*intensityStyles:                false
@@ -210,7 +210,7 @@ URxvt*hold:                             false
 ! URxvt*externalBorder:                 number
 
 ! Internal border of number pixels. This resource is limited to 100
-URxvt*internalBorder:                   24
+URxvt*internalBorder:                   10
 
 ! The colour of the border around the text area and between the scrollbar and the text.
 ! URxvt*borderColor:                    color
@@ -329,36 +329,55 @@ URxvt*perl-ext:
 ! URxvt*remote-clipboard.store:         string
 
 
-*color0: #2c2c2c
-*color8: #1f1f1f
+! *color0: #2c2c2c
+! *color8: #1f1f1f
 
-!! red dark/light
-*color1: #dc322f
-*color9: #cb4b16
+! !! red dark/light
+! *color1: #dc322f
+! *color9: #cb4b16
 
-!! green dark/light
-*color2: #859900
-*color10: #586e75
+! !! green dark/light
+! *color2: #859900
+! *color10: #586e75
 
-!! yellow dark/light
-*color3: #b58900
-*color11: #657b83
+! !! yellow dark/light
+! *color3: #b58900
+! *color11: #657b83
 
-!! blue dark/light
-*color4: #268bd2
-*color12: #839496
+! !! blue dark/light
+! *color4: #268bd2
+! *color12: #839496
 
-!! magenta dark/light
-*color5: #d33682
-*color13: #6c71c4
+! !! magenta dark/light
+! *color5: #d33682
+! *color13: #6c71c4
 
-!! cyan dark/light
-*color6: #2aa198
-*color14: #93a1a1
+! !! cyan dark/light
+! *color6: #2aa198
+! *color14: #93a1a1
 
-!! white dark/light
-*color7: #eee8d5
-*color15: #fdf6e3
+! !! white dark/light
+! *color7: #eee8d5
+! *color15: #fdf6e3
+
+*.foreground: #F8F8F2
+*.background: #282A36
+*.color0:     #000000
+*.color8:     #4D4D4D
+*.color1:     #FF5555
+*.color9:     #FF6E67
+*.color2:     #50FA7B
+*.color10:    #5AF78E
+*.color3:     #F1FA8C
+*.color11:    #F4F99D
+*.color4:     #BD93F9
+*.color12:    #CAA9FA
+*.color5:     #FF79C6
+*.color13:    #FF92D0
+*.color6:     #8BE9FD
+*.color14:    #9AEDFE
+*.color7:     #BFBFBF
+*.color15:    #E6E6E6
 
 !! Key bindings
 URxvt.keysym.F11: perl:fullscreen:switch
