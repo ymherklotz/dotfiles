@@ -493,6 +493,12 @@ Exporting to html needs htmlize.
       :commands writeroom-mode)
 #+END_SRC
 
+*** PDF Tools
+#+BEGIN_SRC emacs-lisp
+  (use-package pdf-tools
+    :commands pdf-view-mode)
+#+END_SRC
+
 ** Programming
 My emacs configuration is mostly focused on programming, therefore there is a
 lot of different language support.
