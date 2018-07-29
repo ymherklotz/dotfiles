@@ -149,12 +149,6 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Start i3bar to display a workspace bar (plus the system information i3status
-# finds out, if available)
-bar {
-        status_command i3status
-}
-
 #============================================================
 # i3 Gaps
 #============================================================
@@ -163,8 +157,8 @@ bar {
 for_window [class="^.*"] border pixel 0
 
 smart_gaps on
-gaps inner 25
-gaps outer 15
+gaps inner 10
+gaps outer 0
 
 #============================================================
 # Custom Bindings
@@ -219,11 +213,8 @@ exec --no-startup-id redshift &
 # Startup dropbox
 exec --no-startup-id dropbox &
 
-# Start nm-applet
-exec --no-startup-id nm-applet &
-
-# Start pulse audio system tray
-
+# Start polybar
+exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 # Enable smooth scrolling
 exec --no-startup-id xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput Natural Scrolling Enabled' 1
