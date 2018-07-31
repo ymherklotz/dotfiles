@@ -122,7 +122,6 @@ monitoring a file such as a log file. It will also do this silently.
 Disable tabs, I want to move towards only using spaces everywhere as that is my
 preferred style. This is just personal preference though.
 #+BEGIN_SRC emacs-lisp
-  (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
   (setq-default python-indent-offset 4)
 #+END_SRC
@@ -134,107 +133,11 @@ and set the column width to 80.
   (setq-default fill-column 80)
 #+END_SRC
 
-**** Font
-Set the font to Hack, which is an opensource monospace font designed for
-programming and looking at source code.
-
-#+BEGIN_SRC emacs-lisp
-  (set-default-font "Hack-11")
-  (setq default-frame-alist '((font . "Hack-11")))
-#+END_SRC
-
 **** Shell
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
     :ensure nil
     :bind (("C-c e" . eshell)))
-#+END_SRC
-
-** Social
-*** Mail
-~mu4e~ is automatically in the load path when installed through a package
-manager.
-
-For archlinux, the command to install mu4e is:
-
-#+BEGIN_SRC shell
-  pacman -S mu
-#+END_SRC
-
-which comes with mu.
-
-Set the email client to be mu4e in emacs, and set the correct mail directory. As
-I am downloading all the mailboxes, there will be duplicates, which can be
-ignored in searches by setting ~mu4e-headers-skip-duplicates~.
-
-Also delete messages when they are sent, and don't copy them over to the sent
-directory, as Gmail will do that for us.
-
-To download the mail using imap, I use ~mbsync~, which downloads all mail with
-the ~-a~ flag.
-
-Finally, remove buffers when an email has been sent.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :ensure nil
-    :commands mu4e
-    :config
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq mu4e-maildir "~/.mail")
-    (setq mu4e-headers-skip-duplicates t)
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq message-kill-buffer-on-exit t)
-    (setq mu4e-completing-read-function 'completing-read)
-    (setq mu4e-context-policy 'pick-first)
-    (setq mu4e-confirm-quit nil)
-
-  ;;; Mail directory shortcuts
-    (setq mu4e-maildir-shortcuts
-          '(("/gmail/Inbox" . ?g)
-            ("/imperial/Inbox" . ?i)))
-    (setq mu4e-contexts
-          `( ,(make-mu4e-context
-               :name "Gmail"
-               :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
-               :vars '((user-mail-address            . "ymherklotz@gmail.com")
-                       (user-full-name               . "Yann Herklotz")
-                       (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
-                       (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
-                       (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
-                       (mu4e-refile-folder           . "/gmail/[Gmail]/All Mail")
-                       (smtpmail-smt-user            . "ymherklotz@gmail.com")
-                       (smtpmail-local-domain        . "gmail.com")
-                       (smtpmail-default-smtp-server . "smtp.gmail.com")
-                       (smtpmail-smtp-server         . "smtp.gmail.com")
-                       (smtpmail-smtp-service        . 587)))
-             ,(make-mu4e-context
-               :name "Imperial"
-               :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
-               :vars '((user-mail-address            . "ymh15@ic.ac.uk")
-                       (user-full-name               . "Yann Herklotz")
-                       (mu4e-sent-folder             . "/imperial/Sent")
-                       (mu4e-drafts-folder           . "/imperial/Drafts")
-                       (mu4e-trash-folder            . "/imperial/Trash")
-                       (mu4e-refile-folder           . "/imperial/Archive")
-                       (smtpmail-smt-user            . "ymh15@ic.ac.uk")
-                       (smtpmail-local-domain        . "cc.ic.ac.uk")
-                       (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
-                       (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
-                       (smtpmail-smtp-service        . 587))))))
-#+END_SRC
-
-Setting up ~smtp~ to send messages using gmail.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package smtpmail
-    :ensure nil
-    :config
-    (setq message-send-mail-function 'smtpmail-send-it
-          starttls-use-gnutls t))
 #+END_SRC
 
 ** Utility
@@ -447,10 +350,6 @@ Set global keys for org mode to access agenda.
 Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-taskjuggler
-    :ensure nil
-    :load-path "~/.emacs.d/personal")
-
   (use-package ob
     :ensure nil
     :config
@@ -501,7 +400,11 @@ lot of different language support.
 **** Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit    
-    :bind (("C-x g" . magit-status)))
+	:bind (("C-x g" . magit-status))
+	:config
+	(magit-add-section-hook 'magit-status-sections-hook
+							'magit-insert-modules-overview
+							'magit-insert-unpulled-from-upstream))
 #+END_SRC
 
 **** Projectile
@@ -534,8 +437,7 @@ Setting up CC mode with a hook that uses my settings.
       (c-set-offset 'inline-open 0)
       (c-set-offset 'inline-close 0)
       (c-set-offset 'innamespace 0)
-      (c-set-offset 'arglist-cont-nonempty 8)
-      (setq indent-tabs-mode nil))
+      (c-set-offset 'arglist-cont-nonempty 8))
     (add-hook 'c-mode-hook 'my-c++-mode-hook)
     (add-hook 'c++-mode-hook 'my-c++-mode-hook)
 
@@ -717,19 +619,19 @@ Enabling global flycheck support.
     (mapc #'disable-theme custom-enabled-themes))
 
   ;; (use-package color-theme-sanityinc-tomorrow)
-
+  ;; 
   ;; (use-package leuven-theme)
-
+  ;; 
   ;; (use-package zenburn-theme)
-
+  ;; 
   ;; (use-package gruvbox-theme)
-
+  ;; 
   ;; (use-package material-theme)
-
+  ;; 
   ;; (use-package monokai-theme)
-
+  ;; 
   ;; (use-package plan9-theme)
-
+  ;; 
   ;; (use-package gruvbox-theme)
 
   (use-package powerline

@@ -180,7 +180,7 @@ URxvt*cursorColor:						#cc99cc
 
 
 ! Select the fonts to be used. This is a comma separated list of font names that are checked in order when trying to find glyphs for characters
-URxvt*font:                             xft:Inconsolata for Powerline:pixelsize:12
+URxvt*font:                             xft:Ubuntu Mono:pixelsize:12
 
 ! When font styles are not enabled, or this option is enabled (True default), bold/blink font styles imply high intensity foreground/background colours
 URxvt*intensityStyles:                false
