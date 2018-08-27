@@ -34,15 +34,17 @@ line-color = ${colors.primary}
 border-size = 0
 border-color = #00000000
 
-padding-left = 0
-padding-right = 2
+padding-left = 1
+padding-right = 1
 
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = fixed:pixelsize=10;1
-font-1 = unifont:fontformat=truetype:size=8:antialias=false;0
-font-2 = siji:pixelsize=10;1
+font-0 = Misc Tamsyn:style=Regular:pixelsize=16
+font-1 = Unifont:fontformat=truetype:size=8:antialias=false;0
+font-2 = Wuncon Siji:style=Regular:pixelsize=10;1
+font-3 = Font Awesome 5 Free:style=Regular:pixelsize=14
+font-4 = Font Awesome 5 Brands:style=Regular:pixelsize=14
 
 modules-left = i3
 modules-center = date
@@ -106,7 +108,7 @@ wrapping-scroll = false
 ; Only show workspaces on the same output as the bar
 ;pin-workspaces = true
 
-label-mode-padding = 2
+label-mode-padding = 1
 label-mode-foreground = #000
 label-mode-background = ${colors.primary}
 
@@ -114,11 +116,11 @@ label-mode-background = ${colors.primary}
 label-focused = %index%
 label-focused-background = ${colors.background-alt}
 label-focused-underline = ${colors.primary}
-label-focused-padding = 2
+label-focused-padding = 1
 
 ; unfocused = Inactive workspace on any monitor
 label-unfocused = %index%
-label-unfocused-padding = 2
+label-unfocused-padding = 1
 
 ; visible = Active workspace on unfocused monitor
 label-visible = %index%
@@ -129,7 +131,7 @@ label-visible-padding = ${self.label-focused-padding}
 ; urgent = Workspace with urgency hint set
 label-urgent = %index%
 label-urgent-background = ${colors.alert}
-label-urgent-padding = 2
+label-urgent-padding = 1
 
 [module/mpd]
 type = internal/mpd
@@ -172,7 +174,7 @@ interval = 2
 format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = ${colors.primary}
-label = "CPU: %percentage:2%%"
+label = "%percentage:2%%"
 
 [module/memory]
 type = internal/memory
@@ -180,7 +182,7 @@ interval = 2
 format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = ${colors.primary}
-label = "RAM: %percentage_used%%"
+label = "%percentage_used%%"
 
 [module/wlan]
 type = internal/network
@@ -224,13 +226,13 @@ format-disconnected =
 type = internal/date
 interval = 5
 
-date =
+date = "" 
 date-alt = "%Y-%m-%d"
 
 time = %H:%M
 time-alt = %H:%M:%S
 
-format-prefix = 
+format-prefix = " "
 format-prefix-foreground = ${colors.foreground-alt}
 format-underline = ${colors.primary}
 
