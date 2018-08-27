@@ -8,6 +8,10 @@ alias em='emacsclient -c -a ""'
 alias emt='emacsclient -nw -a ""'
 # alias lspasscp='lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\\]//g')'
 
+# fixing pdflatex
+#alias pdflatex='/usr/bin/pdflatex'
+#alias pdftex='/usr/bin/pdftex'
+
 # fd - cd to selected directory
 fd() {
   local dir
