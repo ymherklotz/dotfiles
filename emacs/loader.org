@@ -139,8 +139,8 @@ Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Hack-11")
-  (setq default-frame-alist '((font . "Hack-11")))
+  (set-default-font "Misc Tamsyn-12")
+  (setq default-frame-alist '((font . "Misc Tamsyn-12")))
 #+END_SRC
 
 **** Shell
@@ -198,7 +198,7 @@ Finally, remove buffers when an email has been sent.
           `( ,(make-mu4e-context
                :name "Gmail"
                :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com"))) 
+                             (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com")))
                :vars '((user-mail-address            . "ymherklotz@gmail.com")
                        (user-full-name               . "Yann Herklotz")
                        (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
@@ -213,7 +213,7 @@ Finally, remove buffers when an email has been sent.
              ,(make-mu4e-context
                :name "Imperial"
                :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk"))) 
+                             (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk")))
                :vars '((user-mail-address            . "ymh15@ic.ac.uk")
                        (user-full-name               . "Yann Herklotz")
                        (mu4e-sent-folder             . "/imperial/Sent")
@@ -381,7 +381,7 @@ Used to display what every key combination does when starting to enter it.
 
   (defun spell-buffer-english ()
     (interactive)
-    (ispell-change-dictionary "en_US")
+    (ispell-change-dictionary "en_UK")
     (flyspell-buffer))
 
   (use-package ispell
@@ -404,6 +404,42 @@ Wrap words when in text mode.
     :ensure nil
     :hook ((text-mode) . flyspell-mode)
     :diminish flyspell)
+#+END_SRC
+
+*** Latex
+#+BEGIN_SRC emacs-lisp
+  (use-package latex
+    :ensure auctex
+    :config
+    (require 'tex-site)
+    ;; to use pdfview with auctex
+    (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+          TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
+          TeX-source-correlate-start-server t) ;; not sure if last line is neccessary
+    ;; to have the buffer refresh after compilation
+    (add-hook 'TeX-after-compilation-finished-functions
+              #'TeX-revert-document-buffer)
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t)
+    (setq TeX-save-query nil)
+    (setq-default TeX-master nil)
+    (setq TeX-PDF-mode t)
+    (add-hook 'LaTeX-mode-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook 'flyspell-buffer)
+    (defun turn-on-outline-minor-mode ()
+      (outline-minor-mode 1))
+
+    (add-hook 'LaTeX-mode-hook 'turn-on-outline-minor-mode)
+    (setq outline-minor-mode-prefix "\C-c \C-o")
+    (autoload 'reftex-mode "reftex" "RefTeX Minor Mode" t)
+    (autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
+    (autoload 'reftex-citation "reftex-cite" "Make citation" nil)
+    (autoload 'reftex-index-phrase-mode "reftex-index" "Phrase Mode" t)
+    (add-hook 'latex-mode-hook 'turn-on-reftex) ; with Emacs latex mode
+
+    (require 'ox-latex)
+    (add-to-list 'org-latex-packages-alist '("" "minted"))
+    (setq org-latex-listings 'minted))
 #+END_SRC
 
 *** Markdown
@@ -506,13 +542,13 @@ lot of different language support.
 *** Version Control and Project Management
 **** Magit
 #+BEGIN_SRC emacs-lisp
-  (use-package magit    
+  (use-package magit
     :bind (("C-x g" . magit-status)))
 #+END_SRC
 
 **** Projectile
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile    
+  (use-package projectile
     :config
     (projectile-global-mode 1)
     (setq projectile-enable-caching t)
@@ -718,7 +754,7 @@ Enabling global flycheck support.
 
 ** Look and Feel
 #+BEGIN_SRC emacs-lisp
-  (defadvice load-theme 
+  (defadvice load-theme
       (before theme-dont-propagate activate)
     (mapc #'disable-theme custom-enabled-themes))
 
