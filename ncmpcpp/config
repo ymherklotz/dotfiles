@@ -1,0 +1,11 @@
+progressbar_look = "─⊙ "
+
+header_visibility = "no"
+
+visualizer_fifo_path = "/tmp/mpd.fifo"
+visualizer_output_name = "FIFO"
+visualizer_sync_interval = "30" 
+visualizer_in_stereo = "yes"
+visualizer_type = "spectrum"
+visualizer_look = "+▊"
+visualizer_color = "blue"
