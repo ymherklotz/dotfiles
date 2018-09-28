@@ -13,6 +13,16 @@ but also has support for Python, F#, Haskell and Clojure.
 #+END_SRC
 
 ** Setup
+
+Set path so that it picks up some executables that I use
+
+#+BEGIN_SRC emacs-lisp
+  (setenv "PATH"
+    (concat
+     (expand-file-name "~/.local/bin") ":"
+     (getenv "PATH")))
+#+END_SRC
+
 *** Repositories
 Defining all the package repositories that are going to be used.
 
@@ -88,8 +98,8 @@ yes or no. Also stop the start up message from popping up and enter the scratch
 buffer instead.
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
-  (tool-bar-mode -1)
-  (menu-bar-mode -1)
+  (tool-bar-mode 0)
+  (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
@@ -127,11 +137,9 @@ preferred style. This is just personal preference though.
   (setq-default python-indent-offset 4)
 #+END_SRC
 
-Set the line number display very high so that it is always shown in the modeline
-and set the column width to 80.
+Set the line number display very high so that it is always shown in the modeline.
 #+BEGIN_SRC emacs-lisp
   (setq line-number-display-limit 2000000)
-  (setq-default fill-column 80)
 #+END_SRC
 
 **** Font
@@ -139,8 +147,8 @@ Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Misc Tamsyn-12")
-  (setq default-frame-alist '((font . "Misc Tamsyn-12")))
+  (set-default-font "Hack-11")
+  (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
 
 **** Shell
@@ -550,7 +558,8 @@ lot of different language support.
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :config
-    (projectile-global-mode 1)
+    (projectile-mode +1)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (setq projectile-enable-caching t)
     (setq projectile-git-submodule-command "")
     (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
@@ -675,7 +684,18 @@ Haskell mode with company mode completion.
 #+BEGIN_SRC emacs-lisp
   (use-package haskell-mode
     :commands haskell-mode)
+
+  (use-package interactive-haskell-mode
+    :ensure haskell-mode
+    :hook haskell-mode
+    :init
+    (custom-set-variables
+     '(haskell-process-path-stack (expand-file-name "~/.local/bin/stack"))
+     '(haskell-process-log t)))
 #+END_SRC
+
+#+RESULTS:
+| interactive-haskell-mode |
 
 **** Python
 Elpy package for python, which provides an IDE type environment for python.
@@ -784,10 +804,10 @@ Enabling global flycheck support.
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'dracula t)
+                  (load-theme 'plan9 t)
                   (toggle-scroll-bar -1)
                   (powerline-reset)))
-    (progn (load-theme 'dracula t)
+    (progn (load-theme 'plan9 t)
            (toggle-scroll-bar -1)
            (powerline-reset)))
 #+END_SRC
@@ -856,6 +876,9 @@ Setting up my keybindings
   (add-hook 'fsharp-mode-hook
             (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
+
+#+RESULTS:
+| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
 
 Registers
 #+BEGIN_SRC emacs-lisp
