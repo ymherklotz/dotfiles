@@ -104,6 +104,7 @@ buffer instead.
 #+END_SRC
 
 **** Global settings
+
 Make emacs follow symlinks every time, this means that it will open the actual
 file and go to where the file is actually stored instead of editing it through
 the symlink. This enables the use of git and other version control when editing
