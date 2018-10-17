@@ -3,6 +3,7 @@ export ALTERNATE_EDITOR=""
 export EDITOR='emacsclient -nw -a ""'
 export VISUAL='emacsclient -c -a ""'
 
-export PATH="${PATH}:${HOME}/.gem/ruby/2.5.0/bin:/usr/local/bin"
-export PATH="${PATH}:${HOME}/.local/bin"
+export PATH="${HOME}/.gem/ruby/2.5.0/bin:/usr/local/bin:${PATH}"
+export PATH="${HOME}/.local/bin:${PATH}"
 export PATH="/usr/bin:${PATH}"
+export PATH="${HOME}/.yarn/bin:${PATH}"
