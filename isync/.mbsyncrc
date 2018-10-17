@@ -38,10 +38,7 @@ Inbox ~/.mail/imperial/Inbox
 Channel gmail
 Master :gmail-remote:
 Slave :gmail-local:
-# Exclude everything under the internal [Gmail] folder, except the interesting folders
-# Patterns * ![Gmail]* "[Gmail]/Sent Mail" "[Gmail]/Starred" "[Gmail]/All Mail"
-# Or include everything
-Patterns *
+Patterns "[Gmail]/Sent Mail" "[Gmail]/Drafts" "[Gmail]/Trash" INBOX MyArchive
 # Automatically create missing mailboxes, both locally and on the server
 Create Both
 # Save the synchronization state files in the relevant directory
@@ -50,6 +47,6 @@ SyncState *
 Channel imperial
 Master :imperial-remote:
 Slave :imperial-local:
-Patterns *
+Patterns "Sent Items" MyArchive "Deleted Items" INBOX Drafts
 Create Both
 SyncState *
