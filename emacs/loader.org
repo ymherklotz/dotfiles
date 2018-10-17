@@ -1,7 +1,6 @@
 #+TITLE: GNU Emacs Configuration
 #+DATE: <2017-08-11 Fri>
 #+AUTHOR: Yann Herklotz
-#+EMAIL: ymherklotz@gmail.com
 
 ** Introduction
 This is my GNU Emacs Configuration that is mostly focused on C++ development,
@@ -20,6 +19,7 @@ Set path so that it picks up some executables that I use
   (setenv "PATH"
     (concat
      (expand-file-name "~/.local/bin") ":"
+     (expand-file-name "~/.yarn/bin") ":"
      (getenv "PATH")))
 #+END_SRC
 
@@ -61,32 +61,24 @@ Initialise the packages and if the directories don't exist, create them.
   (package-initialize)
 #+END_SRC
 
+#+RESULTS:
+
 Use ~use-package~ to manage other packages, and improve load times.
 
 #+BEGIN_SRC emacs-lisp
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-
   (require 'use-package)
 
   (setq use-package-always-ensure t)
 #+END_SRC
+
+#+RESULTS:
+: t
+
 *** GC Threshold
 Threshold for faster startup.
 
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 500000000)
-#+END_SRC
-
-Move the backup files into the temporaty directory so that they are out of the
-way.
-
-#+BEGIN_SRC emacs-lisp
-  (setq backup-directory-alist
-        `((".*" . ,temporary-file-directory)))
-  (setq auto-save-file-name-transforms
-        `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
 *** General Configuration
@@ -104,6 +96,16 @@ buffer instead.
 #+END_SRC
 
 **** Global settings
+
+Move the backup files into the temporaty directory so that they are out of the
+way.
+
+#+BEGIN_SRC emacs-lisp
+  (setq backup-directory-alist
+        `((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+        `((".*" ,temporary-file-directory t)))
+#+END_SRC
 
 Make emacs follow symlinks every time, this means that it will open the actual
 file and go to where the file is actually stored instead of editing it through
@@ -135,7 +137,8 @@ preferred style. This is just personal preference though.
 #+BEGIN_SRC emacs-lisp
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
-  (setq-default python-indent-offset 4)
+  (defvaralias 'python-indent-offset 'tab-width)
+  (defvaralias 'c-basic-offset 'tab-width)
 #+END_SRC
 
 Set the line number display very high so that it is always shown in the modeline.
@@ -188,32 +191,46 @@ Finally, remove buffers when an email has been sent.
   (use-package mu4e
     :ensure nil
     :commands mu4e
-    :config
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq mu4e-maildir "~/.mail")
-    (setq mu4e-headers-skip-duplicates t)
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq message-kill-buffer-on-exit t)
-    (setq mu4e-completing-read-function 'completing-read)
-    (setq mu4e-context-policy 'pick-first)
-    (setq mu4e-confirm-quit nil)
+    :config 
+    (add-hook 'message-mode-hook 'turn-on-orgtbl)
+    (add-hook 'message-mode-hook 'turn-on-orgstruct++)
 
-  ;;; Mail directory shortcuts
+    (setq mail-user-agent 'mu4e-user-agent
+          mu4e-maildir (expand-file-name "~/.mail")
+          mu4e-headers-skip-duplicates t
+          mu4e-sent-messages-behavior 'sent
+          mu4e-get-mail-command "mbsync -a"
+          message-kill-buffer-on-exit t
+          mu4e-completing-read-function 'completing-read
+          mu4e-context-policy 'pick-first
+          mu4e-confirm-quit nil
+          mu4e-html2text-command "pandoc -f html -t plain -"
+          mu4e-change-filenames-when-moving t)
+
+    ;; Try to show images
+    (setq mu4e-view-show-images t
+          mu4e-show-images t
+          mu4e-view-image-max-width 800)
+
+    ;; Mail directory shortcuts
     (setq mu4e-maildir-shortcuts
           '(("/gmail/Inbox" . ?g)
-            ("/imperial/Inbox" . ?i)))
+            ("/gmail/MyArchive" . ?r)
+            ("/imperial/Inbox" . ?i)
+            ("/imperial/MyArchive" . ?a)))
+
     (setq mu4e-contexts
           `( ,(make-mu4e-context
                :name "Gmail"
                :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymherklotz@gmail.com")))
+                             (when msg
+                               (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
                :vars '((user-mail-address            . "ymherklotz@gmail.com")
                        (user-full-name               . "Yann Herklotz")
                        (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
                        (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
                        (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
-                       (mu4e-refile-folder           . "/gmail/[Gmail]/All Mail")
+                       (mu4e-refile-folder           . "/gmail/MyArchive")
                        (smtpmail-smt-user            . "ymherklotz@gmail.com")
                        (smtpmail-local-domain        . "gmail.com")
                        (smtpmail-default-smtp-server . "smtp.gmail.com")
@@ -222,19 +239,23 @@ Finally, remove buffers when an email has been sent.
              ,(make-mu4e-context
                :name "Imperial"
                :match-func (lambda (msg)
-                             (when msg (mu4e-message-contact-field-matches msg :to "ymh15@ic.ac.uk")))
-               :vars '((user-mail-address            . "ymh15@ic.ac.uk")
+                             (when msg
+                               (string-match-p "^/imperial" (mu4e-message-field msg :maildir))))
+               :vars '((user-mail-address            . "yann.herklotz15@imperial.ac.uk")
                        (user-full-name               . "Yann Herklotz")
-                       (mu4e-sent-folder             . "/imperial/Sent")
+                       (mu4e-sent-folder             . "/imperial/Sent Items")
                        (mu4e-drafts-folder           . "/imperial/Drafts")
-                       (mu4e-trash-folder            . "/imperial/Trash")
-                       (mu4e-refile-folder           . "/imperial/Archive")
+                       (mu4e-trash-folder            . "/imperial/Deleted Items")
+                       (mu4e-refile-folder           . "/imperial/MyArchive")
                        (smtpmail-smt-user            . "ymh15@ic.ac.uk")
                        (smtpmail-local-domain        . "cc.ic.ac.uk")
                        (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
                        (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
                        (smtpmail-smtp-service        . 587))))))
 #+END_SRC
+
+#+RESULTS:
+: t
 
 Setting up ~smtp~ to send messages using gmail.
 
@@ -246,76 +267,64 @@ Setting up ~smtp~ to send messages using gmail.
           starttls-use-gnutls t))
 #+END_SRC
 
+To enable storing links in mu4e
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-mu4e
+    :ensure nil)
+#+END_SRC
+
+*** Elfeed
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed-org
+    :config
+    (elfeed-org)
+    (setq rmh-elfeed-org-files (list (expand-file-name "~/Dropbox/org/elfeed.org"))))
+
+  (use-package elfeed
+    :bind (:map elfeed-search-mode-map
+                ("A" . y/elfeed-show-all)
+                ("E" . y/elfeed-show-emacs)
+                ("D" . y/elfeed-show-daily)
+                ("q" . y/elfeed-save-db-and-bury)))
+#+END_SRC
+
 ** Utility
 *** Diminish
 #+BEGIN_SRC emacs-lisp
   (use-package diminish)
 #+END_SRC
 
-*** Discoverability
-Used to display what every key combination does when starting to enter it.
-#+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :diminish which-key-mode
-    :config
-    (which-key-mode))
-#+END_SRC
-
 *** Navigation
-**** Ace Windows
-#+BEGIN_SRC emacs-lisp
-  (use-package ace-window
-    :bind (("C-x o" . ace-window)))
-#+END_SRC
-
-**** Avy
-#+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :bind (("C-:" . avy-goto-char)
-           ("C-'" . avy-goto-char-2)))
-#+END_SRC
-
 **** Ivy
 #+BEGIN_SRC emacs-lisp
-    (use-package ivy
-      :bind
-      (("C-s"     . swiper)
-       ("M-x"     . counsel-M-x)
-       ("C-x C-f" . counsel-find-file)
-       ("C-c g"   . counsel-git)
-       ("C-c j"   . counsel-git-grep)
-       ("C-c k"   . counsel-ag)
-       ("C-c C-r" . ivy-resume)
-       ("C-x b"   . counsel-ibuffer))
-      :config
-      (setq ivy-use-virtual-buffers t)
-      (setq ivy-count-format "(%d/%d) "))
-#+END_SRC
-
-**** Winner Mode
-#+BEGIN_SRC emacs-lisp
-  (setq winner-mode t)
-#+END_SRC
-
-**** Beacon mode
-#+BEGIN_SRC emacs-lisp
-  (use-package beacon
-    :diminish beacon-mode
+  (use-package ivy
+    :bind
+    (("C-s"     . swiper)
+     ("M-x"     . counsel-M-x)
+     ("C-x C-f" . counsel-find-file)
+     ("C-c g"   . counsel-git)
+     ("C-c j"   . counsel-git-grep)
+     ("C-c k"   . counsel-ag)
+     ("C-c C-r" . ivy-resume)
+     ("C-x b"   . counsel-ibuffer)
+     ("C-c y u" . counsel-unicode-char))
     :config
-    (beacon-mode 1))
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq ivy-re-builders-alist
+          '((swiper . ivy--regex-plus)
+            (t      . ivy--regex-fuzzy))))
 #+END_SRC
+
+#+RESULTS:
+: counsel-unicode-char
 
 *** Visual
 **** All the icons
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
-#+END_SRC
-
-**** Treemacs
-#+BEGIN_SRC emacs-lisp
-  (use-package treemacs
-    :commands treemacs
-    :bind (("C-c t" . treemacs)))
 #+END_SRC
 
 *** Editing
@@ -376,8 +385,7 @@ Used to display what every key combination does when starting to enter it.
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
     :diminish iedit-mode
-    :bind (("C-;" . iedit-mode))
-    )
+    :bind (("C-;" . iedit-mode)))
 #+END_SRC
 
 ** Writing
@@ -403,16 +411,11 @@ Used to display what every key combination does when starting to enter it.
     ;;       ispell-extra-args '("--sug-mode=ultra"))
     :bind (("C-c N" . spell-buffer-german)
            ("C-c n" . spell-buffer-english)))
-#+END_SRC
 
-*** Word Wrapping
-Wrap words when in text mode.
-
-#+BEGIN_SRC emacs-lisp
   (use-package flyspell
     :ensure nil
     :hook ((text-mode) . flyspell-mode)
-    :diminish flyspell)
+    :diminish flyspell-mode)
 #+END_SRC
 
 *** Latex
@@ -468,7 +471,6 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files (quote ("~/Dropbox/org")))
   (setq org-log-into-drawer t)
   (setq org-log-done "note")
   (setq org-hide-leading-stars t)
@@ -476,7 +478,8 @@ Agenda setup for org mode, pointing to the write files.
   (setq org-directory (expand-file-name "~/Dropbox/org"))
   (setq org-default-notes-file
         (concat org-directory "/notes.org"))
-  (setq org-image-actual-width nil)
+  (setq org-image-actual-width nil
+        org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
 #+END_SRC
 
 Set global keys for org mode to access agenda.
@@ -492,31 +495,21 @@ Set global keys for org mode to access agenda.
 Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-taskjuggler
-    :ensure nil
-    :load-path "~/.emacs.d/personal")
-
   (use-package ob
     :ensure nil
     :config
     (org-babel-do-load-languages
      'org-babel-load-languages
-     '(
-       (emacs-lisp . t)
-       (js . t)
-       (java . t)
-       (haskell . t)
-       (python . t)
-       (ruby . t)
-       (org . t)
-       (matlab . t)
-       (ditaa . t)
-       (clojure . t)
-       )))
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+     '((emacs-lisp . t)
+       (js         . t)
+       (java       . t)
+       (haskell    . t)
+       (python     . t)
+       (ruby       . t)
+       (org        . t)
+       (matlab     . t)
+       (ditaa      . t)
+       (clojure    . t))))
 #+END_SRC
 
 Exporting to html needs htmlize.
@@ -531,16 +524,39 @@ Exporting to html needs htmlize.
                htmlize-region-save-screenshot))
 #+END_SRC
 
-*** Writeroom
+**** Agenda
 
 #+BEGIN_SRC emacs-lisp
-    (use-package writeroom-mode
-      :commands writeroom-mode)
+  (setq org-agenda-files (mapcar 'expand-file-name
+                                 '("~/Dropbox/org/inbox.org"
+                                   "~/Dropbox/org/main.org"
+                                   "~/Dropbox/org/tickler.org"))
+        org-refile-targets '(("~/Dropbox/org/main.org" :maxlevel . 2)
+                             ("~/Dropbox/org/someday.org" :level . 1)
+                             ("~/Dropbox/org/tickler.org" :maxlevel . 2))
+        org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
+#+END_SRC
+
+Setting org templates.
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("t" "todo" entry (file+headline "~/Dropbox/org/inbox.org" "Tasks")
+           "* TODO %?\n\n%i\n%a\n\n")))
+
+  (setq org-agenda-custom-commands 
+        '(("w" "At work" tags-todo "@work"
+           ((org-agenda-overriding-header "Work")))
+          ("h" "At home" tags-todo "@home"
+           ((org-agenda-overriding-header "Home")))
+          ("u" "At uni" tags-todo "@uni"
+           ((org-agenda-overriding-header "University")))))
 #+END_SRC
 
 *** PDF Tools
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
+    :hook (doc-view-mode . pdf-view-mode)
     :commands pdf-view-mode)
 #+END_SRC
 
@@ -558,10 +574,11 @@ lot of different language support.
 **** Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
+    :diminish projectile-mode
     :config
     (projectile-mode +1)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (setq projectile-enable-caching t)
+    (setq projectile-enable-caching nil)
     (setq projectile-git-submodule-command "")
     (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
 
@@ -580,7 +597,7 @@ Setting up CC mode with a hook that uses my settings.
     :config
     (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
     (setq c-default-style "linux"
-          c-basic-offset 4
+          tab-width 4
           c-indent-level 4)
     (defun my-c++-mode-hook ()
       (c-set-offset 'inline-open 0)
@@ -661,6 +678,17 @@ Adding hook to clojure mode to enable strict parentheses mode.
            '(("\\.cmake\\'" . cmake-mode))
            auto-mode-alist))
     (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
+#+END_SRC
+
+**** Elm
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elm-mode
+    :mode ("\\.elm\\'")
+    :config
+    (add-hook 'elm-mode-hook
+              (lambda ()
+                  (setq elm-indent-offset 2))))
 #+END_SRC
 
 **** Emacs Lisp
@@ -747,8 +775,8 @@ JSON files should be opened in js-mode.
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :diminish company-mode
-    :hook ((after-init-hook) . global-company-mode)
     :config
+    (add-hook 'after-init-hook 'global-company-mode)
     (setq company-backends (delete 'company-semantic company-backends))
 
     (define-key c-mode-map (kbd "C-c n") 'company-complete)
@@ -797,20 +825,14 @@ Enabling global flycheck support.
 
   ;; (use-package dracula-theme)
 
-  (use-package powerline
-    :config
-    (powerline-default-theme))
-
   (if (daemonp)
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
                   (load-theme 'plan9 t)
-                  (toggle-scroll-bar -1)
-                  (powerline-reset)))
+                  (toggle-scroll-bar -1)))
     (progn (load-theme 'plan9 t)
-           (toggle-scroll-bar -1)
-           (powerline-reset)))
+           (toggle-scroll-bar -1)))
 #+END_SRC
 
 ** My Code
@@ -878,15 +900,52 @@ Setting up my keybindings
             (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
 
-#+RESULTS:
-| lambda | nil | (local-set-key (kbd C-c C-c) (function y/fsharp-reload-file)) |
+*** Registers
 
-Registers
 #+BEGIN_SRC emacs-lisp
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
   (set-register ?n (cons 'file "~/Dropbox/org/note.org"))
   (set-register ?t (cons 'file "~/Dropbox/org/todo.org"))
   (set-register ?h (cons 'file "~/Dropbox/org/today.org"))
+#+END_SRC
+
+*** Elfeed
+
+#+BEGIN_SRC emacs-lisp
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;; elfeed feed reader                                                     ;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;shortcut functions
+  (defun y/elfeed-show-all ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-all"))
+
+  (defun y/elfeed-show-emacs ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-emacs"))
+
+  (defun y/elfeed-show-daily ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-daily"))
+
+  ;;functions to support syncing .elfeed between machines
+  ;;makes sure elfeed reads index from disk before launching
+  (defun y/elfeed-load-db-and-open ()
+    "Wrapper to load the elfeed db from disk before opening"
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force))
+
+  ;;write to disk when quiting
+  (defun y/elfeed-save-db-and-bury ()
+    "Wrapper to save the elfeed db to disk before burying buffer"
+    (interactive)
+    (elfeed-db-save)
+    (quit-window))
 #+END_SRC
 
 ** Conclusion
