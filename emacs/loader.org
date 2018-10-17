@@ -85,15 +85,73 @@ Threshold for faster startup.
 **** UI
 Editor specific options such as adding line numbers.
 
-Disable UI that starts when starting emacs and also set the y or n instead of
-yes or no. Also stop the start up message from popping up and enter the scratch
-buffer instead.
+Disable UI that starts when starting emacs and also set the y or n
+instead of yes or no. Also stop the start up message from popping up
+and enter the scratch buffer instead.
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
   (tool-bar-mode 0)
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
+Editing the modeline. ~%c~ might be a bit slow though, so that could
+be removed if that is ever a problem.
+
+#+BEGIN_SRC emacs-lisp
+  (defun -custom-modeline-github-vc ()
+    (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
+      (concat
+       (propertize (format " %s" (all-the-icons-octicon "git-branch"))
+                   'face `(:height 1 :family ,(all-the-icons-octicon-family))
+                   'display '(raise 0))
+       (propertize (format " %s" branch))
+       (propertize "  "))))
+
+  (defun -custom-modeline-svn-vc ()
+    (let ((revision (cadr (split-string vc-mode "-"))))
+      (concat
+       (propertize (format " %s" (all-the-icons-faicon "cloud"))
+                   'face `(:height 1)
+                   'display '(raise 0))
+       (propertize (format " %s" revision) 'face `(:height 0.9)))))
+
+  (defvar y/mode-line-vc
+    '(:propertize
+      (:eval (when vc-mode
+               (cond
+                ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
+                ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
+                (t (format "%s" vc-mode)))))
+      face mode-line-directory)
+    "Formats the current directory.")
+
+  (define-minor-mode minor-mode-blackout-mode
+    "Hides minor modes from the mode line."
+    t)
+
+  (catch 'done
+    (mapc (lambda (x)
+            (when (and (consp x)
+                       (equal (cadr x) '("" minor-mode-alist)))
+              (let ((original (copy-sequence x)))
+                (setcar x 'minor-mode-blackout-mode)
+                (setcdr x (list "" original)))
+              (throw 'done t)))
+          mode-line-modes))
+
+  (setq-default mode-line-format
+                (list
+                 " " mode-line-modified
+                 " %[" mode-line-buffer-identification "%] %6l:%3c %6 "
+                 mode-line-modes
+                 " %6 "
+                 y/mode-line-vc
+                 mode-line-end-spaces))
+#+END_SRC
+
+#+RESULTS:
+|   | (%1* %1+) | %[ | (%12b) | %] %6l:%3c %6 | (%[ ( (:propertize ( mode-name) help-echo Major mode |
 
 **** Global settings
 
@@ -825,15 +883,21 @@ Enabling global flycheck support.
 
   ;; (use-package dracula-theme)
 
+  (use-package solarized-theme
+    :config
+    (setq solarized-use-variable-pitch nil))
+
   (if (daemonp)
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'plan9 t)
+                  (load-theme 'solarized-light t)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'plan9 t)
+    (progn (load-theme 'solarized-light t)
            (toggle-scroll-bar -1)))
 #+END_SRC
+
+#+RESULTS:
 
 ** My Code
 #+BEGIN_SRC emacs-lisp
