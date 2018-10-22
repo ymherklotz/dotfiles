@@ -2,7 +2,7 @@
 #+DATE: <2017-08-11 Fri>
 #+AUTHOR: Yann Herklotz
 
-** Introduction
+* Introduction
 This is my GNU Emacs Configuration that is mostly focused on C++ development,
 but also has support for Python, F#, Haskell and Clojure.
 
@@ -11,7 +11,7 @@ but also has support for Python, F#, Haskell and Clojure.
   (setq user-mail-address "ymherklotz@gmail.com")
 #+END_SRC
 
-** Setup
+* Setup
 
 Set path so that it picks up some executables that I use
 
@@ -23,7 +23,7 @@ Set path so that it picks up some executables that I use
      (getenv "PATH")))
 #+END_SRC
 
-*** Repositories
+** Repositories
 Defining all the package repositories that are going to be used.
 
 - ~gnu~ :: The default package repository for emacs
@@ -74,15 +74,15 @@ Use ~use-package~ to manage other packages, and improve load times.
 #+RESULTS:
 : t
 
-*** GC Threshold
+** GC Threshold
 Threshold for faster startup.
 
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 500000000)
 #+END_SRC
 
-*** General Configuration
-**** UI
+** General Configuration
+*** UI
 Editor specific options such as adding line numbers.
 
 Disable UI that starts when starting emacs and also set the y or n
@@ -153,7 +153,7 @@ be removed if that is ever a problem.
 #+RESULTS:
 |   | (%1* %1+) | %[ | (%12b) | %] %6l:%3c %6 | (%[ ( (:propertize ( mode-name) help-echo Major mode |
 
-**** Global settings
+*** Global settings
 
 Move the backup files into the temporaty directory so that they are out of the
 way.
@@ -204,7 +204,7 @@ Set the line number display very high so that it is always shown in the modeline
   (setq line-number-display-limit 2000000)
 #+END_SRC
 
-**** Font
+*** Font
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
@@ -213,15 +213,15 @@ programming and looking at source code.
   (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
 
-**** Shell
+*** Shell
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
     :ensure nil
     :bind (("C-c e" . eshell)))
 #+END_SRC
 
-** Social
-*** Mail
+* Social
+** Mail
 ~mu4e~ is automatically in the load path when installed through a package
 manager.
 
@@ -332,7 +332,7 @@ To enable storing links in mu4e
     :ensure nil)
 #+END_SRC
 
-*** Elfeed
+** Elfeed
 
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed-org
@@ -348,14 +348,10 @@ To enable storing links in mu4e
                 ("q" . y/elfeed-save-db-and-bury)))
 #+END_SRC
 
-** Utility
-*** Diminish
-#+BEGIN_SRC emacs-lisp
-  (use-package diminish)
-#+END_SRC
+* Utility
 
-*** Navigation
-**** Ivy
+** Navigation
+*** Ivy
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :bind
@@ -379,25 +375,23 @@ To enable storing links in mu4e
 #+RESULTS:
 : counsel-unicode-char
 
-*** Visual
-**** All the icons
+** Visual
+*** All the icons
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
 #+END_SRC
 
-*** Editing
-**** Hungry Delete
+** Editing
+*** Hungry Delete
 #+BEGIN_SRC emacs-lisp
   (use-package hungry-delete
-    :diminish hungry-delete-mode
     :config
     (global-hungry-delete-mode))
 #+END_SRC
 
-**** SmartParens
+*** SmartParens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
-    :diminish (smartparens-mode smartparens-strict-mode)
     :bind (("M-["              . sp-backward-unwrap-sexp)
            ("M-]"              . sp-unwrap-sexp)
            ("C-M-f"            . sp-forward-sexp)
@@ -411,17 +405,18 @@ To enable storing links in mu4e
            ("C-M-p"            . sp-previous-sexp)
            ("C-M-k"            . sp-kill-sexp)
            ("C-M-w"            . sp-copy-sexp)
-           ("C-<right>"        . sp-forward-slurp-sexp)
-           ("C-<left>"         . sp-forward-barf-sexp)
-           ("C-M-<left>"       . sp-backward-slurp-sexp)
-           ("C-M-<right>"      . sp-backward-barf-sexp)
+           ("C-)"              . sp-forward-slurp-sexp)
+           ("C-}"              . sp-forward-barf-sexp)
+           ("C-("              . sp-backward-slurp-sexp)
+           ("C-{"              . sp-backward-barf-sexp)
            ("M-D"              . sp-splice-sexp)
            ("C-]"              . sp-select-next-thing-exchange)
            ("C-<left_bracket>" . sp-select-previous-thing)
            ("C-M-]"            . sp-select-next-thing)
            ("M-F"              . sp-forward-symbol)
-           ("M-B"              . sp-backward-symbol))
-    :hook ((minibuffer-setup) . turn-on-smartparens-strict-mode)
+           ("M-B"              . sp-backward-symbol)
+           ("M-S"              . sp-split-sexp))
+    :hook ((minibuffer-setup)  . turn-on-smartparens-strict-mode)
     :config
     (require 'smartparens-config)
     (show-smartparens-global-mode +1)
@@ -433,21 +428,20 @@ To enable storing links in mu4e
                                                 ("* ||\n[i]" "RET")))))
 #+END_SRC
 
-**** Whitespace
+*** Whitespace
 #+BEGIN_SRC emacs-lisp
   (use-package whitespace
     :bind (("C-x w" . whitespace-mode)))
 #+END_SRC
 
-**** IEdit
+*** IEdit
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
-    :diminish iedit-mode
     :bind (("C-;" . iedit-mode)))
 #+END_SRC
 
-** Writing
-*** Spellcheck in emacs
+* Writing
+** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
   (defun spell-buffer-german ()
     (interactive)
@@ -473,10 +467,9 @@ To enable storing links in mu4e
   (use-package flyspell
     :ensure nil
     :hook ((text-mode) . flyspell-mode)
-    :diminish flyspell-mode)
 #+END_SRC
 
-*** Latex
+** Latex
 #+BEGIN_SRC emacs-lisp
   (use-package latex
     :ensure auctex
@@ -512,7 +505,7 @@ To enable storing links in mu4e
     (setq org-latex-listings 'minted))
 #+END_SRC
 
-*** Markdown
+** Markdown
 Markdown is the standard for writing documentation. This snippet loads GFM
 (Github Flavoured Markdown) style.
 
@@ -525,7 +518,7 @@ Markdown is the standard for writing documentation. This snippet loads GFM
     :init (setq markdown-command "multimarkdown"))
 #+END_SRC
 
-*** Org
+** Org
 Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
@@ -582,7 +575,7 @@ Exporting to html needs htmlize.
                htmlize-region-save-screenshot))
 #+END_SRC
 
-**** Agenda
+*** Agenda
 
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (mapcar 'expand-file-name
@@ -611,28 +604,27 @@ Setting org templates.
            ((org-agenda-overriding-header "University")))))
 #+END_SRC
 
-*** PDF Tools
+** PDF Tools
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
     :hook (doc-view-mode . pdf-view-mode)
     :commands pdf-view-mode)
 #+END_SRC
 
-** Programming
+* Programming
 My emacs configuration is mostly focused on programming, therefore there is a
 lot of different language support.
 
-*** Version Control and Project Management
-**** Magit
+** Version Control and Project Management
+*** Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :bind (("C-x g" . magit-status)))
 #+END_SRC
 
-**** Projectile
+*** Projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
-    :diminish projectile-mode
     :config
     (projectile-mode +1)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
@@ -645,8 +637,8 @@ lot of different language support.
     (counsel-projectile-mode t))
 #+END_SRC
 
-*** Language Support
-**** C++
+** Language Support
+*** C++
 
 Setting up CC mode with a hook that uses my settings.
 
@@ -709,7 +701,7 @@ to install clang format script).
            ("C-c u" . 'clang-format-buffer)))
 #+END_SRC
 
-**** Clojure
+*** Clojure
 Using Cider for clojure environment.
 
 #+BEGIN_SRC emacs-lisp
@@ -725,7 +717,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
   (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
 #+END_SRC
 
-**** CMake
+*** CMake
 #+BEGIN_SRC emacs-lisp
   (use-package cmake-mode
     :commands cmake-mode
@@ -738,7 +730,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
     (autoload 'cmake-mode "~/CMake/Auxiliary/cmake-mode.el" t))
 #+END_SRC
 
-**** Elm
+*** Elm
 
 #+BEGIN_SRC emacs-lisp
   (use-package elm-mode
@@ -749,14 +741,14 @@ Adding hook to clojure mode to enable strict parentheses mode.
                   (setq elm-indent-offset 2))))
 #+END_SRC
 
-**** Emacs Lisp
+*** Emacs Lisp
 Adding strict parentheses to emacs lisp.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
 #+END_SRC
 
-**** F#
+*** F#
 F# mode for uni work.
 
 #+BEGIN_SRC emacs-lisp
@@ -764,7 +756,7 @@ F# mode for uni work.
     :commands fsharp-mode)
 #+END_SRC
 
-**** Haskell
+*** Haskell
 
 Haskell mode with company mode completion.
 
@@ -784,7 +776,7 @@ Haskell mode with company mode completion.
 #+RESULTS:
 | interactive-haskell-mode |
 
-**** Python
+*** Python
 Elpy package for python, which provides an IDE type environment for python.
 
 #+BEGIN_SRC emacs-lisp
@@ -806,13 +798,13 @@ Elpy package for python, which provides an IDE type environment for python.
          nil "_"))))
 #+END_SRC
 
-**** JSON
+*** JSON
 JSON files should be opened in js-mode.
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'auto-mode-alist '("\\.json\\'" . js-mode))
 #+END_SRC
 
-**** SCSS
+*** SCSS
 #+BEGIN_SRC emacs-lisp
   (use-package css-mode
     :ensure nil
@@ -822,17 +814,16 @@ JSON files should be opened in js-mode.
     (setq css-indent-offset 2))
 #+END_SRC
 
-**** Shell
+*** Shell
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
 
-*** Completion Support
-**** Company
+** Completion Support
+*** Company
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :diminish company-mode
     :config
     (add-hook 'after-init-hook 'global-company-mode)
     (setq company-backends (delete 'company-semantic company-backends))
@@ -842,24 +833,22 @@ JSON files should be opened in js-mode.
     (setq company-dabbrev-downcase 0))
 #+END_SRC
 
-**** Flycheck
+*** Flycheck
 Enabling global flycheck support.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
-    :diminish flycheck-mode
     :config (global-flycheck-mode))
 #+END_SRC
 
-**** Yasnippets
+*** Yasnippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :hook ((org-mode cc-mode) . yas-minor-mode)
-    :diminish yas-minor-mode
     :config
     (yas-minor-mode 1))
 #+END_SRC
 
-** Look and Feel
+* Look and Feel
 #+BEGIN_SRC emacs-lisp
   (defadvice load-theme
       (before theme-dont-propagate activate)
@@ -899,7 +888,7 @@ Enabling global flycheck support.
 
 #+RESULTS:
 
-** My Code
+* My Code
 #+BEGIN_SRC emacs-lisp
   (defun y/swap-windows ()
     "Swaps two windows and leaves the cursor in the original one"
@@ -964,7 +953,7 @@ Setting up my keybindings
             (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
 #+END_SRC
 
-*** Registers
+** Registers
 
 #+BEGIN_SRC emacs-lisp
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
@@ -972,7 +961,7 @@ Setting up my keybindings
   (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 #+END_SRC
 
-*** Elfeed
+** Elfeed
 
 #+BEGIN_SRC emacs-lisp
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1011,9 +1000,10 @@ Setting up my keybindings
     (quit-window))
 #+END_SRC
 
-** Conclusion
+* Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 10000000)
 #+END_SRC
+
