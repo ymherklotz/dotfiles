@@ -968,9 +968,8 @@ Setting up my keybindings
 
 #+BEGIN_SRC emacs-lisp
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
-  (set-register ?n (cons 'file "~/Dropbox/org/note.org"))
-  (set-register ?t (cons 'file "~/Dropbox/org/todo.org"))
-  (set-register ?h (cons 'file "~/Dropbox/org/today.org"))
+  (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
+  (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 #+END_SRC
 
 *** Elfeed
