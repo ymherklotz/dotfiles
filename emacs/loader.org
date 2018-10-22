@@ -61,8 +61,6 @@ Initialise the packages and if the directories don't exist, create them.
   (package-initialize)
 #+END_SRC
 
-#+RESULTS:
-
 Use ~use-package~ to manage other packages, and improve load times.
 
 #+BEGIN_SRC emacs-lisp
@@ -70,9 +68,6 @@ Use ~use-package~ to manage other packages, and improve load times.
 
   (setq use-package-always-ensure t)
 #+END_SRC
-
-#+RESULTS:
-: t
 
 ** GC Threshold
 Threshold for faster startup.
@@ -150,9 +145,6 @@ be removed if that is ever a problem.
                  mode-line-end-spaces))
 #+END_SRC
 
-#+RESULTS:
-|   | (%1* %1+) | %[ | (%12b) | %] %6l:%3c %6 | (%[ ( (:propertize ( mode-name) help-echo Major mode |
-
 *** Global settings
 
 Move the backup files into the temporaty directory so that they are out of the
@@ -202,6 +194,11 @@ preferred style. This is just personal preference though.
 Set the line number display very high so that it is always shown in the modeline.
 #+BEGIN_SRC emacs-lisp
   (setq line-number-display-limit 2000000)
+#+END_SRC
+
+Set the undo correctly
+#+BEGIN_SRC emacs-lisp
+  (define-key global-map (kbd "C-\\") 'undo-only)
 #+END_SRC
 
 *** Font
@@ -312,9 +309,6 @@ Finally, remove buffers when an email has been sent.
                        (smtpmail-smtp-service        . 587))))))
 #+END_SRC
 
-#+RESULTS:
-: t
-
 Setting up ~smtp~ to send messages using gmail.
 
 #+BEGIN_SRC emacs-lisp
@@ -348,9 +342,55 @@ To enable storing links in mu4e
                 ("q" . y/elfeed-save-db-and-bury)))
 #+END_SRC
 
+Define utility functions to make the reader work.
+
+#+BEGIN_SRC emacs-lisp
+  (defun y/elfeed-show-all ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-all"))
+
+  (defun y/elfeed-show-emacs ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-emacs"))
+
+  (defun y/elfeed-show-daily ()
+    (interactive)
+    (bookmark-maybe-load-default-file)
+    (bookmark-jump "elfeed-daily"))
+
+  ;;functions to support syncing .elfeed between machines
+  ;;makes sure elfeed reads index from disk before launching
+  (defun y/elfeed-load-db-and-open ()
+    "Wrapper to load the elfeed db from disk before opening"
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force))
+
+  ;;write to disk when quiting
+  (defun y/elfeed-save-db-and-bury ()
+    "Wrapper to save the elfeed db to disk before burying buffer"
+    (interactive)
+    (elfeed-db-save)
+    (quit-window))
+#+END_SRC
+
 * Utility
 
 ** Navigation
+
+Set navigation commands in all the buffers
+#+BEGIN_SRC emacs-lisp
+  (defun prev-window ()
+    (interactive)
+    (other-window -1))
+
+  (global-set-key (kbd "C-.") #'other-window)
+  (global-set-key (kbd "C-,") #'prev-window)
+#+END_SRC
+
 *** Ivy
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
@@ -371,9 +411,6 @@ To enable storing links in mu4e
           '((swiper . ivy--regex-plus)
             (t      . ivy--regex-fuzzy))))
 #+END_SRC
-
-#+RESULTS:
-: counsel-unicode-char
 
 ** Visual
 *** All the icons
@@ -467,6 +504,9 @@ To enable storing links in mu4e
   (use-package flyspell
     :ensure nil
     :hook ((text-mode) . flyspell-mode)
+    :config
+    (define-key flyspell-mode-map (kbd "C-.") nil)
+    (define-key flyspell-mode-map (kbd "C-,") nil))
 #+END_SRC
 
 ** Latex
@@ -602,6 +642,11 @@ Setting org templates.
            ((org-agenda-overriding-header "Home")))
           ("u" "At uni" tags-todo "@uni"
            ((org-agenda-overriding-header "University")))))
+#+END_SRC
+
+Removing binding
+#+BEGIN_SRC emacs-lisp
+  (define-key org-mode-map (kbd "C-,") nil)
 #+END_SRC
 
 ** PDF Tools
@@ -773,9 +818,6 @@ Haskell mode with company mode completion.
      '(haskell-process-log t)))
 #+END_SRC
 
-#+RESULTS:
-| interactive-haskell-mode |
-
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
 
@@ -886,8 +928,6 @@ Enabling global flycheck support.
            (toggle-scroll-bar -1)))
 #+END_SRC
 
-#+RESULTS:
-
 * My Code
 #+BEGIN_SRC emacs-lisp
   (defun y/swap-windows ()
@@ -960,46 +1000,6 @@ Setting up my keybindings
   (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
   (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 #+END_SRC
-
-** Elfeed
-
-#+BEGIN_SRC emacs-lisp
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; elfeed feed reader                                                     ;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;shortcut functions
-  (defun y/elfeed-show-all ()
-    (interactive)
-    (bookmark-maybe-load-default-file)
-    (bookmark-jump "elfeed-all"))
-
-  (defun y/elfeed-show-emacs ()
-    (interactive)
-    (bookmark-maybe-load-default-file)
-    (bookmark-jump "elfeed-emacs"))
-
-  (defun y/elfeed-show-daily ()
-    (interactive)
-    (bookmark-maybe-load-default-file)
-    (bookmark-jump "elfeed-daily"))
-
-  ;;functions to support syncing .elfeed between machines
-  ;;makes sure elfeed reads index from disk before launching
-  (defun y/elfeed-load-db-and-open ()
-    "Wrapper to load the elfeed db from disk before opening"
-    (interactive)
-    (elfeed-db-load)
-    (elfeed)
-    (elfeed-search-update--force))
-
-  ;;write to disk when quiting
-  (defun y/elfeed-save-db-and-bury ()
-    "Wrapper to save the elfeed db to disk before burying buffer"
-    (interactive)
-    (elfeed-db-save)
-    (quit-window))
-#+END_SRC
-
 * Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
