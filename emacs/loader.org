@@ -201,6 +201,43 @@ Set the undo correctly
   (define-key global-map (kbd "C-\\") 'undo-only)
 #+END_SRC
 
+**** Keybindings
+
+Setting up my keybindings
+
+#+BEGIN_SRC emacs-lisp
+  (defun y/swap-windows ()
+    "Swaps two windows and leaves the cursor in the original one"
+    (interactive)
+    (ace-swap-window)
+    (aw-flip-window))
+
+  (defun y/exit-emacs-client ()
+    "consistent exit emacsclient. If not in emacs client, echo a
+    message in minibuffer, don't exit emacs. If in server mode and
+    editing file, do C-x # server-edit else do C-x 5 0
+    delete-frame"
+    (interactive)
+    (if server-buffer-clients
+        (server-edit)
+      (delete-frame)))
+
+  (defun y/beautify-json ()
+    (interactive)
+    (let ((b (if mark-active (min (point) (mark)) (point-min)))
+          (e (if mark-active (max (point) (mark)) (point-max))))
+      (shell-command-on-region b e
+                               "python -m json.tool" (current-buffer) t)))
+
+  (define-prefix-command 'y-map)
+  (global-set-key (kbd "C-c y") 'y-map)
+
+  (global-set-key (kbd "C-c q") 'y/exit-emacs-client)
+
+  (define-key y-map (kbd "s") 'y/swap-windows)
+  (define-key y-map (kbd "j") 'y/beautify-json)
+#+END_SRC
+
 *** Font
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
@@ -568,7 +605,7 @@ Agenda setup for org mode, pointing to the write files.
   (setq org-confirm-babel-evaluate nil)
   (setq org-directory (expand-file-name "~/Dropbox/org"))
   (setq org-default-notes-file
-        (concat org-directory "/notes.org"))
+        (concat org-directory "/inbox.org"))
   (setq org-image-actual-width nil
         org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
 #+END_SRC
@@ -615,6 +652,19 @@ Exporting to html needs htmlize.
                htmlize-region-save-screenshot))
 #+END_SRC
 
+Add md backend
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-md)
+#+END_SRC
+
+*** Templates
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("t" "todo" entry (file+headline "~/Dropbox/org/inbox.org" "Tasks")
+           "* TODO %?\n\n%i\n%a\n\n")))
+#+END_SRC
+
 *** Agenda
 
 #+BEGIN_SRC emacs-lisp
@@ -628,13 +678,7 @@ Exporting to html needs htmlize.
         org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 #+END_SRC
 
-Setting org templates.
-
 #+BEGIN_SRC emacs-lisp
-  (setq org-capture-templates
-        '(("t" "todo" entry (file+headline "~/Dropbox/org/inbox.org" "Tasks")
-           "* TODO %?\n\n%i\n%a\n\n")))
-
   (setq org-agenda-custom-commands 
         '(("w" "At work" tags-todo "@work"
            ((org-agenda-overriding-header "Work")))
@@ -644,9 +688,17 @@ Setting org templates.
            ((org-agenda-overriding-header "University")))))
 #+END_SRC
 
-Removing binding
+*** Remove Binding
 #+BEGIN_SRC emacs-lisp
   (define-key org-mode-map (kbd "C-,") nil)
+#+END_SRC
+
+*** Registers
+
+#+BEGIN_SRC emacs-lisp
+  (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
+  (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
+  (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 #+END_SRC
 
 ** PDF Tools
@@ -779,11 +831,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
 
 #+BEGIN_SRC emacs-lisp
   (use-package elm-mode
-    :mode ("\\.elm\\'")
-    :config
-    (add-hook 'elm-mode-hook
-              (lambda ()
-                  (setq elm-indent-offset 2))))
+    :mode ("\\.elm\\'"))
 #+END_SRC
 
 *** Emacs Lisp
@@ -798,7 +846,14 @@ F# mode for uni work.
 
 #+BEGIN_SRC emacs-lisp
   (use-package fsharp-mode
-    :commands fsharp-mode)
+    :commands fsharp-mode
+    :config
+    (defun y/fsharp-reload-file ()
+      "Reloads the whole file when in fsharp mode."
+      (interactive)
+      (fsharp-eval-region (point-min) (point-max)))
+      (add-hook 'fsharp-mode-hook
+              (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file))))
 #+END_SRC
 
 *** Haskell
@@ -891,28 +946,44 @@ Enabling global flycheck support.
 #+END_SRC
 
 * Look and Feel
+
+Keybindings
+
+#+BEGIN_SRC emacs-lisp
+  (defun y/set-theme (theme)
+    (load-theme theme t)
+    (toggle-scroll-bar -1))
+
+  (defun y/sanityinc-tomorrow-bright ()
+    (interactive)
+    (y/set-theme 'sanityinc-tomorrow-bright))
+
+  (defun y/zenburn ()
+    (interactive)
+    (y/set-theme 'zenburn))
+
+  (defun y/solarized-light ()
+    (interactive)
+    (y/set-theme 'solarized-light))
+
+  (defun y/gruvbox ()
+    (interactive)
+    (y/set-theme 'gruvbox))
+
+  (defun y/sanityinc-tomorrow-bright ()
+    (interactive)
+    (y/set-theme 'sanityinc-tomorrow-bright))
+
+  (define-key y-map (kbd "1") 'y/sanityinc-tomorrow-bright)
+  (define-key y-map (kbd "2") 'y/zenburn)
+  (define-key y-map (kbd "3") 'y/solarized-light)
+  (define-key y-map (kbd "4") 'y/gruvbox)
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (defadvice load-theme
       (before theme-dont-propagate activate)
     (mapc #'disable-theme custom-enabled-themes))
-
-  ;; (use-package color-theme-sanityinc-tomorrow)
-
-  ;; (use-package leuven-theme)
-
-  ;; (use-package zenburn-theme)
-
-  ;; (use-package gruvbox-theme)
-
-  ;; (use-package material-theme)
-
-  ;; (use-package monokai-theme)
-
-  ;; (use-package plan9-theme)
-
-  ;; (use-package gruvbox-theme)
-
-  ;; (use-package dracula-theme)
 
   (use-package solarized-theme
     :config
@@ -928,78 +999,6 @@ Enabling global flycheck support.
            (toggle-scroll-bar -1)))
 #+END_SRC
 
-* My Code
-#+BEGIN_SRC emacs-lisp
-  (defun y/swap-windows ()
-    "Swaps two windows and leaves the cursor in the original one"
-    (interactive)
-    (ace-swap-window)
-    (aw-flip-window))
-
-  (defun y/fsharp-reload-file ()
-    "Reloads the whole file when in fsharp mode."
-    (interactive)
-    (fsharp-eval-region (point-min) (point-max)))
-
-  (defun y/exit-emacs-client ()
-    "consistent exit emacsclient. If not in emacs client, echo a
-    message in minibuffer, don't exit emacs. If in server mode and
-    editing file, do C-x # server-edit else do C-x 5 0
-    delete-frame"
-    (interactive)
-    (if server-buffer-clients
-        (server-edit)
-      (delete-frame)))
-
-  (defun y/beautify-json ()
-    (interactive)
-    (let ((b (if mark-active (min (point) (mark)) (point-min)))
-          (e (if mark-active (max (point) (mark)) (point-max))))
-      (shell-command-on-region b e
-                               "python -m json.tool" (current-buffer) t)))
-
-  (defun y/set-theme (theme)
-    (load-theme theme t)
-    (toggle-scroll-bar -1)
-    (powerline-reset))
-#+END_SRC
-
-Setting up my keybindings
-#+BEGIN_SRC emacs-lisp
-  (define-prefix-command 'y-map)
-  (global-set-key (kbd "C-c y") 'y-map)
-
-  (global-set-key (kbd "C-c q") 'y/exit-emacs-client)
-
-  (define-key y-map (kbd "s") 'y/swap-windows)
-  (define-key y-map (kbd "j") 'y/beautify-json)
-  (define-key y-map (kbd "1") (lambda ()
-                                (interactive)
-                                (y/set-theme 'sanityinc-tomorrow-bright)))
-  (define-key y-map (kbd "2") (lambda ()
-                                (interactive)
-                                (y/set-theme 'zenburn)))
-  (define-key y-map (kbd "3") (lambda ()
-                                (interactive)
-                                (y/set-theme 'leuven)))
-  (define-key y-map (kbd "4") (lambda ()
-                                (interactive)
-                                (y/set-theme 'ample)))
-  (define-key y-map (kbd "5") (lambda ()
-                                (interactive)
-                                (y/set-theme 'ample-flat)))
-
-  (add-hook 'fsharp-mode-hook
-            (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file)))
-#+END_SRC
-
-** Registers
-
-#+BEGIN_SRC emacs-lisp
-  (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
-  (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
-  (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
-#+END_SRC
 * Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
