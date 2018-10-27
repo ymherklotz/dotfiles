@@ -77,7 +77,9 @@ Threshold for faster startup.
 #+END_SRC
 
 ** General Configuration
-*** UI
+
+*** Editor settings
+
 Editor specific options such as adding line numbers.
 
 Disable UI that starts when starting emacs and also set the y or n
@@ -89,6 +91,28 @@ and enter the scratch buffer instead.
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
+Splitting of windows made more deterministic
+
+#+BEGIN_SRC emacs-lisp
+  (setq display-buffer-reuse-frames t)
+  (setq pop-up-windows nil)
+
+  ;; fix window splitting behavior when possible
+  (setq display-buffer-alist
+        '(("\\*cider-repl .*"
+           (display-buffer-reuse-window display-buffer-in-side-window)
+           (reusable-frames . visible)
+           (side . bottom)
+           (window-height . 0.2))
+          ("\\*compilation\\*"
+           (display-buffer-reuse-window display-buffer-same-window))
+          ;; default
+          (".*"
+           (display-buffer-same-window))))
+#+END_SRC
+
+*** Custom modeline
 
 Editing the modeline. ~%c~ might be a bit slow though, so that could
 be removed if that is ever a problem.
@@ -117,8 +141,7 @@ be removed if that is ever a problem.
                (cond
                 ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
                 ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-                (t (format "%s" vc-mode)))))
-      face mode-line-directory)
+                (t (format "%s" vc-mode))))))
     "Formats the current directory.")
 
   (define-minor-mode minor-mode-blackout-mode
@@ -144,8 +167,6 @@ be removed if that is ever a problem.
                  y/mode-line-vc
                  mode-line-end-spaces))
 #+END_SRC
-
-*** Global settings
 
 Move the backup files into the temporaty directory so that they are out of the
 way.
@@ -201,8 +222,6 @@ Set the undo correctly
   (define-key global-map (kbd "C-\\") 'undo-only)
 #+END_SRC
 
-**** Keybindings
-
 Setting up my keybindings
 
 #+BEGIN_SRC emacs-lisp
@@ -238,7 +257,6 @@ Setting up my keybindings
   (define-key y-map (kbd "j") 'y/beautify-json)
 #+END_SRC
 
-*** Font
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
@@ -247,7 +265,6 @@ programming and looking at source code.
   (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
 
-*** Shell
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
     :ensure nil
@@ -415,7 +432,6 @@ Define utility functions to make the reader work.
 #+END_SRC
 
 * Utility
-
 ** Navigation
 
 Set navigation commands in all the buffers
@@ -512,6 +528,23 @@ Set navigation commands in all the buffers
 #+BEGIN_SRC emacs-lisp
   (use-package iedit
     :bind (("C-;" . iedit-mode)))
+#+END_SRC
+
+*** Expand Region
+
+Expand region is very useful to select words and structures quickly by
+incrementally selecting more and more of the text.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :bind ("C-i" . er/expand-region))
+#+END_SRC
+
+*** Dired
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'dired-load-hook
+              (function (lambda () (load "dired-x"))))
 #+END_SRC
 
 * Writing
@@ -1005,4 +1038,3 @@ Setting the gc-cons threshold back to what it was at the beginning.
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 10000000)
 #+END_SRC
-
