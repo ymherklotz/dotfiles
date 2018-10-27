@@ -537,7 +537,7 @@ incrementally selecting more and more of the text.
 
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
-    :bind ("C-i" . er/expand-region))
+    :bind ("M-m" . er/expand-region))
 #+END_SRC
 
 *** Dired
