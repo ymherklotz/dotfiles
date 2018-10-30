@@ -11,6 +11,9 @@ but also has support for Python, F#, Haskell and Clojure.
   (setq user-mail-address "ymherklotz@gmail.com")
 #+END_SRC
 
+#+RESULTS:
+: ymherklotz@gmail.com
+
 * Setup
 
 Set path so that it picks up some executables that I use
@@ -22,6 +25,9 @@ Set path so that it picks up some executables that I use
      (expand-file-name "~/.yarn/bin") ":"
      (getenv "PATH")))
 #+END_SRC
+
+#+RESULTS:
+: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 
 ** Repositories
 Defining all the package repositories that are going to be used.
@@ -85,6 +91,7 @@ Editor specific options such as adding line numbers.
 Disable UI that starts when starting emacs and also set the y or n
 instead of yes or no. Also stop the start up message from popping up
 and enter the scratch buffer instead.
+
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t
         confirm-nonexistent-file-or-buffer nil)
@@ -92,6 +99,9 @@ and enter the scratch buffer instead.
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
+
+#+RESULTS:
+: y-or-n-p
 
 Splitting of windows made more deterministic
 
@@ -174,6 +184,9 @@ be removed if that is ever a problem.
                  mode-line-end-spaces))
 #+END_SRC
 
+#+RESULTS:
+|   | (%1* %1+) | %[ | (%12b) | %] %6l:%3c %6 | (%[ ( (:propertize ( mode-name) help-echo Major mode |
+
 Move the backup files into the temporaty directory so that they are out of the
 way.
 
@@ -184,6 +197,9 @@ way.
         `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
+#+RESULTS:
+| .* | /tmp/ | t |
+
 Make emacs follow symlinks every time, this means that it will open the actual
 file and go to where the file is actually stored instead of editing it through
 the symlink. This enables the use of git and other version control when editing
@@ -192,15 +208,24 @@ the file.
   (setq vc-follow-symlinks t)
 #+END_SRC
 
+#+RESULTS:
+: t
+
 Make it easier to refresh the buffer by setting it to ~<f5>~.
 #+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "<f5>") 'revert-buffer)
 #+END_SRC
 
+#+RESULTS:
+: revert-buffer
+
 This stops paren mode with interfering with the modeline.
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode 'expression)
 #+END_SRC
+
+#+RESULTS:
+: t
 
 Revert the buffer automatically when a file changes on disc. This is useful when
 monitoring a file such as a log file. It will also do this silently.
@@ -208,6 +233,8 @@ monitoring a file such as a log file. It will also do this silently.
   (global-auto-revert-mode 1)
   (setq auto-revert-verbose nil)
 #+END_SRC
+
+#+RESULTS:
 
 Disable tabs, I want to move towards only using spaces everywhere as that is my
 preferred style. This is just personal preference though.
@@ -218,15 +245,24 @@ preferred style. This is just personal preference though.
   (defvaralias 'c-basic-offset 'tab-width)
 #+END_SRC
 
+#+RESULTS:
+: tab-width
+
 Set the line number display very high so that it is always shown in the modeline.
 #+BEGIN_SRC emacs-lisp
   (setq line-number-display-limit 2000000)
 #+END_SRC
 
+#+RESULTS:
+: 2000000
+
 Set the undo correctly
 #+BEGIN_SRC emacs-lisp
   (define-key global-map (kbd "C-\\") 'undo-only)
 #+END_SRC
+
+#+RESULTS:
+: undo-only
 
 Setting up my keybindings
 
@@ -263,6 +299,9 @@ Setting up my keybindings
   (define-key y-map (kbd "j") 'y/beautify-json)
 #+END_SRC
 
+#+RESULTS:
+: y/beautify-json
+
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
@@ -271,11 +310,17 @@ programming and looking at source code.
   (setq default-frame-alist '((font . "Hack-11")))
 #+END_SRC
 
+#+RESULTS:
+: ((font . Hack-11))
+
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
     :ensure nil
     :bind (("C-c e" . eshell)))
 #+END_SRC
+
+#+RESULTS:
+: eshell
 
 * Social
 ** Mail
@@ -369,6 +414,9 @@ Finally, remove buffers when an email has been sent.
                        (smtpmail-smtp-service        . 587))))))
 #+END_SRC
 
+#+RESULTS:
+: t
+
 Setting up ~smtp~ to send messages using gmail.
 
 #+BEGIN_SRC emacs-lisp
@@ -379,12 +427,17 @@ Setting up ~smtp~ to send messages using gmail.
           starttls-use-gnutls t))
 #+END_SRC
 
+#+RESULTS:
+: t
+
 To enable storing links in mu4e
 
 #+BEGIN_SRC emacs-lisp
   (use-package org-mu4e
     :ensure nil)
 #+END_SRC
+
+#+RESULTS:
 
 ** Elfeed
 
@@ -401,6 +454,9 @@ To enable storing links in mu4e
                 ("D" . y/elfeed-show-daily)
                 ("q" . y/elfeed-save-db-and-bury)))
 #+END_SRC
+
+#+RESULTS:
+: y/elfeed-save-db-and-bury
 
 Define utility functions to make the reader work.
 
@@ -437,6 +493,9 @@ Define utility functions to make the reader work.
     (quit-window))
 #+END_SRC
 
+#+RESULTS:
+: y/elfeed-save-db-and-bury
+
 * Utility
 ** Navigation
 
@@ -449,6 +508,9 @@ Set navigation commands in all the buffers
   (global-set-key (kbd "C-.") #'other-window)
   (global-set-key (kbd "C-,") #'prev-window)
 #+END_SRC
+
+#+RESULTS:
+: prev-window
 
 *** Ivy
 #+BEGIN_SRC emacs-lisp
@@ -471,11 +533,16 @@ Set navigation commands in all the buffers
             (t      . ivy--regex-fuzzy))))
 #+END_SRC
 
+#+RESULTS:
+: counsel-unicode-char
+
 ** Visual
 *** All the icons
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
 #+END_SRC
+
+#+RESULTS:
 
 ** Editing
 *** Hungry Delete
@@ -484,6 +551,9 @@ Set navigation commands in all the buffers
     :config
     (global-hungry-delete-mode))
 #+END_SRC
+
+#+RESULTS:
+: t
 
 *** SmartParens
 #+BEGIN_SRC emacs-lisp
