@@ -365,7 +365,7 @@ Finally, remove buffers when an email has been sent.
           mu4e-completing-read-function 'completing-read
           mu4e-context-policy 'pick-first
           mu4e-confirm-quit nil
-          mu4e-html2text-command "pandoc -f html -t plain -"
+          ;;mu4e-html2text-command "pandoc -f html -t plain -"
           mu4e-change-filenames-when-moving t)
 
     ;; Try to show images
