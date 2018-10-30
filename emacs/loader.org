@@ -157,7 +157,8 @@ be removed if that is ever a problem.
                (cond
                 ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
                 ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-                (t (format "%s" vc-mode))))))
+                (t (format "%s" vc-mode)))))
+      face mode-line)
     "Formats the current directory.")
 
   (define-minor-mode minor-mode-blackout-mode
