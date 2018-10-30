@@ -86,7 +86,8 @@ Disable UI that starts when starting emacs and also set the y or n
 instead of yes or no. Also stop the start up message from popping up
 and enter the scratch buffer instead.
 #+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-message t)
+  (setq inhibit-startup-message t
+        confirm-nonexistent-file-or-buffer nil)
   (tool-bar-mode 0)
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -111,6 +112,11 @@ Splitting of windows made more deterministic
           (".*"
            (display-buffer-same-window))))
 #+END_SRC
+
+#+RESULTS:
+| \*cider-repl .* | (display-buffer-reuse-window display-buffer-in-side-window) | (reusable-frames . visible) | (side . bottom) | (window-height . 0.2) |
+| \*compilation\* | (display-buffer-reuse-window display-buffer-same-window)    |                             |                 |                       |
+| .*              | (display-buffer-same-window)                                |                             |                 |                       |
 
 *** Custom modeline
 
@@ -544,7 +550,9 @@ incrementally selecting more and more of the text.
 
 #+BEGIN_SRC emacs-lisp
   (add-hook 'dired-load-hook
-              (function (lambda () (load "dired-x"))))
+            (function (lambda () (load "dired-x"))))
+
+  (setq dired-dwim-target t)
 #+END_SRC
 
 * Writing
@@ -670,7 +678,8 @@ Set up ob for executing code blocks
        (org        . t)
        (matlab     . t)
        (ditaa      . t)
-       (clojure    . t))))
+       (clojure    . t)
+       (dot        . t))))
 #+END_SRC
 
 Exporting to html needs htmlize.
@@ -749,8 +758,13 @@ lot of different language support.
 *** Magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
-    :bind (("C-x g" . magit-status)))
+    :bind (("C-x g" . magit-status))
+    :config
+    (setq server-switch-hook nil))
 #+END_SRC
+
+#+RESULTS:
+: magit-status
 
 *** Projectile
 #+BEGIN_SRC emacs-lisp
