@@ -165,7 +165,11 @@ URxvt*cursorColor: #cc99cc
 ! Select the fonts to be used. This is a comma separated list of font
 ! names that are checked in order when trying to find glyphs for
 ! characters
-*font: xft:Hack:style=Regular:pixelsize=16,xft:Unifont:size=8:anialias=false,xft:Wuncon Siji:style=Regular:pixelsize=10,xft:Font Awesome 5 Free:style=Regular:pixelsize=14,xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
+*font: xft:Hack:style=Regular:pixelsize=16, \
+       xft:Unifont:size=8:anialias=false, \
+       xft:Wuncon Siji:style=Regular:pixelsize=10, \
+       xft:Font Awesome 5 Free:style=Regular:pixelsize=14, \
+       xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
 
 ! When font styles are not enabled, or this option is enabled (True
 ! default), bold/blink font styles imply high intensity
@@ -190,9 +194,6 @@ URxvt*depth: 32
 ! it exits. Instead, it will wait till it is being killed or closed by
 ! the user.
 URxvt*hold: false
-
-! Internal border of number pixels. This resource is limited to 100
-URxvt*internalBorder: 10
 
 ! Specify a command pipe for vt100 printer [default lpr(1)].  Use
 ! Print to initiate a screen dump to the printer and Ctrl-Print or
