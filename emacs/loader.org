@@ -27,7 +27,7 @@ Set path so that it picks up some executables that I use
 #+END_SRC
 
 #+RESULTS:
-: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/home/yannherklotz/.yarn/bin:/usr/bin:/home/yannherklotz/.local/bin:/home/yannherklotz/.gem/ruby/2.5.0/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
 
 ** Repositories
 Defining all the package repositories that are going to be used.
@@ -50,6 +50,9 @@ Defining all the package repositories that are going to be used.
   (defvar org-elpa     '("org"          . "https://orgmode.org/elpa/"))
 #+END_SRC
 
+#+RESULTS:
+: org-elpa
+
 These packages are then added to the list of package archives.
 
 #+BEGIN_SRC emacs-lisp
@@ -60,12 +63,17 @@ These packages are then added to the list of package archives.
   (add-to-list 'package-archives org-elpa t)
 #+END_SRC
 
+#+RESULTS:
+: ((melpa-stable . https://stable.melpa.org/packages/) (melpa . https://melpa.org/packages/) (gnu . https://elpa.gnu.org/packages/) (org . https://orgmode.org/elpa/))
+
 Initialise the packages and if the directories don't exist, create them.
 
 #+BEGIN_SRC emacs-lisp
   (setq package-enable-at-startup nil)
   (package-initialize)
 #+END_SRC
+
+#+RESULTS:
 
 Use ~use-package~ to manage other packages, and improve load times.
 
@@ -74,6 +82,9 @@ Use ~use-package~ to manage other packages, and improve load times.
 
   (setq use-package-always-ensure t)
 #+END_SRC
+
+#+RESULTS:
+: t
 
 ** GC Threshold
 Threshold for faster startup.
@@ -750,8 +761,12 @@ Set up ob for executing code blocks
        (matlab     . t)
        (ditaa      . t)
        (clojure    . t)
-       (dot        . t))))
+       (dot        . t)
+       (shell      . t))))
 #+END_SRC
+
+#+RESULTS:
+: t
 
 Exporting to html needs htmlize.
 
