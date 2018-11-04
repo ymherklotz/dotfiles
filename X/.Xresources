@@ -57,44 +57,62 @@
 
 Xft.antialias: true
 
-! Specifies the terminal type name to be set in the TERM environment variable
+! Specifies the terminal type name to be set in the TERM environment
+! variable
 URxvt*termName: rxvt-unicode-256color
 
-! Create the window with the specified X window geometry [default 80x24]
+! Create the window with the specified X window geometry [default
+! 80x24]
 URxvt*geometry: 100x25
 
-! True: start as a login shell by prepending a - to argv[0] of the shell; option -ls.  False: start as a normal sub-shell [default];
+! True: start as a login shell by prepending a - to argv[0] of the
+! shell; option -ls.  False: start as a normal sub-shell [default];
 URxvt*loginShell: true
 
 ! Use the specified colour for the scrollbar [default #B2B2B2]
 URxvt*scrollColor: #777777
 
-! Set scrollbar style to rxvt, plain, next or xterm. plain is the authors favourite.
+! Set scrollbar style to rxvt, plain, next or xterm. plain is the
+! authors favourite.
 URxvt*scrollstyle: plain
 
-! True: scroll to bottom when a non-special key pressed.  Special keys are those which are intercepted by rxvt for special handling andnt passed onto the shell; False: dont scroll to bottom
+! True: scroll to bottom when a non-special key pressed.  Special keys
+! are those which are intercepted by rxvt for special handling andnt
+! passed onto the shell; False: dont scroll to bottom
 URxvt*scrollTtyKeypress: true
 
-! True: scroll to bottom when tty receives output; False: do not scroll to bottom when tty receives output
+! True: scroll to bottom when tty receives output; False: do not
+! scroll to bottom when tty receives output
 URxvt*scrollTtyOutput: false
 
-! True: scroll with scrollback buffer when tty recieves new lines (and scrollTtyOutput is False);  False: do not scroll with scrollback buffer when tty recieves new lines
+! True: scroll with scrollback buffer when tty recieves new lines (and
+! scrollTtyOutput is False); False: do not scroll with scrollback
+! buffer when tty recieves new lines
 URxvt*scrollWithBuffer: false
 
 ! Turn on/off secondary screen (default enabled)
 URxvt*secondaryScreen: true
 
-! (default enabled). If this option is enabled, scrolls on the secondary screen will change the scrollback buffer and, when secondaryScreen is off, switching to/from the secondary screen will instead scroll the screen up.
+! (default enabled). If this option is enabled, scrolls on the
+! secondary screen will change the scrollback buffer and, when
+! secondaryScreen is off, switching to/from the secondary screen will
+! instead scroll the screen up.
 URxvt*secondaryScroll: true
 
-! When receiving lots of lines, urxvt will only scroll once a whole screen height of lines has been read, resulting in fewer updates while still displaying every received line
-! False: specify that smooth scrolling should be used. urxvt will force a screen refresh on each new line it received
+! When receiving lots of lines, urxvt will only scroll once a whole
+! screen height of lines has been read, resulting in fewer updates
+! while still displaying every received line False: specify that
+! smooth scrolling should be used. urxvt will force a screen refresh
+! on each new line it received
 URxvt*jumpScroll: true
 
-! (true) When receiving lots of lines, urxvt will only scroll once in a while (around 60x/sec), resulting in fewer updates. This can result in urxvt not ever displaying some of the lines it receives
+! (true) When receiving lots of lines, urxvt will only scroll once in
+! a while (around 60x/sec), resulting in fewer updates. This can
+! result in urxvt not ever displaying some of the lines it receives
 URxvt*skipScroll: false
 
-! True: enable the scrollbar [default]; option -sb. False: disable the scrollbar
+! True: enable the scrollbar [default]; option -sb. False: disable the
+! scrollbar
 URxvt*scrollBar: false
 
 ! place the scrollbar on the right of the window
@@ -103,66 +121,89 @@ URxvt*scrollBar_right: false
 ! di5play an rxvt scrollbar with/without a trough
 URxvt*scrollBar_floating: false
 
-! True: inhibit writing record into the system log file utmp;  False: write record into the system log file utmp [default]
+! True: inhibit writing record into the system log file utmp; False:
+! write record into the system log file utmp [default]
 URxvt*utmpInhibit: false
 
-! True: set the urgency hint for the wm on receipt of a bell character.  False: do not set the urgency hint [default] urxvt resets the urgency hint on every focus change.
+! True: set the urgency hint for the wm on receipt of a bell
+! character.  False: do not set the urgency hint [default] urxvt
+! resets the urgency hint on every focus change.
 URxvt*urgentOnBell: false
 
-! True: use visual bell on receipt of a bell character; option -vb.  False: no visual bell [default]
+! True: use visual bell on receipt of a bell character; option -vb.
+! False: no visual bell [default]
 URxvt*visualBell: false
 
-! True: de-iconify (map) on receipt of a bell character.  False: no de-iconify (map) on receipt of a bell character [default].
+! True: de-iconify (map) on receipt of a bell character.  False: no
+! de-iconify (map) on receipt of a bell character [default].
 URxvt*mapAlert: false
 
-! True: the mouse wheel scrolls a page full. False: the mouse wheel scrolls five lines [default]
+! True: the mouse wheel scrolls a page full. False: the mouse wheel
+! scrolls five lines [default]
 URxvt*mouseWheelScrollPage: false
 
-! Use the specified colour to disp1ay underlined characters when the foreground colour is the default.
+! Use the specified colour to disp1ay underlined characters when the
+! foreground colour is the default.
 URxvt*colorUL: yellow
 
-! Use the specified colour as the background for reverse video characters.
-! URxvt*colorRV:                        color
-
-! If set, use the specified colour as the colour for the underline itself. If unset, use the foreground colour
+! If set, use the specified colour as the colour for the underline
+! itself. If unset, use the foreground colour
 URxvt*underlineColor: yellow
 
-! If set, use the specified colour as the background for highlighted characters. If unset, use reverse video
+! If set, use the specified colour as the background for highlighted
+! characters. If unset, use reverse video
 URxvt*highlightColor: #373b41
 
-! If set and highlightColor is set, use the specified colour as the foreground for highlighted characters
+! If set and highlightColor is set, use the specified colour as the
+! foreground for highlighted characters
 URxvt*highlightTextColor: White
 
-! Use the specified colour for the cursor.  The default is to use the foreground colour
+! Use the specified colour for the cursor.  The default is to use the
+! foreground colour
 URxvt*cursorColor: #cc99cc
 
-! Select the fonts to be used. This is a comma separated list of font names that are checked in order when trying to find glyphs for characters
-URxvt*font: xft:Hack:style=Regular:pixelsize=16,xft:Unifont:size=8:anialias=false,xft:Wuncon Siji:style=Regular:pixelsize=10,xft:Font Awesome 5 Free:style=Regular:pixelsize=14,xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
+! Select the fonts to be used. This is a comma separated list of font
+! names that are checked in order when trying to find glyphs for
+! characters
+*font: xft:Hack:style=Regular:pixelsize=16,xft:Unifont:size=8:anialias=false,xft:Wuncon Siji:style=Regular:pixelsize=10,xft:Font Awesome 5 Free:style=Regular:pixelsize=14,xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
 
-! When font styles are not enabled, or this option is enabled (True default), bold/blink font styles imply high intensity foreground/background colours
+! When font styles are not enabled, or this option is enabled (True
+! default), bold/blink font styles imply high intensity
+! foreground/background colours
 URxvt*intensityStyles: false
 
-! Save number lines in the scrollback buffer [default 64]. This resource is limited on most machines to 65535
+! Save number lines in the scrollback buffer [default 64]. This
+! resource is limited on most machines to 65535
 URxvt*saveLines: 16384
 
-! Double-buffering for xft (default enabled).  On some card/driver combination enabling it slightly decreases performance, on most it greatly helps it. The slowdown is small, so it should normally be enabled
+! Double-buffering for xft (default enabled).  On some card/driver
+! combination enabling it slightly decreases performance, on most it
+! greatly helps it. The slowdown is small, so it should normally be
+! enabled
 URxvt*buffered: true
 
 ! Attempt to find a visual with the given bit depth
 URxvt*depth: 32
 
-! Turn on/off hold window after exit support. If enabled, urxvt will not immediately destroy its window when the program executed within it exits. Instead, it will wait till it is being killed or closed by the user.
+! Turn on/off hold window after exit support. If enabled, urxvt will
+! not immediately destroy its window when the program executed within
+! it exits. Instead, it will wait till it is being killed or closed by
+! the user.
 URxvt*hold: false
 
 ! Internal border of number pixels. This resource is limited to 100
 URxvt*internalBorder: 10
 
-! Specify a command pipe for vt100 printer [default lpr(1)].  Use Print to initiate a screen dump to the printer and Ctrl-Print or Shift-Print to include the scrollback
+! Specify a command pipe for vt100 printer [default lpr(1)].  Use
+! Print to initiate a screen dump to the printer and Ctrl-Print or
+! Shift-Print to include the scrollback
 URxvt*print-pipe: cat > $HOME/$(echo urxvt.dump.$(date +'%Y%M%d%H%m%S'))
 
-! Set the key to be interpreted as the Meta key to: alt, meta, hyper, super, mod1, mod2, mod3, mod4, mod5
+! Set the key to be interpreted as the Meta key to: alt, meta, hyper,
+! super, mod1, mod2, mod3, mod4, mod5
 URxvt*modifier:	alt
 
-! Comma-separated list(s) of perl extension scripts (default: "default") to use in this terminal instance, blank disables
+! Comma-separated list(s) of perl extension scripts (default:
+! "default") to use in this terminal instance, blank disables
 URxvt*perl-ext-common: fullscreen
 URxvt*perl-ext:
