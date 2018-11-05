@@ -165,11 +165,11 @@ URxvt*cursorColor: #cc99cc
 ! Select the fonts to be used. This is a comma separated list of font
 ! names that are checked in order when trying to find glyphs for
 ! characters
-*font: xft:Hack:style=Regular:pixelsize=16, \
-       xft:Unifont:size=8:anialias=false, \
-       xft:Wuncon Siji:style=Regular:pixelsize=10, \
-       xft:Font Awesome 5 Free:style=Regular:pixelsize=14, \
-       xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
+URxvt*font: xft:Hack:style=Regular:pixelsize=16, \
+            xft:Unifont:size=8:anialias=false, \
+            xft:Wuncon Siji:style=Regular:pixelsize=10, \
+            xft:Font Awesome 5 Free:style=Regular:pixelsize=14, \
+            xft:Font Awesome 5 Brands:style=Regular:pixelsize=14
 
 ! When font styles are not enabled, or this option is enabled (True
 ! default), bold/blink font styles imply high intensity

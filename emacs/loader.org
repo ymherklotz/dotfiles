@@ -638,6 +638,12 @@ incrementally selecting more and more of the text.
 #+END_SRC
 
 * Writing
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'text-mode-hook (lambda ()
+                              (auto-fill-mode 1)))
+#+END_SRC
+
 ** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
   (defun spell-buffer-german ()
