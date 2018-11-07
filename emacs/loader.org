@@ -48,27 +48,13 @@ Defining all the package repositories that are going to be used.
   (defvar melpa        '("melpa"        . "https://melpa.org/packages/"))
   (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
   (defvar org-elpa     '("org"          . "https://orgmode.org/elpa/"))
-#+END_SRC
 
-#+RESULTS:
-: org-elpa
-
-These packages are then added to the list of package archives.
-
-#+BEGIN_SRC emacs-lisp
   (setq package-archives nil)
   (add-to-list 'package-archives melpa-stable t)
   (add-to-list 'package-archives melpa t)
   (add-to-list 'package-archives gnu t)
   (add-to-list 'package-archives org-elpa t)
-#+END_SRC
 
-#+RESULTS:
-: ((melpa-stable . https://stable.melpa.org/packages/) (melpa . https://melpa.org/packages/) (gnu . https://elpa.gnu.org/packages/) (org . https://orgmode.org/elpa/))
-
-Initialise the packages and if the directories don't exist, create them.
-
-#+BEGIN_SRC emacs-lisp
   (setq package-enable-at-startup nil)
   (package-initialize)
 #+END_SRC
@@ -93,8 +79,10 @@ Threshold for faster startup.
   (setq gc-cons-threshold 500000000)
 #+END_SRC
 
-** General Configuration
+#+RESULTS:
+: 500000000
 
+** General Configuration
 *** Editor settings
 
 Editor specific options such as adding line numbers.
@@ -334,6 +322,13 @@ programming and looking at source code.
 
 #+RESULTS:
 : eshell
+*** Reload
+
+#+BEGIN_SRC emacs-lisp
+  (defun y/reload ()
+    (interactive)
+    (load-file (expand-file-name "~/.emacs.d/init.el")))
+#+END_SRC
 
 * Social
 ** Mail
@@ -738,6 +733,12 @@ Agenda setup for org mode, pointing to the write files.
         (concat org-directory "/inbox.org"))
   (setq org-image-actual-width nil
         org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+
+  (eval-after-load "org"
+    '(setq org-metaup-hook nil
+           org-metadown-hook nil))
+
+  (add-hook 'org-trigger-hook 'save-buffer)
 #+END_SRC
 
 Set global keys for org mode to access agenda.
