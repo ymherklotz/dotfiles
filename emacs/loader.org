@@ -838,11 +838,15 @@ Add md backend
 #+END_SRC
 
 ** PDF Tools
+
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
     :hook (doc-view-mode . pdf-view-mode)
     :commands pdf-view-mode)
 #+END_SRC
+
+#+RESULTS:
+| pdf-view-mode |
 
 * Programming
 My emacs configuration is mostly focused on programming, therefore there is a
