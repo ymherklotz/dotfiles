@@ -529,16 +529,14 @@ Set navigation commands in all the buffers
      ("C-x C-f" . counsel-find-file)
      ("C-c g"   . counsel-git)
      ("C-c j"   . counsel-git-grep)
-     ("C-c k"   . counsel-ag)
      ("C-c C-r" . ivy-resume)
-     ("C-x b"   . counsel-ibuffer)
-     ("C-c y u" . counsel-unicode-char))
+     ("C-x b"   . ivy-switch-buffer)
+     ("C-x 8 RET" . counsel-unicode-char))
     :config
+    (counsel-mode t)
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
-    (setq ivy-re-builders-alist
-          '((swiper . ivy--regex-plus)
-            (t      . ivy--regex-fuzzy))))
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
 #+END_SRC
 
 #+RESULTS:
