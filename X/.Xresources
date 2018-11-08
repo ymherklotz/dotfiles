@@ -154,7 +154,7 @@ URxvt*underlineColor: yellow
 ! characters. If unset, use reverse video
 URxvt*highlightColor: #373b41
 
-! If set and highlightColor is set, use the specified colour as the
+! If set and highlightColor is set, use the specified colppour as the
 ! foreground for highlighted characters
 URxvt*highlightTextColor: White
 
@@ -165,7 +165,8 @@ URxvt*cursorColor: #cc99cc
 ! Select the fonts to be used. This is a comma separated list of font
 ! names that are checked in order when trying to find glyphs for
 ! characters
-URxvt*font: xft:Hack:style=Regular:pixelsize=16, \
+
+URxvt*font: xft:Misc Tamsyn:style=Regular:pixelsize=16, \
             xft:Unifont:size=8:anialias=false, \
             xft:Wuncon Siji:style=Regular:pixelsize=10, \
             xft:Font Awesome 5 Free:style=Regular:pixelsize=14, \
@@ -196,7 +197,7 @@ URxvt*depth: 32
 URxvt*hold: false
 
 ! Specify a command pipe for vt100 printer [default lpr(1)].  Use
-! Print to initiate a screen dump to the printer and Ctrl-Print or
+! Print to initiate a sc            xft:Font Awesome 5 Brands:style=Regular:pixelsize=14reen dump to the printer and Ctrl-Print or
 ! Shift-Print to include the scrollback
 URxvt*print-pipe: cat > $HOME/$(echo urxvt.dump.$(date +'%Y%M%d%H%m%S'))
 
@@ -208,3 +209,19 @@ URxvt*modifier:	alt
 ! "default") to use in this terminal instance, blank disables
 URxvt*perl-ext-common: fullscreen
 URxvt*perl-ext:
+
+XTerm.termName: xterm-256color
+XTerm.vt100.locale: true
+XTerm.vt100.metaSendsEscape: true
+XTerm.vt100.backarrowKey: false
+XTerm.ttyModes: erase ^?
+XTerm.vt100.saveLines: 65536
+XTerm.vt100.scrollBar: false
+XTerm.vt100.geometry: 80x32
+XTerm.vt100.font: -*-tamsyn-medium-*-*-*-15-*-*-*-*-*-*-*
+XTerm.vt100.translations: #override \n\
+    Ctrl <Key>M: maximize() \n\
+    Ctrl <Key>R: restore() \n\
+    <Btn1Up>: select-end(PRIMARY, CLIPBOARD, CUT_BUFFER0) \n\
+    Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
+    Ctrl Shift <Key>V: insert-selection(CLIPBOARD)

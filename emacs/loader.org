@@ -307,12 +307,12 @@ Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Hack-11")
-  (setq default-frame-alist '((font . "Hack-11")))
+  (set-default-font "Misc Tamsyn-13")
+  (setq default-frame-alist '((font . "Misc Tamsyn-13")))
 #+END_SRC
 
 #+RESULTS:
-: ((font . Hack-11))
+: ((font . Misc Tamsyn-13))
 
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
