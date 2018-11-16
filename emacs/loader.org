@@ -103,31 +103,6 @@ and enter the scratch buffer instead.
 #+RESULTS:
 : t
 
-Splitting of windows made more deterministic
-
-#+BEGIN_SRC emacs-lisp
-  (setq display-buffer-reuse-frames t)
-  (setq pop-up-windows nil)
-
-  ;; fix window splitting behavior when possible
-  (setq display-buffer-alist
-        '(("\\*cider-repl .*"
-           (display-buffer-reuse-window display-buffer-in-side-window)
-           (reusable-frames . visible)
-           (side . bottom)
-           (window-height . 0.2))
-          ("\\*compilation\\*"
-           (display-buffer-reuse-window display-buffer-same-window))
-          ;; default
-          (".*"
-           (display-buffer-same-window))))
-#+END_SRC
-
-#+RESULTS:
-| \*cider-repl .* | (display-buffer-reuse-window display-buffer-in-side-window) | (reusable-frames . visible) | (side . bottom) | (window-height . 0.2) |
-| \*compilation\* | (display-buffer-reuse-window display-buffer-same-window)    |                             |                 |                       |
-| .*              | (display-buffer-same-window)                                |                             |                 |                       |
-
 *** Custom modeline
 
 Editing the modeline. ~%c~ might be a bit slow though, so that could
@@ -521,22 +496,25 @@ Set navigation commands in all the buffers
 : prev-window
 
 *** Ivy
+
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :bind
-    (("C-s"     . swiper)
-     ("M-x"     . counsel-M-x)
-     ("C-x C-f" . counsel-find-file)
-     ("C-c g"   . counsel-git)
-     ("C-c j"   . counsel-git-grep)
-     ("C-c C-r" . ivy-resume)
-     ("C-x b"   . ivy-switch-buffer)
+    (("C-c s"     . swiper)
+     ("M-x"       . counsel-M-x)
+     ("C-x C-f"   . counsel-find-file)
+     ("C-c g"     . counsel-git)
+     ("C-c j"     . counsel-git-grep)
+     ("C-c C-r"   . ivy-resume)
+     ("C-x b"     . ivy-switch-buffer)
      ("C-x 8 RET" . counsel-unicode-char))
     :config
     (counsel-mode t)
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
-    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+    (setq ivy-re-builders-alist
+          '((t . ivy--regex-fuzzy))))
 #+END_SRC
 
 #+RESULTS:
@@ -630,6 +608,17 @@ incrementally selecting more and more of the text.
 
   (setq dired-dwim-target t)
 #+END_SRC
+
+** Search
+*** Deadgrep
+
+#+BEGIN_SRC emacs-lisp
+  (use-package deadgrep
+    :bind (("C-c d" . deadgrep)))
+#+END_SRC
+
+#+RESULTS:
+: deadgrep
 
 * Writing
 
@@ -1005,7 +994,12 @@ Haskell mode with company mode completion.
 
 #+BEGIN_SRC emacs-lisp
   (use-package haskell-mode
-    :commands haskell-mode)
+    :commands haskell-mode
+    :bind (("M-." . haskell-mode-jump-to-def))
+    :config
+    (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
+    (setq haskell-mode-stylish-haskell-path (expand-file-name "~/.local/bin/stylish-haskell")
+          haskell-stylish-on-save t))
 
   (use-package interactive-haskell-mode
     :ensure haskell-mode
@@ -1015,6 +1009,9 @@ Haskell mode with company mode completion.
      '(haskell-process-path-stack (expand-file-name "~/.local/bin/stack"))
      '(haskell-process-log t)))
 #+END_SRC
+
+#+RESULTS:
+| haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
