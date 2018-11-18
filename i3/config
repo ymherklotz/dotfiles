@@ -216,9 +216,6 @@ exec --no-startup-id compton -c &
 # set the background
 exec --no-startup-id sh ~/.fehbg
 
-# Start emacs daemon to use with emacsclient
-exec --no-startup-id emacs --daemon &
-
 # Activate redshift
 exec --no-startup-id redshift &
 

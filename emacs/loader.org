@@ -282,12 +282,12 @@ Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Misc Tamsyn-13")
-  (setq default-frame-alist '((font . "Misc Tamsyn-13")))
+  (set-default-font "Misc Tamsyn-16")
+  (setq default-frame-alist '((font . "Misc Tamsyn-16")))
 #+END_SRC
 
 #+RESULTS:
-: ((font . Misc Tamsyn-13))
+: ((font . Misc Tamsyn-16))
 
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
@@ -687,11 +687,7 @@ incrementally selecting more and more of the text.
     (autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
     (autoload 'reftex-citation "reftex-cite" "Make citation" nil)
     (autoload 'reftex-index-phrase-mode "reftex-index" "Phrase Mode" t)
-    (add-hook 'latex-mode-hook 'turn-on-reftex) ; with Emacs latex mode
-
-    (require 'ox-latex)
-    (add-to-list 'org-latex-packages-alist '("" "minted"))
-    (setq org-latex-listings 'minted))
+    (add-hook 'latex-mode-hook 'turn-on-reftex)) ; with Emacs latex mode
 #+END_SRC
 
 ** Markdown
@@ -999,19 +995,16 @@ Haskell mode with company mode completion.
     :config
     (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
     (setq haskell-mode-stylish-haskell-path (expand-file-name "~/.local/bin/stylish-haskell")
-          haskell-stylish-on-save t))
+          haskell-stylish-on-save t
+          haskell-process-type 'stack-ghci))
 
   (use-package interactive-haskell-mode
     :ensure haskell-mode
-    :hook haskell-mode
-    :init
-    (custom-set-variables
-     '(haskell-process-path-stack (expand-file-name "~/.local/bin/stack"))
-     '(haskell-process-log t)))
+    :hook haskell-mode)
 #+END_SRC
 
 #+RESULTS:
-| haskell-decl-scan-mode | interactive-haskell-mode |
+| interactive-haskell-mode | haskell-decl-scan-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
