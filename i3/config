@@ -210,9 +210,6 @@ bindsym $mod+Shift+p mode "$mode_system"
 # Application Startup
 #============================================================
 
-# Start compton for tear fix
-exec --no-startup-id compton -c &
-
 # set the background
 exec --no-startup-id sh ~/.fehbg
 
