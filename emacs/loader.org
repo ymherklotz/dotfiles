@@ -292,7 +292,43 @@ programming and looking at source code.
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
     :ensure nil
-    :bind (("C-c e" . eshell)))
+    :bind (("C-c e" . eshell))
+    :init
+    (defun eshell/vi (&rest args)
+      "Invoke `find-file' on the file.
+      \"vi +42 foo\" also goes to line 42 in the buffer."
+      (while args
+        (if (string-match "\\`\\+\\([0-9]+\\)\\'" (car args))
+            (let* ((line (string-to-number (match-string 1 (pop args))))
+                   (file (pop args)))
+              (find-file file)
+              (goto-line line))
+          (find-file (pop args)))))
+
+    (defun eshell/em (&rest args)
+      "Open a file in emacs. Some habits die hard."
+      (if (null args)
+          ;; If I just ran "emacs", I probably expect to be launching
+          ;; Emacs, which is rather silly since I'm already in Emacs.
+          ;; So just pretend to do what I ask.
+          (bury-buffer)
+        ;; We have to expand the file names or else naming a directory in an
+        ;; argument causes later arguments to be looked for in that directory,
+        ;; not the starting directory
+        (mapc #'find-file (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
+
+    (defun y/eshell-here ()
+      "Go to eshell and set current directory to the buffer's directory"
+      (interactive)
+      (let ((dir (file-name-directory (or (buffer-file-name)
+                                          default-directory))))
+        (eshell)
+        (eshell/pushd ".")
+        (cd dir)
+        (goto-char (point-max))
+        (eshell-kill-input)
+        (eshell-send-input)))
+    (global-set-key (kbd "C-c i") #'y/eshell-here))
 #+END_SRC
 
 #+RESULTS:
@@ -503,6 +539,25 @@ Enable winner mode to save window state.
 *** Ivy
 
 #+BEGIN_SRC emacs-lisp
+  (use-package flx-ido
+    :config
+    (ido-mode 1)
+    (ido-everywhere 1)
+    (flx-ido-mode 1)
+    ;; disable ido faces to see flx highlights.
+    (setq ido-enable-flex-matching t)
+    (setq ido-use-faces nil))
+
+  (use-package smex
+    :bind (("M-x" . smex)
+           ("M-X" . smex-major-mode-commands))
+    :config
+    (smex-initialize))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_COMMENT emacs-lisp
   (use-package ivy
     :bind
     (("C-c s"     . swiper)
@@ -520,7 +575,7 @@ Enable winner mode to save window state.
     (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
     (setq ivy-re-builders-alist
           '((t . ivy--regex-fuzzy))))
-#+END_SRC
+#+END_COMMENT
 
 #+RESULTS:
 : counsel-unicode-char
@@ -645,11 +700,8 @@ incrementally selecting more and more of the text.
     (flyspell-buffer))
 
   (use-package ispell
+    :ensure nil
     :config
-    (when (executable-find "hunspell")
-      (setq-default ispell-program-name "hunspell")
-      (setq ispell-really-hunspell t))
-
     ;; (setq ispell-program-name "aspell"
     ;;       ispell-extra-args '("--sug-mode=ultra"))
     :bind (("C-c N" . spell-buffer-german)
@@ -683,6 +735,8 @@ incrementally selecting more and more of the text.
     (setq TeX-PDF-mode t)
     (add-hook 'LaTeX-mode-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook 'flyspell-buffer)
+    (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+
     (defun turn-on-outline-minor-mode ()
       (outline-minor-mode 1))
 
@@ -692,8 +746,18 @@ incrementally selecting more and more of the text.
     (autoload 'turn-on-reftex "reftex" "RefTeX Minor Mode" nil)
     (autoload 'reftex-citation "reftex-cite" "Make citation" nil)
     (autoload 'reftex-index-phrase-mode "reftex-index" "Phrase Mode" t)
-    (add-hook 'latex-mode-hook 'turn-on-reftex)) ; with Emacs latex mode
+    (add-hook 'latex-mode-hook 'turn-on-reftex)
+    (defun turn-on-outline-minor-mode ()
+      (outline-minor-mode 1))
+
+    (add-hook 'LaTeX-mode-hook 'turn-on-outline-minor-mode)
+    (add-hook 'latex-mode-hook 'turn-on-outline-minor-mode)
+    (setq outline-minor-mode-prefix "\C-c \C-o")
+    ) ; with Emacs latex mode
 #+END_SRC
+
+#+RESULTS:
+: t
 
 ** Markdown
 Markdown is the standard for writing documentation. This snippet loads GFM
@@ -927,9 +991,12 @@ to install clang format script).
 
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
-    :bind (("C-c i" . 'clang-format-region)
+    :bind (("C-c C-i" . 'clang-format-region)
            ("C-c u" . 'clang-format-buffer)))
 #+END_SRC
+
+#+RESULTS:
+: clang-format-buffer
 
 *** Clojure
 Using Cider for clojure environment.
