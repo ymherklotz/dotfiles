@@ -87,13 +87,14 @@ Threshold for faster startup.
 
 Editor specific options such as adding line numbers.
 
-Disable UI that starts when starting emacs and also set the y or n
-instead of yes or no. Also stop the start up message from popping up
-and enter the scratch buffer instead.
+Disable UI that starts when starting emacs and also set the y or n instead of
+yes or no. Also stop the start up message from popping up and enter the scratch
+buffer instead.
 
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t
-        confirm-nonexistent-file-or-buffer nil)
+        confirm-nonexistent-file-or-buffer nil
+        fill-column 80)
   (tool-bar-mode 0)
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -105,8 +106,8 @@ and enter the scratch buffer instead.
 
 *** Custom modeline
 
-Editing the modeline. ~%c~ might be a bit slow though, so that could
-be removed if that is ever a problem.
+Editing the modeline. ~%c~ might be a bit slow though, so that could be removed
+if that is ever a problem.
 
 #+BEGIN_SRC emacs-lisp
   (defun -custom-modeline-github-vc ()
@@ -749,7 +750,6 @@ incrementally selecting more and more of the text.
     (add-hook 'latex-mode-hook 'turn-on-reftex)
     (defun turn-on-outline-minor-mode ()
       (outline-minor-mode 1))
-
     (add-hook 'LaTeX-mode-hook 'turn-on-outline-minor-mode)
     (add-hook 'latex-mode-hook 'turn-on-outline-minor-mode)
     (setq outline-minor-mode-prefix "\C-c \C-o")
@@ -776,15 +776,15 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-log-into-drawer t)
-  (setq org-log-done "note")
-  (setq org-hide-leading-stars t)
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-directory (expand-file-name "~/Dropbox/org"))
-  (setq org-default-notes-file
-        (concat org-directory "/inbox.org"))
-  (setq org-image-actual-width nil
-        org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+  (setq org-log-into-drawer t
+        org-log-done "note"
+        org-hide-leading-stars t
+        org-confirm-babel-evaluate nil
+        org-directory (expand-file-name "~/Dropbox/org")
+        org-image-actual-width nil
+        org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
+        org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
+        org-default-notes-file (concat org-directory "/inbox.org"))
 
   (eval-after-load "org"
     '(setq org-metaup-hook nil
@@ -846,6 +846,20 @@ Add md backend
   (require 'ox-md)
 #+END_SRC
 
+Add org noter
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-noter
+      :after org
+      :ensure t
+      :config (setq org-noter-default-notes-file-names '("notes.org")
+                    org-noter-notes-search-path '("~/org/research")
+                    org-noter-separate-notes-from-heading t))
+#+END_SRC
+
+#+RESULTS:
+: t
+
 *** Templates
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
@@ -864,9 +878,7 @@ Add md backend
                              ("~/Dropbox/org/someday.org" :level . 1)
                              ("~/Dropbox/org/tickler.org" :maxlevel . 2))
         org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-#+END_SRC
 
-#+BEGIN_SRC emacs-lisp
   (setq org-agenda-custom-commands 
         '(("w" "At work" tags-todo "@work"
            ((org-agenda-overriding-header "Work")))
@@ -1163,6 +1175,10 @@ Keybindings
     (interactive)
     (y/set-theme 'sanityinc-tomorrow-bright))
 
+  (defun y/inkpot ()
+    (interactive)
+    (y/set-theme 'inkpot))
+
   (defun y/zenburn ()
     (interactive)
     (y/set-theme 'zenburn))
@@ -1175,15 +1191,15 @@ Keybindings
     (interactive)
     (y/set-theme 'gruvbox))
 
-  (defun y/sanityinc-tomorrow-bright ()
-    (interactive)
-    (y/set-theme 'sanityinc-tomorrow-bright))
-
   (define-key y-map (kbd "1") 'y/sanityinc-tomorrow-bright)
   (define-key y-map (kbd "2") 'y/zenburn)
   (define-key y-map (kbd "3") 'y/solarized-light)
   (define-key y-map (kbd "4") 'y/gruvbox)
+  (define-key y-map (kbd "5") 'y/inkpot)
 #+END_SRC
+
+#+RESULTS:
+: y/inkpot
 
 #+BEGIN_SRC emacs-lisp
   (defadvice load-theme
@@ -1198,9 +1214,9 @@ Keybindings
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'solarized-light t)
+                  (load-theme 'inkpot t)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'solarized-light t)
+    (progn (load-theme 'inkpot t)
            (toggle-scroll-bar -1)))
 #+END_SRC
 
