@@ -1,4 +1,4 @@
-n#+TITLE: GNU Emacs Configuration
+#+TITLE: GNU Emacs Configuration
 #+DATE: <2017-08-11 Fri>
 #+AUTHOR: Yann Herklotz
 
@@ -310,13 +310,7 @@ programming and looking at source code.
     (defun eshell/em (&rest args)
       "Open a file in emacs. Some habits die hard."
       (if (null args)
-          ;; If I just ran "emacs", I probably expect to be launching
-          ;; Emacs, which is rather silly since I'm already in Emacs.
-          ;; So just pretend to do what I ask.
           (bury-buffer)
-        ;; We have to expand the file names or else naming a directory in an
-        ;; argument causes later arguments to be looked for in that directory,
-        ;; not the starting directory
         (mapc #'find-file (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
 
     (defun y/eshell-here ()
@@ -369,96 +363,12 @@ the ~-a~ flag.
 Finally, remove buffers when an email has been sent.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :ensure nil
-    :commands mu4e
-    :config 
-    (add-hook 'message-mode-hook 'turn-on-orgtbl)
-    (add-hook 'message-mode-hook 'turn-on-orgstruct++)
-
-    (setq mail-user-agent 'mu4e-user-agent
-          mu4e-maildir (expand-file-name "~/.mail")
-          mu4e-headers-skip-duplicates t
-          mu4e-sent-messages-behavior 'sent
-          mu4e-get-mail-command "mbsync -a"
-          message-kill-buffer-on-exit t
-          mu4e-completing-read-function 'completing-read
-          mu4e-context-policy 'pick-first
-          mu4e-confirm-quit nil
-          ;;mu4e-html2text-command "pandoc -f html -t plain -"
-          mu4e-change-filenames-when-moving t)
-
-    ;; Try to show images
-    (setq mu4e-view-show-images t
-          mu4e-show-images t
-          mu4e-view-image-max-width 800)
-
-    ;; Mail directory shortcuts
-    (setq mu4e-maildir-shortcuts
-          '(("/gmail/Inbox" . ?g)
-            ("/gmail/MyArchive" . ?r)
-            ("/imperial/Inbox" . ?i)
-            ("/imperial/MyArchive" . ?a)))
-
-    (setq mu4e-contexts
-          `( ,(make-mu4e-context
-               :name "Gmail"
-               :match-func (lambda (msg)
-                             (when msg
-                               (string-match-p "^/gmail" (mu4e-message-field msg :maildir))))
-               :vars '((user-mail-address            . "ymherklotz@gmail.com")
-                       (user-full-name               . "Yann Herklotz")
-                       (mu4e-sent-folder             . "/gmail/[Gmail]/Sent Mail")
-                       (mu4e-drafts-folder           . "/gmail/[Gmail]/Drafts")
-                       (mu4e-trash-folder            . "/gmail/[Gmail]/Trash")
-                       (mu4e-refile-folder           . "/gmail/MyArchive")
-                       (smtpmail-smt-user            . "ymherklotz@gmail.com")
-                       (smtpmail-local-domain        . "gmail.com")
-                       (smtpmail-default-smtp-server . "smtp.gmail.com")
-                       (smtpmail-smtp-server         . "smtp.gmail.com")
-                       (smtpmail-smtp-service        . 587)))
-             ,(make-mu4e-context
-               :name "Imperial"
-               :match-func (lambda (msg)
-                             (when msg
-                               (string-match-p "^/imperial" (mu4e-message-field msg :maildir))))
-               :vars '((user-mail-address            . "yann.herklotz15@imperial.ac.uk")
-                       (user-full-name               . "Yann Herklotz")
-                       (mu4e-sent-folder             . "/imperial/Sent Items")
-                       (mu4e-drafts-folder           . "/imperial/Drafts")
-                       (mu4e-trash-folder            . "/imperial/Deleted Items")
-                       (mu4e-refile-folder           . "/imperial/MyArchive")
-                       (smtpmail-smt-user            . "ymh15@ic.ac.uk")
-                       (smtpmail-local-domain        . "cc.ic.ac.uk")
-                       (smtpmail-default-smtp-server . "smtp.cc.ic.ac.uk")
-                       (smtpmail-smtp-server         . "smtp.cc.ic.ac.uk")
-                       (smtpmail-smtp-service        . 587))))))
-#+END_SRC
-
-#+RESULTS:
-: t
-
-Setting up ~smtp~ to send messages using gmail.
-
-#+BEGIN_SRC emacs-lisp
-  (use-package smtpmail
-    :ensure nil
-    :config
-    (setq message-send-mail-function 'smtpmail-send-it
-          starttls-use-gnutls t))
-#+END_SRC
-
-#+RESULTS:
-: t
-
-To enable storing links in mu4e
-
-#+BEGIN_SRC emacs-lisp
-  (use-package org-mu4e
+  (use-package personal
     :ensure nil)
 #+END_SRC
 
 #+RESULTS:
+: t
 
 ** Elfeed
 
