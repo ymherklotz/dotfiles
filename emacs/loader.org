@@ -23,11 +23,12 @@ Set path so that it picks up some executables that I use
           (concat
            "/home/yannherklotz/.local/bin" ":"
            "/home/yannherklotz/.yarn/bin" ":"
+           "/usr/bin/vendor_perl" ":"
            (getenv "PATH")))
 #+END_SRC
 
 #+RESULTS:
-: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/home/yannherklotz/.yarn/bin:/usr/bin:/home/yannherklotz/.local/bin:/home/yannherklotz/.gem/ruby/2.5.0/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/opt/clojurescript/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl
+: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/bin/vendor_perl:/home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
 
 ** Repositories
 Defining all the package repositories that are going to be used.
@@ -870,11 +871,22 @@ Add org noter
       :config (setq org-noter-default-notes-file-names '("notes.org")
                     org-noter-notes-search-path '("~/org/research")
                     org-noter-separate-notes-from-heading t))
+
+  (use-package org-ref
+    :after org
+    :bind (("C-c r" . org-ref-cite-hydra/body))
+    :config
+    (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
+    (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+          org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
+          org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
+    (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+    (setq org-ref-completion-library 'org-ref-ivy-cite))
 #+END_SRC
 
 #+RESULTS:
-: t
-p
+: org-ref-cite-hydra/body
+
 *** Templates
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
@@ -914,6 +926,12 @@ p
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
   (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
   (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
+#+END_SRC
+
+*** Exporting
+
+#+BEGIN_SRC emacs-lisp
+  (use-package ox-twbs)
 #+END_SRC
 
 ** PDF Tools
