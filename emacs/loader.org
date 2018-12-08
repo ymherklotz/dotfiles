@@ -469,28 +469,9 @@ Enable winner mode to save window state.
   (winner-mode 1)
 #+END_SRC
 
-*** Ivy
-
-#+BEGIN_COMMENT emacs-lisp
-  (use-package flx-ido
-    :config
-    (ido-mode 1)
-    (ido-everywhere 1)
-    (flx-ido-mode 1)
-    ;; disable ido faces to see flx highlights.
-    (setq ido-enable-flex-matching t)
-    (setq ido-use-faces nil))
-
-  (use-package smex
-    :bind (("M-x" . smex)
-           ("M-X" . smex-major-mode-commands))
-    :config
-    (smex-initialize))
-#+END_COMMENT
-
-#+RESULTS:
-
 #+BEGIN_SRC emacs-lisp
+  (use-package flx)
+
   (use-package ivy
     :bind
     (("C-c s"     . swiper)
