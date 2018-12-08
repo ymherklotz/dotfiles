@@ -483,6 +483,7 @@ Enable winner mode to save window state.
      ("C-x b"     . ivy-switch-buffer)
      ("C-x 8 RET" . counsel-unicode-char))
     :config
+    (ivy-mode 1)
     (counsel-mode t)
     (setq ivy-use-virtual-buffers t)
     (setq ivy-count-format "(%d/%d) ")
