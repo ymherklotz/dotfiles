@@ -30,6 +30,20 @@ Set path so that it picks up some executables that I use
 #+RESULTS:
 : /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/bin/vendor_perl:/home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
 
+#+BEGIN_SRC emacs-lisp
+  (defconst user-init-dir
+    (cond ((boundp 'user-emacs-directory)
+           user-emacs-directory)
+          ((boundp 'user-init-directory)
+           user-init-directory)
+          (t "~/.emacs.d/")))
+
+  (defun load-user-file (file)
+    (interactive "f")
+    "Load a file in current user's configuration directory"
+    (load-file (expand-file-name file user-init-dir)))
+#+END_SRC
+
 ** Repositories
 Defining all the package repositories that are going to be used.
 
@@ -363,8 +377,7 @@ the ~-a~ flag.
 Finally, remove buffers when an email has been sent.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package personal
-    :ensure nil)
+  (load-user-file "personal.el")
 #+END_SRC
 
 #+RESULTS:
@@ -1087,6 +1100,53 @@ Enabling global flycheck support.
     :config
     (yas-minor-mode 1))
 #+END_SRC
+
+*** SMerge
+
+Shamelessly taken from https://github.com/alphapapa/unpackaged.el#hydra.
+#+BEGIN_SRC emacs-lisp
+  (use-package smerge-mode
+    :config
+    (defhydra unpackaged/smerge-hydra
+      (:color pink :hint nil :post (smerge-auto-leave))
+      "
+  ^Move^       ^Keep^               ^Diff^                 ^Other^
+  ^^-----------^^-------------------^^---------------------^^-------
+  _n_ext       _b_ase               _<_: upper/base        _C_ombine
+  _p_rev       _u_pper              _=_: upper/lower       _r_esolve
+  ^^           _l_ower              _>_: base/lower        _k_ill current
+  ^^           _a_ll                _R_efine
+  ^^           _RET_: current       _E_diff
+  "
+      ("n" smerge-next)
+      ("p" smerge-prev)
+      ("b" smerge-keep-base)
+      ("u" smerge-keep-upper)
+      ("l" smerge-keep-lower)
+      ("a" smerge-keep-all)
+      ("RET" smerge-keep-current)
+      ("\C-m" smerge-keep-current)
+      ("<" smerge-diff-base-upper)
+      ("=" smerge-diff-upper-lower)
+      (">" smerge-diff-base-lower)
+      ("R" smerge-refine)
+      ("E" smerge-ediff)
+      ("C" smerge-combine-with-next)
+      ("r" smerge-resolve)
+      ("k" smerge-kill-current)
+      ("ZZ" (lambda ()
+              (interactive)
+              (save-buffer)
+              (bury-buffer))
+       "Save and bury buffer" :color blue)
+      ("q" nil "cancel" :color blue))
+    :hook (magit-diff-visit-file . (lambda ()
+                                     (when smerge-mode
+                                       (unpackaged/smerge-hydra/body)))))
+#+END_SRC
+
+#+RESULTS:
+| lambda | nil | (when smerge-mode (unpackaged/smerge-hydra/body)) |
 
 * Look and Feel
 
