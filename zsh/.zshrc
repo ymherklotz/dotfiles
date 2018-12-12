@@ -7,7 +7,7 @@ bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
 
-zstyle ':completion:*' completer _expand _complete _ignored _approximate
+zstyle ':completion:*' completer _expand _complete _correct _approximate
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' max-errors 10
@@ -25,3 +25,9 @@ source $HOME/.zsh/export.zsh
 source $HOME/.zsh/minimal.zsh
 source $HOME/.zsh/function.zsh
 source $HOME/.zsh/startup.zsh
+source $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
+source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey -M emacs '^P' history-substring-search-up
+bindkey -M emacs '^N' history-substring-search-down

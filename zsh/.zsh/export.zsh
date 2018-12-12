@@ -7,3 +7,5 @@ export PATH="${HOME}/.gem/ruby/2.5.0/bin:/usr/local/bin:${PATH}"
 export PATH="${HOME}/.local/bin:${PATH}"
 export PATH="/usr/bin:${PATH}"
 export PATH="${HOME}/.yarn/bin:${PATH}"
+
+export CDPATH='.:..:../..'
