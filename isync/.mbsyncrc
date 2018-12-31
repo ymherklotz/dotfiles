@@ -2,7 +2,7 @@ IMAPAccount gmail
 # Address to connect to
 Host imap.gmail.com
 User ymherklotz@gmail.com
-PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphrase-file ~/.yann --batch --yes -d ~/.authgmail.gpg"
+PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphrase-file ~/.config/.yann --batch --yes -d ~/.authgmail.gpg"
 # Use SSL
 SSLType IMAPS
 # The following line should work. If get certificate errors, uncomment the two following lines and read the "Troubleshooting" section.
@@ -14,7 +14,7 @@ IMAPAccount imperial
 Host outlook.office365.com
 Port 993
 User ymh15@ic.ac.uk
-PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphrase-file ~/.yann --batch --yes -d ~/.authimperial.gpg"
+PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphrase-file ~/.config/.yann --batch --yes -d ~/.authimperial.gpg"
 SSLType IMAPS
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 
