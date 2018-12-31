@@ -1,6 +1,6 @@
 #+TITLE: GNU Emacs Configuration
 #+DATE: <2017-08-11 Fri>
-#+AUTHOR: Yann Herklotz
+#+AUTHOR: Yann Herklotz Grave
 
 * Introduction
 This is my GNU Emacs Configuration that is mostly focused on C++ development,
@@ -110,6 +110,7 @@ buffer instead.
   (setq inhibit-startup-message t
         confirm-nonexistent-file-or-buffer nil)
   (setq-default fill-column 80)
+  (setq-default truncate-lines t)n
   (tool-bar-mode 0)
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -282,6 +283,11 @@ Setting up my keybindings
       (shell-command-on-region b e
                                "python -m json.tool" (current-buffer) t)))
 
+  (use-package pass
+    :commands (password-store-copy
+               password-store-insert
+               password-store-generate))
+
   (define-prefix-command 'y-map)
   (global-set-key (kbd "C-c y") 'y-map)
 
@@ -289,10 +295,13 @@ Setting up my keybindings
 
   (define-key y-map (kbd "s") 'y/swap-windows)
   (define-key y-map (kbd "j") 'y/beautify-json)
+  (define-key y-map (kbd "p") 'password-store-copy)
+  (define-key y-map (kbd "i") 'password-store-insert)
+  (define-key y-map (kbd "g") 'password-store-generate)
 #+END_SRC
 
 #+RESULTS:
-: y/beautify-json
+: password-store-generate
 
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
@@ -611,6 +620,16 @@ incrementally selecting more and more of the text.
 #+RESULTS:
 : deadgrep
 
+** Yasnippets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :config
+    (yas-global-mode))
+
+  (use-package yasnippet-snippets)
+#+END_SRC
+
 * Writing
 
 #+BEGIN_SRC emacs-lisp
@@ -779,7 +798,9 @@ Add org noter
 
   (use-package org-ref
     :after org
-    :bind (("C-c r" . org-ref-cite-hydra/body))
+    :bind (("C-c r" . org-ref-cite-hydra/body)
+           ("C-c b" . org-ref-bibtex-hydra/body))
+    :mode ("\\.bib\\'")
     :config
     (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
     (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
@@ -1011,9 +1032,14 @@ F# mode for uni work.
 Haskell mode with company mode completion.
 
 #+BEGIN_SRC emacs-lisp
+  (defun y/haskell-align (start end)
+    (interactive "r")
+    (align-regexp start end "\\(\\s-*\\)--"))
+
   (use-package haskell-mode
     :commands haskell-mode
-    :bind (("M-." . haskell-mode-jump-to-def))
+    :bind (("M-." . haskell-mode-jump-to-def)
+           ("C-c a" . y/haskell-align))
     :config
     (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
     (setq haskell-mode-stylish-haskell-path "/home/yannherklotz/.local/bin/stylish-haskell"
@@ -1027,7 +1053,7 @@ Haskell mode with company mode completion.
 #+END_SRC
 
 #+RESULTS:
-| interactive-haskell-mode | haskell-decl-scan-mode |
+| haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
@@ -1192,19 +1218,18 @@ Keybindings
       (before theme-dont-propagate activate)
     (mapc #'disable-theme custom-enabled-themes))
 
-  (use-package solarized-theme
-    :config
-    (setq solarized-use-variable-pitch nil))
-
   (if (daemonp)
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'inkpot t)
+                  (load-theme 'doom-one t)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'inkpot t)
+    (progn (load-theme 'doom-one t)
            (toggle-scroll-bar -1)))
 #+END_SRC
+
+#+RESULTS:
+| (lambda (frame) (select-frame frame) (load-theme (quote doom-one) t) (toggle-scroll-bar -1)) | (lambda (frame) (select-frame frame) (load-theme (quote inkpot) t) (toggle-scroll-bar -1)) | x-dnd-init-frame |
 
 * Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
