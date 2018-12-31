@@ -125,7 +125,7 @@ bindsym $mod+Shift+r restart
 # App bindings to open
 set $open_mode Open: (e) Emacs, (f) Firefox
 mode "$open_mode" {
-    bindsym f exec firefox, mode "default"
+    bindsym f exec firefox-developer-edition, mode "default"
     bindsym e exec emacsclient -c -a "emacs", mode "default"
 
     # back to normal: Enter or Escape
