@@ -18,11 +18,22 @@ PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphr
 SSLType IMAPS
 CertificateFile /etc/ssl/certs/ca-certificates.crt
 
+IMAPAccount mailbox
+Host imap.mailbox.org
+Port 993
+User yannherklotzgrave@mailbox.org
+PassCmd "gpg -q --pinentry-mode loopback --for-your-eyes-only --no-tty --passphrase-file ~/.config/.yann --batch --yes -d ~/.authmail.gpg"
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
 IMAPStore gmail-remote
 Account gmail
 
 IMAPStore imperial-remote
 Account imperial
+
+IMAPStore mailbox-remote
+Account mailbox
 
 MaildirStore gmail-local
 Subfolders Verbatim
@@ -34,6 +45,11 @@ MaildirStore imperial-local
 Subfolders Verbatim
 Path ~/.mail/imperial/
 Inbox ~/.mail/imperial/Inbox
+
+MaildirStore mailbox-local
+Subfolders Verbatim
+Path ~/.mail/mailbox/
+Inbox ~/.mail/mailbox/Inbox
 
 Channel gmail
 Master :gmail-remote:
@@ -48,5 +64,12 @@ Channel imperial
 Master :imperial-remote:
 Slave :imperial-local:
 Patterns "Sent Items" MyArchive "Deleted Items" INBOX Drafts
+Create Both
+SyncState *
+
+Channel mailbox
+Master :mailbox-remote:
+Slave :mailbox-local:
+Patterns *
 Create Both
 SyncState *
