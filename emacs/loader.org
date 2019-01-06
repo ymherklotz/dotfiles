@@ -110,7 +110,7 @@ buffer instead.
   (setq inhibit-startup-message t
         confirm-nonexistent-file-or-buffer nil)
   (setq-default fill-column 80)
-  (setq-default truncate-lines t)n
+  (setq-default truncate-lines t)
   (tool-bar-mode 0)
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
@@ -800,7 +800,8 @@ Add org noter
     :after org
     :bind (("C-c r" . org-ref-cite-hydra/body)
            ("C-c b" . org-ref-bibtex-hydra/body))
-    :mode ("\\.bib\\'")
+    :init
+    (require 'org-ref)
     :config
     (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
     (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
@@ -811,7 +812,7 @@ Add org noter
 #+END_SRC
 
 #+RESULTS:
-: org-ref-cite-hydra/body
+: org-ref-bibtex-hydra/body
 
 *** Templates
 #+BEGIN_SRC emacs-lisp
