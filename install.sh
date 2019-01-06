@@ -56,6 +56,7 @@ for i in "$@"; do
     firefox) FIREFOX=1; NOT_ALL=1;;
     ncmpcpp) NCMPCPP=1; NOT_ALL=1;;
     mpd)     MPD=1;     NOT_ALL=1;;
+    bspwm)   BSPWM=1;   NOT_ALL=1;;
 
     *)
       print_help
@@ -129,4 +130,12 @@ if [[ ! -z $MPD ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing mpd config..."
   mk ~/.config/mpd
   ln_configs mpd/mpd.conf ~/.config/mpd/mpd.conf
+fi
+
+if [[ ! -z $BSPWM ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing bspwm config..."
+  mk ~/.config/bspwm
+  mk ~/.config/sxhkd
+  ln_configs bspwm/bspwmrc ~/.config/bspwm/bspwmrc
+  ln_configs sxhkd/sxhkdrc ~/.config/sxhkd/sxhkdrc
 fi
