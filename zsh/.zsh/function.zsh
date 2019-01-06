@@ -6,6 +6,7 @@ alias vi='nvim'
 alias vim='nvim'
 alias emc='emacsclient -c -a ""'
 alias em='emacsclient -nw -a ""'
+alias ff='firefox-developer-edition'
 # alias lspasscp='lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\\]//g')'
 
 # fixing pdflatex
