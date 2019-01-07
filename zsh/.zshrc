@@ -18,6 +18,8 @@ autoload -Uz compinit
 compinit
 # End of lines added by compinstall
 
+(cat ~/.cache/wal/sequences &)
+
 # Sourcing everything
 source /usr/share/fzf/key-bindings.zsh
 source /usr/share/fzf/completion.zsh
