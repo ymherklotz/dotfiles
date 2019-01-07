@@ -124,29 +124,21 @@ super + {Left,Down,Up,Right}
 # Media
 #
 
-XF86AudioPlay
-    playerctl play-pause
+XF86Audio{Play,Stop,Next,Prev}
+    playerctl {play-pause,stop,next,previous}
 
-XF86AudioStop
-    playerctl stop
+XF86MonBrightness{Up,Down}
+    light -{A,U} 5
 
-XF86AudioNext
-    playerctl next
-
-XF86AudioPrev
-    playerctl previous
-
-pXF86MonBrightnessUp
-    light -A 5
-
-XF86MonBrightnessDown
-    light -U 5
-
-XF86AudioRaiseVolume
-    amixer set Master 5%+
-
-XF86AudioLowerVolume
-    amixer set Master 5%-
+XF86Audio{Raise,Lower}Volume
+    amixer set Master 5%{+,-}
 
 XF86AudioMute
     amixer set Master toggle-mute
+
+#
+# Power
+#
+
+super + shift + p; {s,shift + s,l,shift + r}
+    ${HOME}/.local/bin/i3exit {suspend,shutdown,lock,reboot}

@@ -24,4 +24,5 @@ fdd() {
 wal-tile() {
     wal -n -i "$@"
     feh --bg-tile "$(< "${HOME}/.cache/wal/wal")"
+    /home/yannherklotz/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
 }
