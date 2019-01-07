@@ -116,7 +116,7 @@ fi
 
 if [[ ! -z $FIREFOX ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing firefox config..."
-  ln_configs firefox/userChrome.css ~/.mozilla/firefox/1ye8etqv.default/chrome/userChrome.css
+  #ln_configs firefox/userChrome.css ~/.mozilla/firefox/1ye8etqv.default/chrome/userChrome.css
 fi
 
 if [[ ! -z $NCMPCPP ]] || [[ -z $NOT_ALL ]]; then
@@ -135,7 +135,7 @@ fi
 if [[ ! -z $BSPWM ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing bspwm config..."
   mk ~/.config/bspwm
-  mk ~/.config/sxhkd
   ln_configs bspwm/bspwmrc ~/.config/bspwm/bspwmrc
+  mk ~/.config/sxhkd
   ln_configs sxhkd/sxhkdrc ~/.config/sxhkd/sxhkdrc
 fi
