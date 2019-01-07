@@ -32,5 +32,13 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
+# Startup programs
+sxhkd -m 1 &
+compton &
+redshift &
+wal -R
+feh --bg-tile "$(< "${HOME}/.cache/wal/wal")"
+xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput Natural Scrolling Enabled' 1
+
 #exec i3
 exec bspwm
