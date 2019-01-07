@@ -20,3 +20,8 @@ fdd() {
                   -o -type d -print 2> /dev/null | fzf +m) &&
   cd "$dir"
 }
+
+wal-tile() {
+    wal -n -i "$@"
+    feh --bg-tile "$(< "${HOME}/.cache/wal/wal")"
+}
