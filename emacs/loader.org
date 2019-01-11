@@ -120,6 +120,15 @@ buffer instead.
 #+RESULTS:
 : t
 
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "M-u") 'upcase-dwim)
+  (global-set-key (kbd "M-l") 'downcase-dwim)
+  (global-set-key (kbd "M-c") 'capitalize-dwim)
+#+END_SRC
+
+#+RESULTS:
+: capitalize-dwim
+
 *** Custom modeline
 
 Editing the modeline. ~%c~ might be a bit slow though, so that could be removed
