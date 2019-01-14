@@ -315,13 +315,18 @@ Setting up my keybindings
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC text
   (set-default-font "Misc Tamsyn-16")
   (setq default-frame-alist '((font . "Misc Tamsyn-16")))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  (set-default-font "Hack-11")
+  (setq default-frame-alist '((font . "Hack-11")))
+#+END_SRC
+
 #+RESULTS:
-: ((font . Misc Tamsyn-16))
+: ((font . Hack-11))
 
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
@@ -648,27 +653,17 @@ incrementally selecting more and more of the text.
 
 ** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
-  (defun spell-buffer-german ()
-    (interactive)
-    (ispell-change-dictionary "de_DE")
-    (flyspell-buffer))
-
-  (defun spell-buffer-english ()
-    (interactive)
-    (ispell-change-dictionary "en_UK")
-    (flyspell-buffer))
-
-  (use-package ispell
-    :ensure nil
-    :config
-    ;; (setq ispell-program-name "aspell"
-    ;;       ispell-extra-args '("--sug-mode=ultra"))
-    :bind (("C-c N" . spell-buffer-german)
-           ("C-c n" . spell-buffer-english)))
-
   (use-package flyspell
     :ensure nil
-    :hook ((text-mode) . flyspell-mode)
+    :hook
+    (prog-mode . flyspell-prog-mode)
+    (text-mode . flyspell-mode)
+    :init
+    (setq ispell-dictionary "en_GB")
+    (setq ispell-dictionary-alist
+    '(("en_GB" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_GB") nil utf-8)))
+    (setq ispell-program-name (executable-find "hunspell"))
+    (setq ispell-really-hunspell t)
     :config
     (define-key flyspell-mode-map (kbd "C-.") nil)
     (define-key flyspell-mode-map (kbd "C-,") nil))
@@ -734,7 +729,8 @@ Agenda setup for org mode, pointing to the write files.
         org-image-actual-width nil
         org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
         org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
-        org-default-notes-file (concat org-directory "/inbox.org"))
+        org-default-notes-file (concat org-directory "/inbox.org")
+        org-image-actual-width nil)
 
   (eval-after-load "org"
     '(setq org-metaup-hook nil
@@ -743,15 +739,20 @@ Agenda setup for org mode, pointing to the write files.
   (add-hook 'org-trigger-hook 'save-buffer)
 #+END_SRC
 
+#+RESULTS:
+| save-buffer |
+
 Set global keys for org mode to access agenda.
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key "\C-cl" 'org-store-link)
-  (global-set-key "\C-ca" 'org-agenda)
-  (global-set-key "\C-cc" 'org-capture)
-  (global-set-key "\C-cb" 'org-iswitchb)
-  (define-key global-map "\C-cc" 'org-capture)
+  (global-set-key (kbd "C-c l") 'org-store-link)
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (global-set-key (kbd "C-c c") 'org-capture)
+  (global-set-key (kbd "C-c b") 'org-iswitchb)
 #+END_SRC
+
+#+RESULTS:
+: org-capture
 
 Set up ob for executing code blocks
 
