@@ -3,8 +3,19 @@
 #+AUTHOR: Yann Herklotz Grave
 
 * Introduction
-This is my GNU Emacs Configuration that is mostly focused on C++ development,
-but also has support for Python, F#, Haskell and Clojure.
+This is my GNU Emacs Configuration. It has support for many programming
+languages such as C++, Haskell and Clojure. It is written in a literate style
+using orgmode tangling to generate the actual configuration file. This can be
+done by adding the following line to the ~init.el~ file.
+
+#+BEGIN_SRC
+  (setq init-dir (file-name-directory (or load-file-name (buffer-file-name))))
+  (org-babel-load-file (expand-file-name "loader.org" init-dir))
+#+END_SRC
+
+It also supports academic writing with org mode using the amazing [[https://github.com/jkitchin/org-ref][org-ref]]
+package to add citations to the LaTeX output. The configuration for that can be
+found in the [[*Writing][Writing]] section.
 
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Yann Herklotz")
