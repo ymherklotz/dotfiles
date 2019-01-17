@@ -110,7 +110,10 @@ Use ~use-package~ to manage other packages, and improve load times.
 : t
 
 ** GC Threshold
-Threshold for faster startup.
+
+Threshold for faster startup. This should increase the garbage collector's
+threshold at which it will start cleaning, so that it is not triggered during
+startup.
 
 #+BEGIN_SRC emacs-lisp
   (setq gc-cons-threshold 500000000)
