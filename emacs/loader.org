@@ -698,7 +698,10 @@ incrementally selecting more and more of the text.
     (autoload 'reftex-citation "reftex-cite" "Make citation" nil)
     (autoload 'reftex-index-phrase-mode "reftex-index" "Phrase Mode" t)
     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-    (setq reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))) ; with Emacs latex mode
+    (setq reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
+    (setq org-latex-listings 'minted)
+    (require 'ox-latex)
+    (add-to-list 'org-latex-packages-alist '("" "minted"))) ; with Emacs latex mode
 #+END_SRC
 
 #+RESULTS:
@@ -748,7 +751,6 @@ Set global keys for org mode to access agenda.
   (global-set-key (kbd "C-c l") 'org-store-link)
   (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture)
-  (global-set-key (kbd "C-c b") 'org-iswitchb)
 #+END_SRC
 
 #+RESULTS:
@@ -1049,10 +1051,11 @@ Haskell mode with company mode completion.
 
   (use-package haskell-mode
     :commands haskell-mode
-    :bind (("M-." . haskell-mode-jump-to-def)
-           ("C-c a" . y/haskell-align))
+    :bind (("M-." . haskell-mode-jump-to-def))
     :config
     (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
+    (add-hook 'haskell-mode-hook (lambda ()
+                                   (local-set-key (kbd "C-c a") 'y/haskell-align)))
     (setq haskell-mode-stylish-haskell-path "/home/yannherklotz/.local/bin/stylish-haskell"
           haskell-stylish-on-save t
           haskell-process-type 'stack-ghci
