@@ -15,7 +15,7 @@ done by adding the following line to the ~init.el~ file.
 
 It also supports academic writing with org mode using the amazing [[https://github.com/jkitchin/org-ref][org-ref]]
 package to add citations to the LaTeX output. The configuration for that can be
-found in the [[*Writing][Writing]] section.
+found in the [[#Writing][Writing]] section.
 
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Yann Herklotz")
