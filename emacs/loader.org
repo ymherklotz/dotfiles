@@ -919,7 +919,11 @@ lot of different language support.
   (use-package magit
     :bind (("C-x g" . magit-status))
     :config
-    (setq server-switch-hook nil))
+    (setq server-switch-hook nil)
+    (defadvice forge-create-issue (after adjust-window activate)
+      "Adjust the window size using the golden-ratio package when
+       creating a new issue"
+      (golden-ratio)))
 #+END_SRC
 
 #+RESULTS:
