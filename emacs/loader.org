@@ -1087,8 +1087,7 @@ Haskell mode with company mode completion.
                                    (local-set-key (kbd "C-c a") 'y/haskell-align)))
     (setq haskell-mode-stylish-haskell-path "/home/yannherklotz/.local/bin/stylish-haskell"
           haskell-stylish-on-save t
-          haskell-process-type 'stack-ghci
-          haskell-process-path-stack "/home/yannherklotz/.local/bin/stack"))
+          flycheck-ghc-language-extensions '("OverloadedStrings")))
 
   (use-package interactive-haskell-mode
     :ensure haskell-mode
