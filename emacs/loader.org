@@ -911,6 +911,10 @@ lot of different language support.
     (defadvice forge-create-issue (after adjust-window activate)
       "Adjust the window size using the golden-ratio package when
        creating a new issue"
+      (golden-ratio))
+    (defadvice magit-status (after adjust-window activate)
+      "Adjust the window size using the golden-ratio package when
+       getting the status of a repository."
       (golden-ratio)))
 #+END_SRC
 
