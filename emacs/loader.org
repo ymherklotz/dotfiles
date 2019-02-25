@@ -156,8 +156,8 @@ if that is ever a problem.
     (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
       (concat
        (propertize (format " %s" (all-the-icons-octicon "git-branch"))
-		   'face `(:height 1 :family ,(all-the-icons-octicon-family))
-		   'display '(raise 0))
+                   'face `(:height 1 :family ,(all-the-icons-octicon-family))
+                   'display '(raise 0))
        (propertize (format " %s" branch))
        (propertize "  "))))
 
@@ -165,8 +165,8 @@ if that is ever a problem.
     (let ((revision (cadr (split-string vc-mode "-"))))
       (concat
        (propertize (format " %s" (all-the-icons-faicon "cloud"))
-		   'face `(:height 1)
-		   'display '(raise 0))
+                   'face `(:height 1)
+                   'display '(raise 0))
        (propertize (format " %s" revision) 'face `(:height 0.9)))))
 
   (define-minor-mode minor-mode-blackout-mode
@@ -175,37 +175,46 @@ if that is ever a problem.
 
   (catch 'done
     (mapc (lambda (x)
-	    (when (and (consp x)
-		       (equal (cadr x) '("" minor-mode-alist)))
-	      (let ((original (copy-sequence x)))
-		(setcar x 'minor-mode-blackout-mode)
-		(setcdr x (list "" original)))
-	      (throw 'done t)))
-	  mode-line-modes))
+            (when (and (consp x)
+                       (equal (cadr x) '("" minor-mode-alist)))
+              (let ((original (copy-sequence x)))
+                (setcar x 'minor-mode-blackout-mode)
+                (setcdr x (list "" original)))
+              (throw 'done t)))
+          mode-line-modes))
 
-  (defun simple-mode-line-render (left right)
+  (defun simple-mode-line-render (left middle right)
     "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
-    (let* ((available-width (- (window-total-width) (+ (length (format-mode-line left)) (length (format-mode-line right))))))
-      (append left (list (format (format "%%%ds" available-width) "")) right)))
+    (let* ((available-width
+            (- (window-total-width)
+               (+ (length (format-mode-line left))
+                  (length (format-mode-line right)))))
+           (before-width (- (/ available-width 2)
+                            (/ (length (format-mode-line middle)) 2)))
+           (after-width (+ (/ available-width 2)
+                           (/ (length (format-mode-line middle)) 2))))
+      (append left (list (format (format "%%%ds" before-width) ""))
+              middle (list (format (format "%%%ds" after-width) ""))
+              right)))
 
   (setq-default mode-line-format
-   '((:eval
-      (simple-mode-line-render
-       (quote (" " mode-line-modified
-	       " " mode-line-buffer-identification
-	       " %l:%c " mode-line-modes " "
-	       (:propertize
-		(:eval (when vc-mode
-			 (cond
-			  ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
-			  ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-			  (t (format "%s" vc-mode)))))
-		face mode-line-vc)))
-       (quote (" " mode-line-misc-info))))))
+                '((:eval
+                   (simple-mode-line-render
+                    (quote (" " mode-line-modified
+                            " " mode-line-buffer-identification
+                            " %l:%c " mode-line-modes " "))
+                    (quote ((:propertize
+                             (:eval (when vc-mode
+                                      (cond
+                                       ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
+                                       ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
+                                       (t (format "%s" vc-mode)))))
+                             face mode-line-vc)))
+                    (quote (" " mode-line-misc-info))))))
 #+END_SRC
 
 #+RESULTS:
-| :eval | (simple-mode-line-render (quote (  mode-line-modified   mode-line-buffer-identification  %l:%c  mode-line-modes   (:propertize (:eval (when vc-mode (cond ((string-match Git[:-] vc-mode) (-custom-modeline-github-vc)) ((string-match SVN- vc-mode) (-custom-modeline-svn-vc)) (t (format %s vc-mode))))) face mode-line-vc))) (quote (  mode-line-misc-info))) |
+| :eval | (simple-mode-line-render (quote (  mode-line-modified   mode-line-buffer-identification  %l:%c  mode-line-modes  )) (quote ((:propertize (:eval (when vc-mode (cond ((string-match Git[:-] vc-mode) (-custom-modeline-github-vc)) ((string-match SVN- vc-mode) (-custom-modeline-svn-vc)) (t (format %s vc-mode))))) face mode-line-vc))) (quote (  mode-line-misc-info))) |
 
 Move the backup files into the temporaty directory so that they are out of the
 way.
