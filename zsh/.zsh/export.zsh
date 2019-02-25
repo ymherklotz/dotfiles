@@ -9,5 +9,3 @@ export PATH="${HOME}/.local/bin:${PATH}"
 export PATH="/usr/bin:${PATH}"
 export PATH="${HOME}/.yarn/bin:${PATH}"
 export PATH="/opt/Xilinx/14.7/ISE_DS/ISE/bin/lin64:${PATH}"
-
-export PASSWORD_STORE_GPG_OPTS="--passphrase-file ${HOME}/.config/.yann_gpg"
