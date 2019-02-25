@@ -186,15 +186,13 @@ if that is ever a problem.
   (defun simple-mode-line-render (left middle right)
     "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
     (let* ((available-width
-            (- (window-total-width)
-               (+ (length (format-mode-line left))
-                  (length (format-mode-line right)))))
-           (before-width (- (/ available-width 2)
-                            (/ (length (format-mode-line middle)) 2)))
-           (after-width (+ (/ available-width 2)
-                           (/ (length (format-mode-line middle)) 2))))
-      (append left (list (format (format "%%%ds" before-width) ""))
-              middle (list (format (format "%%%ds" after-width) ""))
+            (/ (- (window-total-width)
+                  (+ (length (format-mode-line left))
+                     (length (format-mode-line right))
+                     (length (format-mode-line middle))))
+               2)))
+      (append left (list (format (format "%%%ds" available-width) ""))
+              middle (list (format (format "%%%ds" available-width) ""))
               right)))
 
   (setq-default mode-line-format
