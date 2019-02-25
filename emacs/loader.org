@@ -78,26 +78,6 @@ Defining all the package repositories that are going to be used.
                     break the config.
 - ~org~ :: org package repository that contains many packages to extend org-mode.
 
-#+BEGIN_SRC emacs-lisp
-  (require 'package)
-
-  (defvar gnu          '("gnu"          . "https://elpa.gnu.org/packages/"))
-  (defvar melpa        '("melpa"        . "https://melpa.org/packages/"))
-  (defvar melpa-stable '("melpa-stable" . "https://stable.melpa.org/packages/"))
-  (defvar org-elpa     '("org"          . "https://orgmode.org/elpa/"))
-
-  (setq package-archives nil)
-  (add-to-list 'package-archives melpa-stable t)
-  (add-to-list 'package-archives melpa t)
-  (add-to-list 'package-archives gnu t)
-  (add-to-list 'package-archives org-elpa t)
-
-  (setq package-enable-at-startup nil)
-  (package-initialize)
-#+END_SRC
-
-#+RESULTS:
-
 Use ~use-package~ to manage other packages, and improve load times.
 
 #+BEGIN_SRC emacs-lisp
@@ -176,8 +156,8 @@ if that is ever a problem.
     (let ((branch (mapconcat 'concat (cdr (split-string vc-mode "[:-]")) "-")))
       (concat
        (propertize (format " %s" (all-the-icons-octicon "git-branch"))
-                   'face `(:height 1 :family ,(all-the-icons-octicon-family))
-                   'display '(raise 0))
+		   'face `(:height 1 :family ,(all-the-icons-octicon-family))
+		   'display '(raise 0))
        (propertize (format " %s" branch))
        (propertize "  "))))
 
@@ -185,19 +165,9 @@ if that is ever a problem.
     (let ((revision (cadr (split-string vc-mode "-"))))
       (concat
        (propertize (format " %s" (all-the-icons-faicon "cloud"))
-                   'face `(:height 1)
-                   'display '(raise 0))
+		   'face `(:height 1)
+		   'display '(raise 0))
        (propertize (format " %s" revision) 'face `(:height 0.9)))))
-
-  (defvar y/mode-line-vc
-    '(:propertize
-      (:eval (when vc-mode
-               (cond
-                ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
-                ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
-                (t (format "%s" vc-mode)))))
-      face mode-line)
-    "Formats the current directory.")
 
   (define-minor-mode minor-mode-blackout-mode
     "Hides minor modes from the mode line."
@@ -205,26 +175,37 @@ if that is ever a problem.
 
   (catch 'done
     (mapc (lambda (x)
-            (when (and (consp x)
-                       (equal (cadr x) '("" minor-mode-alist)))
-              (let ((original (copy-sequence x)))
-                (setcar x 'minor-mode-blackout-mode)
-                (setcdr x (list "" original)))
-              (throw 'done t)))
-          mode-line-modes))
+	    (when (and (consp x)
+		       (equal (cadr x) '("" minor-mode-alist)))
+	      (let ((original (copy-sequence x)))
+		(setcar x 'minor-mode-blackout-mode)
+		(setcdr x (list "" original)))
+	      (throw 'done t)))
+	  mode-line-modes))
+
+  (defun simple-mode-line-render (left right)
+    "Return a string of `window-width' length containing LEFT, and RIGHT aligned respectively."
+    (let* ((available-width (- (window-total-width) (+ (length (format-mode-line left)) (length (format-mode-line right))))))
+      (append left (list (format (format "%%%ds" available-width) "")) right)))
 
   (setq-default mode-line-format
-                (list
-                 " " mode-line-modified
-                 " %[" mode-line-buffer-identification "%] %6l:%3c %6 "
-                 mode-line-modes
-                 " %6 "
-                 y/mode-line-vc
-                 mode-line-end-spaces))
+   '((:eval
+      (simple-mode-line-render
+       (quote (" " mode-line-modified
+	       " " mode-line-buffer-identification
+	       " %l:%c " mode-line-modes " "
+	       (:propertize
+		(:eval (when vc-mode
+			 (cond
+			  ((string-match "Git[:-]" vc-mode) (-custom-modeline-github-vc))
+			  ((string-match "SVN-" vc-mode) (-custom-modeline-svn-vc))
+			  (t (format "%s" vc-mode)))))
+		face mode-line-vc)))
+       (quote (" " mode-line-misc-info))))))
 #+END_SRC
 
 #+RESULTS:
-|   | (%1* %1+) | %[ | (%12b) | %] %6l:%3c %6 | (%[ ( (:propertize ( mode-name) help-echo Major mode |
+| :eval | (simple-mode-line-render (quote (  mode-line-modified   mode-line-buffer-identification  %l:%c  mode-line-modes   (:propertize (:eval (when vc-mode (cond ((string-match Git[:-] vc-mode) (-custom-modeline-github-vc)) ((string-match SVN- vc-mode) (-custom-modeline-svn-vc)) (t (format %s vc-mode))))) face mode-line-vc))) (quote (  mode-line-misc-info))) |
 
 Move the backup files into the temporaty directory so that they are out of the
 way.
@@ -740,30 +721,28 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 #+END_SRC
 
 ** Org
-Agenda setup for org mode, pointing to the write files.
 
 #+BEGIN_SRC emacs-lisp
-  (setq org-log-into-drawer t
-        org-log-done "note"
-        org-hide-leading-stars t
-        org-confirm-babel-evaluate nil
-        org-directory (expand-file-name "~/Dropbox/org")
-        org-image-actual-width nil
-        org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
-        org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
-        org-default-notes-file (concat org-directory "/inbox.org")
-        org-image-actual-width nil
-        org-export-allow-bind-keywords t)
+  (use-package org
+    :pin org
+    :config
+    (setq org-log-into-drawer t
+          org-log-done "note"
+          org-hide-leading-stars t
+          org-confirm-babel-evaluate nil
+          org-directory (expand-file-name "~/Dropbox/org")
+          org-image-actual-width nil
+          org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
+          org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
+          org-default-notes-file (concat org-directory "/inbox.org")
+          org-image-actual-width nil
+          org-export-allow-bind-keywords t)
 
-  (eval-after-load "org"
-    '(setq org-metaup-hook nil
-           org-metadown-hook nil))
+    (eval-after-load "org"
+      '(setq org-metaup-hook nil
+             org-metadown-hook nil))
 
-  (add-hook 'org-trigger-hook 'save-buffer)
-
-
-  (use-package ox-taskjuggler
-    :ensure nil)
+    (add-hook 'org-trigger-hook 'save-buffer))
 #+END_SRC
 
 #+RESULTS:
@@ -1076,10 +1055,17 @@ Haskell mode with company mode completion.
     :config
     (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
     (add-hook 'haskell-mode-hook (lambda ()
-                                   (local-set-key (kbd "C-c a") 'y/haskell-align-comment)))
+                                   (local-set-key (kbd "C-c y a") 'y/haskell-align-comment)))
     (setq ;;haskell-mode-stylish-haskell-path "brittany"
-          haskell-stylish-on-save t
-          flycheck-ghc-language-extensions '("OverloadedStrings")))
+     haskell-stylish-on-save t
+     flycheck-ghc-language-extensions '("OverloadedStrings"))
+
+    (setq haskell-indentation-layout-offset 4
+          haskell-indentation-starter-offset 4
+          haskell-indentation-left-offset 4
+          haskell-indentation-where-pre-offset 4
+          haskell-indentation-where-post-offset 4))
+
 
   (use-package interactive-haskell-mode
     :ensure haskell-mode
@@ -1087,7 +1073,7 @@ Haskell mode with company mode completion.
 #+END_SRC
 
 #+RESULTS:
-| haskell-decl-scan-mode | interactive-haskell-mode |
+| (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | (lambda nil (local-set-key (kbd C-c a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
@@ -1256,9 +1242,9 @@ Keybindings
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'doom-one t)
+                  (load-theme 'gruvbox-light-soft t)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'doom-one t)
+    (progn (load-theme 'gruvbox-light-soft t)
            (toggle-scroll-bar -1)))
 #+END_SRC
 
