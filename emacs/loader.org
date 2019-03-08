@@ -915,7 +915,8 @@ lot of different language support.
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (setq projectile-enable-caching nil)
     (setq projectile-git-submodule-command "")
-    (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name)))))
+    (setq projectile-mode-line '(:eval (format " Proj[%s]" (projectile-project-name))))
+    (defun projectile-tags-exclude-patterns () ""))
 
   (use-package counsel-projectile
     :config
@@ -1063,6 +1064,9 @@ Haskell mode with company mode completion.
     (add-hook 'haskell-mode-hook 'haskell-decl-scan-mode)
     (add-hook 'haskell-mode-hook (lambda ()
                                    (local-set-key (kbd "C-c y a") 'y/haskell-align-comment)))
+    (add-hook 'haskell-mode-hook (lambda ()
+                                    (set (make-local-variable 'projectile-tags-command)
+                                          "hasktags -Re -f \"%s\" %s \"%s\"")))
     (setq ;;haskell-mode-stylish-haskell-path "brittany"
      haskell-stylish-on-save t
      flycheck-ghc-language-extensions '("OverloadedStrings"))
@@ -1080,7 +1084,7 @@ Haskell mode with company mode completion.
 #+END_SRC
 
 #+RESULTS:
-| (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | (lambda nil (local-set-key (kbd C-c a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
+| (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
