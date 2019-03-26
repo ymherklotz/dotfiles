@@ -427,7 +427,8 @@ Finally, remove buffers when an email has been sent.
   (use-package elfeed-org
     :config
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list (expand-file-name "~/Dropbox/org/elfeed.org"))))
+    (setq rmh-elfeed-org-files
+          (list (expand-file-name "~/Annex/Dropbox/org/elfeed.org"))))
 
   (use-package elfeed
     :bind (:map elfeed-search-mode-map
