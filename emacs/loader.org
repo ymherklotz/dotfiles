@@ -732,6 +732,7 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 
 #+BEGIN_SRC emacs-lisp
   (use-package org
+    :ensure org-plus-contrib
     :pin org
     :config
     (setq org-log-into-drawer t
@@ -754,7 +755,7 @@ Markdown is the standard for writing documentation. This snippet loads GFM
 #+END_SRC
 
 #+RESULTS:
-| save-buffer |
+: t
 
 Set up ob for executing code blocks
 
