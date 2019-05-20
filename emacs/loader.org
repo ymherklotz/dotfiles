@@ -690,8 +690,10 @@ incrementally selecting more and more of the text.
     ;; to have the buffer refresh after compilation
     (add-hook 'TeX-after-compilation-finished-functions
               #'TeX-revert-document-buffer)
+    (setq TeX-engine 'xetex)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
+    (setq TeX-command-extra-options "-shell-escape")
     (setq TeX-save-query nil)
     (setq-default TeX-master nil)
     (setq TeX-PDF-mode t)
@@ -816,7 +818,6 @@ Add org noter
     :init
     (require 'org-ref)
     :config
-    (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib"))
     (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
           org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
           org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
@@ -1092,6 +1093,8 @@ Haskell mode with company mode completion.
     (add-hook 'haskell-mode-hook (lambda ()
                                    (local-set-key (kbd "C-c y a") 'y/haskell-align-comment)))
     (add-hook 'haskell-mode-hook (lambda ()
+                                   (local-set-key (kbd "C-c v") 'haskell-add-import)))
+    (add-hook 'haskell-mode-hook (lambda ()
                                     (set (make-local-variable 'projectile-tags-command)
                                           "hasktags -Re -f \"%s\" %s \"%s\"")))
     (setq ;;haskell-mode-stylish-haskell-path "brittany"
@@ -1111,7 +1114,7 @@ Haskell mode with company mode completion.
 #+END_SRC
 
 #+RESULTS:
-| (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
+| (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
