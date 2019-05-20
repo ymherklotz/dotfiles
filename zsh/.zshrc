@@ -2,7 +2,6 @@
 HISTFILE=~/.histfile
 HISTSIZE=100000
 SAVEHIST=1000000
-setopt appendhistory notify
 bindkey -e
 # End of lines configured by zsh-newuser-install
 # The following lines were added by compinstall
@@ -17,6 +16,12 @@ zstyle :compinstall filename '/home/yannherklotz/.zshrc'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+
+setopt APPEND_HISTORY
+setopt HIST_EXPIRE_DUPS_FIRST
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_FIND_NO_DUPS
 
 (cat ~/.cache/wal/sequences &)
 
