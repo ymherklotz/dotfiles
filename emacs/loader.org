@@ -120,6 +120,7 @@ buffer instead.
   (menu-bar-mode 0)
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
 #+END_SRC
 
 #+RESULTS:
@@ -336,12 +337,12 @@ programming and looking at source code.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Hack-13")
-  (setq default-frame-alist '((font . "Hack-13")))
+  (set-default-font "Iosevka Medium-14")
+  (setq default-frame-alist '((font . "Iosevka Medium-14")))
 #+END_SRC
 
 #+RESULTS:
-: ((font . Hack-13))
+: ((font . Iosevka Medium-14))
 
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
@@ -1153,6 +1154,14 @@ JSON files should be opened in js-mode.
     :config
     (setq css-indent-offset 2))
 #+END_SRC
+
+*** Scala
+
+#+begin_src emacs-lisp
+  (use-package scala-mode)
+#+end_src
+
+#+RESULTS:
 
 *** Shell
 #+BEGIN_SRC emacs-lisp
