@@ -1317,18 +1317,18 @@ Keybindings
       (before theme-dont-propagate activate)
     (mapc #'disable-theme custom-enabled-themes))
 
-  (if (daemonp)
+  (if server-process
       (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'gruvbox-light-soft t)
+                  (load-theme 'sanityinc-tomorrow-night t)
                   (toggle-scroll-bar -1)))
-    (progn (load-theme 'gruvbox-light-soft t)
+    (progn (load-theme 'sanityinc-tomorrow-night t)
            (toggle-scroll-bar -1)))
 #+END_SRC
 
 #+RESULTS:
-| (lambda (frame) (select-frame frame) (load-theme (quote doom-one) t) (toggle-scroll-bar -1)) | (lambda (frame) (select-frame frame) (load-theme (quote inkpot) t) (toggle-scroll-bar -1)) | x-dnd-init-frame |
+| (lambda (frame) (select-frame frame) (load-theme (quote sanityinc-tomorrow-night) t) (toggle-scroll-bar -1)) | (lambda (frame) (select-frame frame) (load-theme (quote gruvbox-light-soft) t) (toggle-scroll-bar -1)) | x-dnd-init-frame |
 
 * Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
