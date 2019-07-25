@@ -261,6 +261,7 @@ preferred style. This is just personal preference though.
 #+BEGIN_SRC emacs-lisp
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
+  (setq tab-width 4)
   (defvaralias 'python-indent-offset 'tab-width)
   (defvaralias 'c-basic-offset 'tab-width)
 #+END_SRC
@@ -653,6 +654,16 @@ incrementally selecting more and more of the text.
 
   (use-package yasnippet-snippets)
 #+END_SRC
+
+** Nix
+
+#+BEGIN_SRC emacs-lisp
+  (use-package direnv
+    :config
+    (direnv-mode))
+#+END_SRC
+
+#+RESULTS:
 
 * Writing
 
