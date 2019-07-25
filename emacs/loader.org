@@ -867,6 +867,15 @@ Add org noter
           ("u" "At uni" tags-todo "@uni"
            ((org-agenda-overriding-header "University")))))
 #+END_SRC
+*** Contacts
+
+#+BEGIN_SRC emacs-lisp
+  (setq org-contacts-files (mapcar 'expand-file-name
+                                   '("~/Dropbox/org/contacts.org")))
+#+END_SRC
+
+#+RESULTS:
+| /home/yannherklotz/Dropbox/org/contacts.org |
 
 *** Remove Binding
 #+BEGIN_SRC emacs-lisp
