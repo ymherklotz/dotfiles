@@ -324,6 +324,7 @@ Setting up my keybindings
   (define-key y-map (kbd "p") 'password-store-copy)
   (define-key y-map (kbd "i") 'password-store-insert)
   (define-key y-map (kbd "g") 'password-store-generate)
+  (define-key y-map (kbd "r") 'toggle-rot13-mode)
 #+END_SRC
 
 #+RESULTS:
@@ -1317,12 +1318,12 @@ Keybindings
       (before theme-dont-propagate activate)
     (mapc #'disable-theme custom-enabled-themes))
 
-  (if server-process
-      (add-hook 'after-make-frame-functions
+  (add-hook 'after-make-frame-functions
                 (lambda (frame)
                   (select-frame frame)
-                  (load-theme 'sanityinc-tomorrow-night t)
                   (toggle-scroll-bar -1)))
+
+  (unless (boundp 'server-process)
     (progn (load-theme 'sanityinc-tomorrow-night t)
            (toggle-scroll-bar -1)))
 #+END_SRC
