@@ -262,12 +262,13 @@ preferred style. This is just personal preference though.
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 4)
   (setq tab-width 4)
-  (defvaralias 'python-indent-offset 'tab-width)
-  (defvaralias 'c-basic-offset 'tab-width)
+  (setq-default python-indent-offset 4)
+  (setq-default c-basic-offset 4)
+  (setq-default python-indent 4)
 #+END_SRC
 
 #+RESULTS:
-: tab-width
+: 4
 
 Set the line number display very high so that it is always shown in the modeline.
 #+BEGIN_SRC emacs-lisp
@@ -1148,6 +1149,7 @@ Elpy package for python, which provides an IDE type environment for python.
     (elpy-enable)
     (setq py-python-command "python3")
     (setq python-shell-interpreter "python3"))
+    (setq tab-width 4)
 
   (with-eval-after-load 'python
     (defun python-shell-completion-native-try ()
@@ -1159,6 +1161,9 @@ Elpy package for python, which provides an IDE type environment for python.
          (get-buffer-process (current-buffer))
          nil "_"))))
 #+END_SRC
+
+#+RESULTS:
+: python-shell-completion-native-try
 
 *** JSON
 JSON files should be opened in js-mode.
