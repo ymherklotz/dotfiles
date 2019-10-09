@@ -22,11 +22,11 @@ for that can be found in the [[#Writing][Writing]] section.
 
 #+BEGIN_SRC emacs-lisp
   (setq user-full-name "Yann Herklotz")
-  (setq user-mail-address "ymherklotz@gmail.com")
+  (setq user-mail-address "yann@yannherklotz.com")
 #+END_SRC
 
 #+RESULTS:
-: ymherklotz@gmail.com
+: yann@yannherklotz.com
 
 * Setup
 
@@ -864,12 +864,14 @@ Add org noter
 
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files (mapcar 'expand-file-name
-                                 '("~/Dropbox/org/inbox.org"
-                                   "~/Dropbox/org/main.org"
-                                   "~/Dropbox/org/tickler.org"))
-        org-refile-targets '(("~/Dropbox/org/main.org" :maxlevel . 2)
+                                 (list "~/Dropbox/org/inbox.org"
+                                       "~/Dropbox/org/main.org"
+                                       "~/Dropbox/org/tickler.org"
+                                       (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+        org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
                              ("~/Dropbox/org/someday.org" :level . 1)
-                             ("~/Dropbox/org/tickler.org" :maxlevel . 2))
+                             ("~/Dropbox/org/tickler.org" :maxlevel . 2)
+                             (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
         org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
   (setq org-agenda-custom-commands 
@@ -880,6 +882,12 @@ Add org noter
           ("u" "At uni" tags-todo "@uni"
            ((org-agenda-overriding-header "University")))))
 #+END_SRC
+
+#+RESULTS:
+| w | At work | tags-todo | @work | ((org-agenda-overriding-header Work))       |
+| h | At home | tags-todo | @home | ((org-agenda-overriding-header Home))       |
+| u | At uni  | tags-todo | @uni  | ((org-agenda-overriding-header University)) |
+
 *** Contacts
 
 #+BEGIN_SRC emacs-lisp
@@ -901,14 +909,17 @@ Add org noter
   (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
   (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
   (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
+  (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
 #+END_SRC
+
+#+RESULTS:
+: (file . ~/Dropbox/org/journals/2019-09.org)
 
 *** Exporting
 
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs)
-#+END_SRC
-
+  #+EN
 ** PDF Tools
 
 #+BEGIN_SRC emacs-lisp
@@ -1295,6 +1306,10 @@ Shamelessly taken from https://github.com/alphapapa/unpackaged.el#hydra.
 Keybindings
 
 #+BEGIN_SRC emacs-lisp
+  (use-package solarized-theme
+    :config
+    (setq solarized-use-variable-pitch nil))
+
   (defun y/set-theme (theme)
     (load-theme theme t)
     (toggle-scroll-bar -1))
