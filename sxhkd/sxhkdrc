@@ -82,7 +82,10 @@ super + {o,h}
 
 # focus or send to the given desktop
 super + {_,shift + }{1-9,0}
-    bspc {desktop -f,node -d} '{term,web,code,music,5-9,10}'
+    bspc {desktop -f,node -d} '{term,web,code,music,5-9,0}'
+
+super + alt + {_,shift + }{1-9,0}
+    bspc {desktop -f,node -d} '{11,12,13,14,15,16,17,18,19,20}'
 
 #
 # preselect
