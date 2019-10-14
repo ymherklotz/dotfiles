@@ -24,11 +24,11 @@ fdd() {
 wal-tile() {
     wal -n -i "$@"
     feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
-    /home/yannherklotz/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
+    $HOME/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
 }
 
 wal-tile-l() {
     wal -l -n -i "$@"
     feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
-    /home/yannherklotz/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
+    $HOME/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
 }

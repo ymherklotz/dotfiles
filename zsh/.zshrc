@@ -23,7 +23,7 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 
-(cat ~/.cache/wal/sequences &)
+(cat ~/.cache/wal/sequences &) >/dev/null 2>&1
 
 # Sourcing everything
 source /usr/share/fzf/key-bindings.zsh
