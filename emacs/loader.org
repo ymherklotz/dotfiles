@@ -36,15 +36,21 @@ be manually set inside emacs.
 
 #+BEGIN_SRC emacs-lisp
   (setenv "PATH"
-          (concat
-           "/home/yannherklotz/.local/bin" ":"
-           "/home/yannherklotz/.yarn/bin" ":"
-           "/usr/bin/vendor_perl" ":"
-           (getenv "PATH")))
+      (concat
+       "/home/yannherklotz/.local/bin" ":"
+       "/home/yannherklotz/.yarn/bin" ":"
+       "/usr/bin/vendor_perl" ":"
+       "/home/yannherklotz/.opam/4.09.0/bin" ":"
+       (getenv "PATH")))
+  (setq exec-path (append
+           '("/home/yannherklotz/.opam/4.09.0/bin"
+             "/home/yannherklotz/.local/bin"
+             "/home/yannherklotz/.yarn/bin")
+           exec-path))
 #+END_SRC
 
 #+RESULTS:
-: /home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/bin/vendor_perl:/home/yannherklotz/.local/bin:/home/yannherklotz/.yarn/bin:/usr/local/sbin:/usr/local/bin:/usr/bin
+| /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.cargo/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /usr/bin | /home/yannherklotz/.gem/ruby/2.6.0/bin | /usr/local/bin | /home/yannherklotz/.nix-profile/bin | /nix/var/nix/profiles/default/bin | /usr/local/sbin | /usr/local/bin | /usr/bin | /opt/clojurescript/bin | /usr/lib/jvm/default/bin | /usr/bin/site_perl | /usr/bin/vendor_perl | /usr/bin/core_perl | /opt/Xilinx/Vivado/2019.1/bin | /opt/intelFPGA_lite/18.1/quartus/bin | /usr/lib/emacs/26.3/x86_64-pc-linux-gnu |
 
 Define a function to load a user file whenever I want to add configurations that
 are not pushed as part of this configuration file. This includes a private file

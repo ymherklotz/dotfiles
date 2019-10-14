@@ -1,0 +1,4 @@
+rofi.combi-modi: window,drun
+rofi.font: hack 10
+rofi.modi: combi
+rofi.theme: .cache/wal/colors-rofi-dark.rasi

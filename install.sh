@@ -57,6 +57,7 @@ for i in "$@"; do
     ncmpcpp) NCMPCPP=1; NOT_ALL=1;;
     mpd)     MPD=1;     NOT_ALL=1;;
     bspwm)   BSPWM=1;   NOT_ALL=1;;
+    rofi)    ROFI=1;    NOT_ALL=1;;
 
     *)
       print_help
@@ -138,4 +139,10 @@ if [[ ! -z $BSPWM ]] || [[ -z $NOT_ALL ]]; then
   ln_configs bspwm/bspwmrc ~/.config/bspwm/bspwmrc
   mk ~/.config/sxhkd
   ln_configs sxhkd/sxhkdrc ~/.config/sxhkd/sxhkdrc
+fi
+
+if [[ ! -z $ROFI ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing rofi config..."
+  mk ~/.config/rofi
+  ln_configs rofi/config ~/.config/rofi/config
 fi
