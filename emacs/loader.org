@@ -37,20 +37,22 @@ be manually set inside emacs.
 #+BEGIN_SRC emacs-lisp
   (setenv "PATH"
       (concat
-       "/home/yannherklotz/.local/bin" ":"
-       "/home/yannherklotz/.yarn/bin" ":"
+       "/home/ymherklotz/.local/bin" ":"
+       "/home/ymherklotz/.yarn/bin" ":"
        "/usr/bin/vendor_perl" ":"
-       "/home/yannherklotz/.opam/4.09.0/bin" ":"
+       "/home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin" ":"
+       "/home/ymherklotz/.nix-profile/bin" ":"
        (getenv "PATH")))
   (setq exec-path (append
-           '("/home/yannherklotz/.opam/4.09.0/bin"
-             "/home/yannherklotz/.local/bin"
-             "/home/yannherklotz/.yarn/bin")
+           '("/home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin"
+             "/home/ymherklotz/.local/bin"
+             "/home/ymherklotz/.yarn/bin"
+             "/home/ymherklotz/.nix-profile/bin")
            exec-path))
 #+END_SRC
 
 #+RESULTS:
-| /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.cargo/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /usr/bin | /home/yannherklotz/.gem/ruby/2.6.0/bin | /usr/local/bin | /home/yannherklotz/.nix-profile/bin | /nix/var/nix/profiles/default/bin | /usr/local/sbin | /usr/local/bin | /usr/bin | /opt/clojurescript/bin | /usr/lib/jvm/default/bin | /usr/bin/site_perl | /usr/bin/vendor_perl | /usr/bin/core_perl | /opt/Xilinx/Vivado/2019.1/bin | /opt/intelFPGA_lite/18.1/quartus/bin | /usr/lib/emacs/26.3/x86_64-pc-linux-gnu |
+| /home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /home/ymherklotz/.nix-profile/bin | /home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /home/ymherklotz/.nix-profile/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/ymherklotz/.cargo/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /usr/bin | /home/ymherklotz/.gem/ruby/2.6.0/bin | /usr/local/bin | /usr/local/sbin | /usr/local/bin | /usr/bin | /usr/bin/site_perl | /usr/bin/vendor_perl | /usr/bin/core_perl | /opt/Xilinx/Vivado/2019.1/bin | /opt/intelFPGA_lite/18.1/quartus/bin | /usr/lib/emacs/26.3/x86_64-pc-linux-gnu |
 
 Define a function to load a user file whenever I want to add configurations that
 are not pushed as part of this configuration file. This includes a private file
@@ -152,6 +154,10 @@ buffer instead.
 
 #+RESULTS:
 : org-capture
+
+#+begin_src emacs-lisp
+  (global-visual-line-mode t)
+#+end_src
 
 *** Custom modeline
 
@@ -684,11 +690,6 @@ incrementally selecting more and more of the text.
 
 * Writing
 
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'text-mode-hook (lambda ()
-                              (auto-fill-mode 1)))
-#+END_SRC
-
 ** Spellcheck in emacs
 #+BEGIN_SRC emacs-lisp
   (use-package flyspell
@@ -928,8 +929,15 @@ Add org noter
 
 #+BEGIN_SRC emacs-lisp
   (use-package pdf-tools
-    :hook (doc-view-mode . pdf-view-mode)
-    :commands pdf-view-mode)
+    :config
+    ;; initialise
+    (pdf-tools-install)
+    ;; open pdfs scaled to fit page
+    (setq-default pdf-view-display-size 'fit-page)
+    ;; automatically annotate highlights
+    (setq pdf-annot-activate-created-annotations t)
+    ;; use normal isearch
+    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
 #+END_SRC
 
 #+RESULTS:
@@ -1090,7 +1098,9 @@ Adding hook to clojure mode to enable strict parentheses mode.
 #+begin_src emacs-lisp
   (use-package proof-general
     :config
-    (setq coq-compile-before-require t))
+    (setq coq-compile-before-require t)
+    (defadvice proof-goto-point (after adjust-window-in-proof)
+      (golden-ratio)))
 #+end_src
 
 #+RESULTS:
@@ -1153,8 +1163,8 @@ Haskell mode with company mode completion.
     (setq haskell-indentation-layout-offset 4
           haskell-indentation-starter-offset 4
           haskell-indentation-left-offset 4
-          haskell-indentation-where-pre-offset 4
-          haskell-indentation-where-post-offset 4))
+          haskell-indentation-where-pre-offset 2
+          haskell-indentation-where-post-offset 2))
 
 
   (use-package interactive-haskell-mode
@@ -1163,7 +1173,7 @@ Haskell mode with company mode completion.
 #+END_SRC
 
 #+RESULTS:
-| (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
+| (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
@@ -1310,10 +1320,6 @@ Shamelessly taken from https://github.com/alphapapa/unpackaged.el#hydra.
 Keybindings
 
 #+BEGIN_SRC emacs-lisp
-  (use-package solarized-theme
-    :config
-    (setq solarized-use-variable-pitch nil))
-
   (defun y/set-theme (theme)
     (load-theme theme t)
     (toggle-scroll-bar -1))
