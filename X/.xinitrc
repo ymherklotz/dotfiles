@@ -38,10 +38,10 @@ dropbox &
 sxhkd -m 1 &
 compton &
 redshift &
+dunst &
 wal -R
-xrandr --output DP1 --left-of DP2 --auto
+xrandr --output DP2 --left-of DP1 --auto
 feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
-xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput Natural Scrolling Enabled' 1
 xsetroot -cursor_name left_ptr
 
 #exec i3
