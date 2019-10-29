@@ -11,6 +11,7 @@ export PATH="${PATH}:/opt/Xilinx/Vivado/2019.1/bin"
 export PATH="${PATH}:/opt/intelFPGA_lite/18.1/quartus/bin"
 export PATH="${HOME}/.local/bin:${PATH}"
 export PATH="${HOME}/.cargo/bin:${PATH}"
+export PATH="${HOME}/.cabal/bin:${PATH}"
 
 # Stop dotnet telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
