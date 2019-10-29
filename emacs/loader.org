@@ -352,8 +352,8 @@ programming and looking at source code.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka Medium-14")
-  (setq default-frame-alist '((font . "Iosevka Medium-14")))
+  (set-default-font "Iosevka Medium-12")
+  (setq default-frame-alist '((font . "Iosevka Medium-12")))
 #+END_SRC
 
 #+RESULTS:
