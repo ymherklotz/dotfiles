@@ -670,8 +670,6 @@ incrementally selecting more and more of the text.
   (use-package yasnippet
     :config
     (yas-global-mode))
-
-  (use-package yasnippet-snippets)
 #+END_SRC
 
 ** Nix
@@ -775,7 +773,7 @@ Markdown is the standard for writing documentation. This snippet loads GFM
           org-directory (expand-file-name "~/Dropbox/org")
           org-image-actual-width nil
           org-format-latex-options (plist-put org-format-latex-options :scale 1.5)
-          org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f")
+          org-latex-pdf-process (list "latexmk -lualatex -shell-escape -bibtex -f -pdf %f")
           org-default-notes-file (concat org-directory "/inbox.org")
           org-image-actual-width nil
           org-export-allow-bind-keywords t)

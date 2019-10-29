@@ -37,6 +37,7 @@ dropbox &
 sxhkd -m 1 &
 compton &
 redshift &
+dunst &
 wal -R
 feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
 xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput Natural Scrolling Enabled' 1
