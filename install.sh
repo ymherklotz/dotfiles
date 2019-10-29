@@ -58,7 +58,7 @@ for i in "$@"; do
     mpd)     MPD=1;     NOT_ALL=1;;
     bspwm)   BSPWM=1;   NOT_ALL=1;;
     rofi)    ROFI=1;    NOT_ALL=1;;
-    rofi)    TERMITE=1; NOT_ALL=1;;
+    termite) TERMITE=1; NOT_ALL=1;;
 
     *)
       print_help
