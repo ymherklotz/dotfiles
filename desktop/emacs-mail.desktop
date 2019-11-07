@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Emacs Email
+Exec=emacsclient -c --eval "(browse-url-mail \"%f\")"
+Icon=/home/yannherklotz/Images/emacs.icon

@@ -1,6 +1,6 @@
 #!/bin/sh
 lock() {
-  /home/yannherklotz/.local/bin/betterlock -$1 blur
+  $HOME/.local/bin/betterlock -$1 blur
 }
 
 case "$1" in
