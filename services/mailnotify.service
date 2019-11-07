@@ -1,0 +1,9 @@
+[Unit]
+Description=Mailbox notification service
+
+[Service]
+Type=simple
+ExecStart=/home/yannherklotz/.local/bin/mailnotify.sh
+
+[Install]
+WantedBy=default.target
