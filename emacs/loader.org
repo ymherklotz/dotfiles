@@ -504,9 +504,9 @@ Set navigation commands in all the buffers
     (interactive)
     (other-window -1))
 
-  (use-package golden-ratio
-    :config
-    (golden-ratio-mode))
+;;  (use-package golden-ratio
+;;    :config
+;;    (golden-ratio-mode))
 
   (defun push-mark-no-activate ()
     "Pushes `point' to `mark-ring' and does not activate the region
@@ -725,7 +725,7 @@ incrementally selecting more and more of the text.
     (setq TeX-engine 'xetex)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
-    (setq TeX-command-extra-options "-shell-escape")
+    (setq-default TeX-command-extra-options "-shell-escape")
     (setq TeX-save-query nil)
     (setq-default TeX-master nil)
     (setq TeX-PDF-mode t)
