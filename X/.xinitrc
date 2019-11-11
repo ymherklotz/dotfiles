@@ -40,7 +40,7 @@ compton &
 redshift &
 dunst &
 wal -R
-xrandr --output DP2 --left-of DP1 --auto
+xrandr --output DP2 --right-of DP1 --auto
 feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
 xsetroot -cursor_name left_ptr
 
