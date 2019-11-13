@@ -17,7 +17,7 @@ secondary = ${xrdb:color5:#e60053}
 alert = ${xrdb:color1:#bd2c40}
 
 [bar/main]
-monitor = DP1
+monitor = DP-1
 width = 100%
 height = 27
 ;offset-x = 1%
@@ -69,8 +69,60 @@ scroll-down = bspwm-deskprev
 cursor-click = pointer
 cursor-scroll = ns-resize
 
+[bar/third]
+monitor = DVI-1-0
+width = 100%
+height = 27
+;offset-x = 1%
+;offset-y = 1%
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = ${colors.primary}
+
+border-size = 0
+border-color = #00000000
+
+padding-left = 1
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = Iosevka:style=Regular:pixelsize=10
+font-1 = Font Awesome 5 Free:style=Solid:pixelsize=9
+font-2 = Font Awesome 5 Brands:style=Regular
+font-3 = Siji:style=Regular:pixelsize=10
+font-4 = Unifont:fontformat=truetype:size=8:antialias=false
+
+modules-left = bspwm
+modules-center = date
+
+tray-position = right
+tray-padding = 2
+;tray-transparent = true
+;tray-background = #0063ff
+
+wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+scroll-up = bspwm-desknext
+scroll-down = bspwm-deskprev
+
+;scroll-up = i3wm-wsnext
+;scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
 [bar/second]
-monitor = DP2
+monitor = DP-2
 width = 100%
 height = 27
 ;offset-x = 1%
