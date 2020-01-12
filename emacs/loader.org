@@ -72,6 +72,9 @@ be used to load any file in that directory.
     (interactive "f")
     "Load a file in current user's configuration directory"
     (load-file (expand-file-name file user-init-dir)))
+
+  (setq load-path
+        (cons (expand-file-name "~/.emacs.d/modes") load-path))
 #+END_SRC
 
 ** Repositories
@@ -1174,6 +1177,15 @@ Haskell mode with company mode completion.
 
 #+RESULTS:
 | (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
+
+*** LLVM IR
+
+#+begin_src emacs-lisp
+  (require 'llvm-mode)
+#+end_src
+
+#+RESULTS:
+: llvm-mode
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
