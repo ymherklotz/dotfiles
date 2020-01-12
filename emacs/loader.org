@@ -1149,7 +1149,7 @@ F# mode for uni work.
 *** Flex
 
 #+begin_src emacs-lisp
-  (add-to-list 'auto-mode-alist '("\\.flex\\'" . my-major-mode))
+  (add-to-list 'auto-mode-alist '("\\.flex\\'" . c-mode))
 #+end_src
 
 *** Haskell
