@@ -1097,9 +1097,7 @@ Adding hook to clojure mode to enable strict parentheses mode.
 #+begin_src emacs-lisp
   (use-package proof-general
     :config
-    (setq coq-compile-before-require t)
-    (defadvice proof-goto-point (after adjust-window-in-proof)
-      (golden-ratio)))
+    (setq coq-compile-before-require t))
 #+end_src
 
 #+RESULTS:
