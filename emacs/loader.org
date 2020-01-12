@@ -946,6 +946,14 @@ Add org noter
 #+RESULTS:
 | pdf-view-mode |
 
+** Writeroom
+
+#+begin_src emacs-lisp
+  (use-package writeroom-mode
+    :config
+    (setq writeroom-width 100))
+#+end_src
+
 * Programming
 My emacs configuration is mostly focused on programming, therefore there is a
 lot of different language support.
