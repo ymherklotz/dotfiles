@@ -507,10 +507,6 @@ Set navigation commands in all the buffers
     (interactive)
     (other-window -1))
 
-  (use-package golden-ratio
-    :config
-    (golden-ratio-mode))
-
   (defun push-mark-no-activate ()
     "Pushes `point' to `mark-ring' and does not activate the region
      Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
