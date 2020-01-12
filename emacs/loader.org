@@ -1146,6 +1146,12 @@ F# mode for uni work.
               (lambda () (local-set-key (kbd "C-c C-c") #'y/fsharp-reload-file))))
 #+END_SRC
 
+*** Flex
+
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.flex\\'" . my-major-mode))
+#+end_src
+
 *** Haskell
 
 Haskell mode with company mode completion.
