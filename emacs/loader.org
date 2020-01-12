@@ -960,15 +960,7 @@ lot of different language support.
   (use-package magit
     :bind (("C-x g" . magit-status))
     :config
-    (setq server-switch-hook nil)
-    (defadvice forge-create-issue (after adjust-window activate)
-      "Adjust the window size using the golden-ratio package when
-       creating a new issue"
-      (golden-ratio))
-    (defadvice magit-status (after adjust-window activate)
-      "Adjust the window size using the golden-ratio package when
-       getting the status of a repository."
-      (golden-ratio)))
+    (setq server-switch-hook nil))
 #+END_SRC
 
 #+RESULTS:
