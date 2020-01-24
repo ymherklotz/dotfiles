@@ -129,6 +129,7 @@ buffer instead.
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 
 #+RESULTS:
@@ -690,6 +691,12 @@ incrementally selecting more and more of the text.
 
 #+RESULTS:
 
+** Tramp
+
+#+begin_src emacs-lisp
+  (setq tramp-default-method "ssh")
+#+end_src
+
 * Writing
 
 ** Spellcheck in emacs
@@ -864,7 +871,8 @@ Add org noter
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
         '(("t" "todo" entry (file+headline "~/Dropbox/org/inbox.org" "Tasks")
-           "* TODO %?\n\n%i\n%a\n\n")))
+           "* TODO %?\n\n%i\n%a\n\n")
+           ()))
 #+END_SRC
 
 *** Agenda
@@ -1176,6 +1184,14 @@ Haskell mode with company mode completion.
 
 #+RESULTS:
 | (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
+
+*** HOL
+
+#+begin_src emacs-lisp
+  (when (file-exists-p "/opt/hol/tools/hol-mode.el")
+    (setq hol-executable "/opt/hol/bin/hol")
+    (load "/opt/hol/tools/hol-mode.el"))
+#+end_src
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
