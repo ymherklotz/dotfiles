@@ -35,7 +35,7 @@ fi
 # Startup programs
 eval $(ssh-agent)
 dropbox &
-sxhkd -m 1 &
+sxhkd &
 compton &
 redshift &
 dunst &
