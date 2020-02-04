@@ -129,6 +129,7 @@ buffer instead.
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (add-to-list 'load-path "~/.emacs.d/modes/")
   (setq ring-bell-function 'ignore)
 #+END_SRC
 
@@ -680,17 +681,6 @@ incrementally selecting more and more of the text.
 
   (use-package yasnippet-snippets)
 #+END_SRC
-
-** Nix
-
-#+BEGIN_SRC emacs-lisp
-  (use-package direnv
-    :config
-    (direnv-mode))
-#+END_SRC
-
-#+RESULTS:
-
 ** Tramp
 
 #+begin_src emacs-lisp
@@ -1248,6 +1238,13 @@ JSON files should be opened in js-mode.
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
+
+*** SMTLIBv2
+
+#+begin_src emacs-lisp
+  (require 'smtlib-mode)
+  (add-to-list 'auto-mode-alist '("\\.smt\\'" . smtlib-mode))
+#+end_src
 
 *** Verilog
 
