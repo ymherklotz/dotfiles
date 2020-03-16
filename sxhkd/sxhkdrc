@@ -127,17 +127,17 @@ super + {Left,Down,Up,Right}
 # Media
 #
 
-XF86Audio{Play,Stop,Next,Prev}
-    playerctl {play-pause,stop,next,previous}
+super + alt + shift + ctrl + {a,r,s,t}
+    playerctl {play-pause,stop,previous,next}
 
-XF86MonBrightness{Up,Down}
+super + alt + shift + ctrl + {w,q}
     light -{A,U} 5
 
-XF86Audio{Raise,Lower}Volume
-    amixer set Master 5%{+,-}
+super + alt + shift + ctrl + {p,f,g}
+    amixer set Master {5%+,5%-,toggle-mute}
 
-XF86AudioMute
-    amixer set Master toggle-mute
+super + alt + shift + ctrl + z
+    emacsclient -c -a emacs
 
 #
 # Power
