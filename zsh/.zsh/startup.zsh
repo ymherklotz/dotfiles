@@ -5,6 +5,6 @@ fi
 
 # direnv
 
-eval "$(direnv hook zsh)"
-
 # End Nix
+
+eval $(opam env)

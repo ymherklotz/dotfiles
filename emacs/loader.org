@@ -132,12 +132,16 @@ buffer instead.
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (add-to-list 'load-path "~/.emacs.d/modes/")
+  (setq ring-bell-function 'ignore)
 #+END_SRC
 
 #+RESULTS:
 : t
 
 #+BEGIN_SRC emacs-lisp
+  (global-unset-key (kbd "C-z"))
+
   (global-set-key (kbd "M-u")   #'upcase-dwim)
   (global-set-key (kbd "M-l")   #'downcase-dwim)
   (global-set-key (kbd "M-c")   #'capitalize-dwim)
@@ -155,8 +159,9 @@ buffer instead.
   (global-set-key (kbd "C-c c") #'org-capture)
 #+END_SRC
 
-#+RESULTS:
-: org-capture
+#+begin_src emacs-lisp
+  (global-visual-line-mode t)
+#+end_src
 
 #+begin_src emacs-lisp
   (global-visual-line-mode t)
@@ -355,8 +360,8 @@ programming and looking at source code.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka Medium-14")
-  (setq default-frame-alist '((font . "Iosevka Medium-14")))
+  (set-default-font "Iosevka Medium-12")
+  (setq default-frame-alist '((font . "Iosevka Medium-12")))
 #+END_SRC
 
 #+RESULTS:
@@ -499,6 +504,15 @@ Define utility functions to make the reader work.
 : y/elfeed-save-db-and-bury
 
 * Utility
+** Zettelkasten
+
+#+begin_src emacs-lisp
+  (when (file-directory-p "~/projects/emacs-zettelkasten")
+    (add-to-list 'load-path "~/projects/emacs-zettelkasten")
+    (require 'zettelkasten)
+    (zettelkasten-mode t))
+#+end_src
+
 ** Navigation
 
 Set navigation commands in all the buffers
@@ -676,16 +690,11 @@ incrementally selecting more and more of the text.
     :config
     (yas-global-mode))
 #+END_SRC
+** Tramp
 
-** Nix
-
-#+BEGIN_SRC emacs-lisp
-  (use-package direnv
-    :config
-    (direnv-mode))
-#+END_SRC
-
-#+RESULTS:
+#+begin_src emacs-lisp
+  (setq tramp-default-method "ssh")
+#+end_src
 
 * Writing
 
@@ -722,7 +731,7 @@ incrementally selecting more and more of the text.
     (setq TeX-engine 'xetex)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
-    (setq TeX-command-extra-options "-shell-escape")
+    (setq-default TeX-command-extra-options "-shell-escape")
     (setq TeX-save-query nil)
     (setq-default TeX-master nil)
     (setq TeX-PDF-mode t)
@@ -837,7 +846,7 @@ Add org noter
   (use-package org-noter
       :after org
       :config (setq org-noter-default-notes-file-names '("notes.org")
-                    org-noter-notes-search-path '("~/org/research")
+                    org-noter-notes-search-path '("~/org/bibliography")
                     org-noter-separate-notes-from-heading t))
 
   (use-package org-ref
@@ -849,19 +858,27 @@ Add org noter
     :config
     (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
           org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-          org-ref-pdf-directory "~/Dropbox/bibliography/bibtex-pdfs/")
-    (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdf %f"))
+          org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
     (setq org-ref-completion-library 'org-ref-ivy-cite))
 #+END_SRC
 
 #+RESULTS:
 : org-ref-bibtex-hydra/body
 
+*** Org ID
+
+#+begin_src emacs-lisp
+  (use-package org-id
+    :ensure nil
+    :after org)
+#+end_src
+
 *** Templates
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
         '(("t" "todo" entry (file+headline "~/Dropbox/org/inbox.org" "Tasks")
-           "* TODO %?\n\n%i\n%a\n\n")))
+           "* TODO %?\n\n%i\n%a\n\n")
+           ()))
 #+END_SRC
 
 *** Agenda
@@ -916,14 +933,12 @@ Add org noter
   (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
 #+END_SRC
 
-#+RESULTS:
-: (file . ~/Dropbox/org/journals/2019-09.org)
-
 *** Exporting
 
 #+BEGIN_SRC emacs-lisp
   (use-package ox-twbs)
-  #+EN
+#+END_SRC
+
 ** PDF Tools
 
 #+BEGIN_SRC emacs-lisp
@@ -1097,7 +1112,8 @@ Adding hook to clojure mode to enable strict parentheses mode.
 #+begin_src emacs-lisp
   (use-package proof-general
     :config
-    (setq coq-compile-before-require t))
+    (setq coq-compile-before-require t)
+    (setq proof-splash-enable nil))
 #+end_src
 
 #+RESULTS:
@@ -1160,7 +1176,6 @@ Haskell mode with company mode completion.
                                     (set (make-local-variable 'projectile-tags-command)
                                           "hasktags -Re -f \"%s\" %s \"%s\"")))
     (setq ;;haskell-mode-stylish-haskell-path "brittany"
-     haskell-stylish-on-save t
      flycheck-ghc-language-extensions '("OverloadedStrings"))
 
     (setq haskell-indentation-layout-offset 4
@@ -1181,11 +1196,17 @@ Haskell mode with company mode completion.
 *** LLVM IR
 
 #+begin_src emacs-lisp
-  (require 'llvm-mode)
+  (when (file-exists-p "~/.emacs.d/modes/llvm-mode.el")
+      (require 'llvm-mode))
 #+end_src
 
-#+RESULTS:
-: llvm-mode
+*** HOL
+
+#+begin_src emacs-lisp
+  (when (file-exists-p "/opt/hol/tools/hol-mode.el")
+    (setq hol-executable "/opt/hol/bin/hol")
+    (load "/opt/hol/tools/hol-mode.el"))
+#+end_src
 
 *** Python
 Elpy package for python, which provides an IDE type environment for python.
@@ -1242,6 +1263,13 @@ JSON files should be opened in js-mode.
   (setq sh-basic-offset 2)
   (setq sh-indentation 2)
 #+END_SRC
+
+*** SMTLIBv2
+
+#+begin_src emacs-lisp
+  (require 'smtlib-mode)
+  (add-to-list 'auto-mode-alist '("\\.smt\\'" . smtlib-mode))
+#+end_src
 
 *** Verilog
 

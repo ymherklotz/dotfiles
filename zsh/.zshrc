@@ -1,3 +1,5 @@
+[[ $TERM == "dumb" ]] && unsetopt zle && PS1=$  && return
+
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.histfile
 HISTSIZE=100000
@@ -23,7 +25,7 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 
-(cat ~/.cache/wal/sequences &)
+(cat ~/.cache/wal/sequences &) >/dev/null 2>&1
 
 # Sourcing everything
 source /usr/share/fzf/key-bindings.zsh
@@ -37,7 +39,10 @@ source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M emacs '^P' history-substring-search-up
-bindkey -M emacs '^N' history-substring-search-down
+bindkey -M emacs ^N history-substring-search-down
 
 # opam configuration
 test -r /home/yannherklotz/.opam/opam-init/init.zsh && . /home/yannherklotz/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+
+# added by travis gem
+[ -f /home/ymherklotz/.travis/travis.sh ] && source /home/ymherklotz/.travis/travis.sh

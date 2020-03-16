@@ -33,14 +33,15 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
 fi
 
 # Startup programs
+eval $(ssh-agent)
 dropbox &
-sxhkd -m 1 &
+sxhkd &
 compton &
 redshift &
 dunst &
 wal -R
+xrandr --output DP-1 --auto --output DP-2 --left-of DP-1 --auto --output DVI-1-0 --rotate left --right-of DP-1 --auto
 feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
-xinput set-prop 'DLL075B:01 06CB:76AF Touchpad' 'libinput Natural Scrolling Enabled' 1
 xsetroot -cursor_name left_ptr
 
 #exec i3

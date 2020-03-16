@@ -13,9 +13,12 @@ export PATH="${PATH}:/opt/intelFPGA_lite/18.1/quartus/bin"
 export PATH="${HOME}/.local/bin:${PATH}"
 export PATH="${HOME}/.cargo/bin:${PATH}"
 export PATH="${HOME}/.cabal/bin:${PATH}"
+if [[ -d "${HOME}/.gem/ruby/2.7.0/bin" ]]; then export PATH="${HOME}/.gem/ruby/2.7.0/bin:${PATH}"; fi
 
 # Stop dotnet telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # Fix java windows for tiling window managers
 export _JAVA_AWT_WM_NONREPARENTING=1
+
+eval "$(direnv hook zsh)"
