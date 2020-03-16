@@ -109,7 +109,7 @@ yes or no. Also stop the start up message from popping up and enter the scratch
 buffer instead.
 
 #+BEGIN_SRC emacs-lisp
-  ;;(setq warning-minimum-level :emergency)
+  (setq warning-minimum-level :emergency)
   (setq inhibit-startup-message t
         confirm-nonexistent-file-or-buffer nil
         default-directory "~/")
@@ -121,11 +121,18 @@ buffer instead.
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  (when (string= system-type "darwin")
+  (when (eq system-type 'darwin)
     (setq dired-use-ls-dired nil))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
+  (when (eq system-type 'darwin)
+    (setq mac-right-option-modifier 'none
+          mac-option-key-is-meta nil
+          mac-command-key-is-meta t
+          mac-command-modifier 'meta
+          mac-option-modifier nil))
+
   (global-set-key (kbd "M-u")   #'upcase-dwim)
   (global-set-key (kbd "M-l")   #'downcase-dwim)
   (global-set-key (kbd "M-c")   #'capitalize-dwim)
@@ -447,6 +454,15 @@ Define utility functions to make the reader work.
 #+END_SRC
 
 * Utility
+** Zettelkasten
+
+#+begin_src emacs-lisp
+  (when (file-directory-p "~/Projects/emacs-zettelkasten")
+    (add-to-list 'load-path "~/Projects/emacs-zettelkasten")
+    (require 'zettelkasten)
+    (zettelkasten-mode t))
+#+end_src
+
 ** Navigation
 
 Set navigation commands in all the buffers
