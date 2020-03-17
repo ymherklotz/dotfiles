@@ -50,6 +50,10 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
+;; Org mode dependencies
+(package! org-ref)
+
+;; Misc dependencies
 (package! hungry-delete)
 (package! color-theme-sanityinc-tomorrow)
 (package! zettelkasten

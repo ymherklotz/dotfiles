@@ -123,6 +123,11 @@
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
 
+;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode',
+;; which is a personal preference.
+(remove-hook 'text-mode-hook #'auto-fill-mode)
+(add-hook 'text-mode-hook #'+word-wrap-mode)
+
 ;; Set up magit when C-c g is called
 (use-package! magit
   :bind (("C-x g" . magit-status)))
@@ -165,7 +170,9 @@
                                        ("t" . "theorem"))))
 
 (use-package! org-id
-  :after org)
+  :after org
+  :init
+  (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
 
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
@@ -193,6 +200,17 @@
           ("u" "At uni" tags-todo "@uni"
            ((org-agenda-overriding-header "University")))))
 
+;; Set up org ref for PDFs
+(use-package! org-ref
+  :after org
+  :bind (("C-c r" . org-ref-cite-hydra/body)
+         ("C-c b" . org-ref-bibtex-hydra/body))
+  :config
+  (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+        org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
+        org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
+  (setq org-ref-completion-library 'org-ref-ivy-cite))
+
 ;; Set up org registers to quickly jump to files that I use often.
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
 (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
@@ -211,6 +229,14 @@
 (use-package! zettelkasten
   :config
   (zettelkasten-mode t))
+
+;; Mac configuration
+(when (eq system-type 'darwin)
+  (setq mac-right-option-modifier 'none
+	mac-option-key-is-meta nil
+	mac-command-key-is-meta t
+	mac-command-modifier 'meta
+	mac-option-modifier nil))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
