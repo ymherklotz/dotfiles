@@ -230,13 +230,31 @@
   :config
   (zettelkasten-mode t))
 
+;; Publishing projects, this one is for the zettelkasten
+(use-package! ox-publish
+  :config
+  (setq org-publish-project-alist
+        '(("zettelkasten"
+           :base-directory "~/Dropbox/org/zettelkasten/"
+           :base-extension "org"
+           :publishing-directory "~/Dropbox/org/zettelkasten/html/"
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4
+           :auto-preamble t
+           :with-toc nil
+           :section-numbers nil
+           :html-head "<link rel=\"stylesheet\" href=\"css/fonts.css\" />
+<link rel=\"stylesheet\" href=\"css/default.css\" />"
+           )))
+  (add-hook 'org-export-before-processing-hook 'zettelkasten-org-export-preprocessor))
+
 ;; Mac configuration
 (when (eq system-type 'darwin)
   (setq mac-right-option-modifier 'none
-	mac-option-key-is-meta nil
-	mac-command-key-is-meta t
-	mac-command-modifier 'meta
-	mac-option-modifier nil))
+        mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier nil))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
