@@ -119,6 +119,9 @@
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
 
+;; Remove the ring for emacs
+(setq ring-bell-function 'ignore)
+
 ;; Automatically refresh files
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)

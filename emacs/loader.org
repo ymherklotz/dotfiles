@@ -25,9 +25,6 @@ for that can be found in the [[#Writing][Writing]] section.
   (setq user-mail-address "yann@yannherklotz.com")
 #+END_SRC
 
-#+RESULTS:
-: yann@yannherklotz.com
-
 * Setup
 
 Set path so that it picks up some executables that I use. This is done because
@@ -40,19 +37,14 @@ be manually set inside emacs.
        "/home/ymherklotz/.local/bin" ":"
        "/home/ymherklotz/.yarn/bin" ":"
        "/usr/bin/vendor_perl" ":"
-       "/home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin" ":"
        "/home/ymherklotz/.nix-profile/bin" ":"
        (getenv "PATH")))
   (setq exec-path (append
-           '("/home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin"
-             "/home/ymherklotz/.local/bin"
+           '("/home/ymherklotz/.local/bin"
              "/home/ymherklotz/.yarn/bin"
              "/home/ymherklotz/.nix-profile/bin")
            exec-path))
 #+END_SRC
-
-#+RESULTS:
-| /home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /home/ymherklotz/.nix-profile/bin | /home/ymherklotz/.opam/ocaml-base-compiler.4.09.0/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /home/ymherklotz/.nix-profile/bin | /home/yannherklotz/.opam/4.09.0/bin | /home/yannherklotz/.local/bin | /home/yannherklotz/.yarn/bin | /home/ymherklotz/.cargo/bin | /home/ymherklotz/.local/bin | /home/ymherklotz/.yarn/bin | /usr/bin | /home/ymherklotz/.gem/ruby/2.6.0/bin | /usr/local/bin | /usr/local/sbin | /usr/local/bin | /usr/bin | /usr/bin/site_perl | /usr/bin/vendor_perl | /usr/bin/core_perl | /opt/Xilinx/Vivado/2019.1/bin | /opt/intelFPGA_lite/18.1/quartus/bin | /usr/lib/emacs/26.3/x86_64-pc-linux-gnu |
 
 Define a function to load a user file whenever I want to add configurations that
 are not pushed as part of this configuration file. This includes a private file
@@ -97,9 +89,6 @@ Use ~use-package~ to manage other packages, and improve load times.
   (setq use-package-always-ensure t)
 #+END_SRC
 
-#+RESULTS:
-: t
-
 ** GC Threshold
 
 Threshold for faster startup. This should increase the garbage collector's
@@ -107,11 +96,8 @@ threshold at which it will start cleaning, so that it is not triggered during
 startup.
 
 #+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold 500000000)
+  (setq gc-cons-threshold (* 1024 1024 1024))
 #+END_SRC
-
-#+RESULTS:
-: 500000000
 
 ** General Configuration
 *** Editor settings
@@ -123,24 +109,32 @@ yes or no. Also stop the start up message from popping up and enter the scratch
 buffer instead.
 
 #+BEGIN_SRC emacs-lisp
+  (setq warning-minimum-level :emergency)
   (setq inhibit-startup-message t
-        confirm-nonexistent-file-or-buffer nil)
+        confirm-nonexistent-file-or-buffer nil
+        default-directory "~/")
   (setq-default fill-column 80)
   (setq-default truncate-lines t)
   (tool-bar-mode 0)
-  (menu-bar-mode 0)
+  (unless (string= system-type "darwin")
+    (menu-bar-mode 0))
   (fset 'yes-or-no-p 'y-or-n-p)
   (global-hl-line-mode 1)
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
   (add-to-list 'load-path "~/.emacs.d/modes/")
   (setq ring-bell-function 'ignore)
+  (when (eq system-type 'darwin)
+    (setq dired-use-ls-dired nil))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 #+BEGIN_SRC emacs-lisp
   (global-unset-key (kbd "C-z"))
+  (when (eq system-type 'darwin)
+    (setq mac-right-option-modifier 'none
+          mac-option-key-is-meta nil
+          mac-command-key-is-meta t
+          mac-command-modifier 'meta
+          mac-option-modifier nil))
 
   (global-set-key (kbd "M-u")   #'upcase-dwim)
   (global-set-key (kbd "M-l")   #'downcase-dwim)
@@ -158,10 +152,6 @@ buffer instead.
   (global-set-key (kbd "C-c a") #'org-agenda)
   (global-set-key (kbd "C-c c") #'org-capture)
 #+END_SRC
-
-#+begin_src emacs-lisp
-  (global-visual-line-mode t)
-#+end_src
 
 #+begin_src emacs-lisp
   (global-visual-line-mode t)
@@ -232,9 +222,6 @@ if that is ever a problem.
                     (quote (" " mode-line-misc-info))))))
 #+END_SRC
 
-#+RESULTS:
-| :eval | (simple-mode-line-render (quote (  mode-line-modified   mode-line-buffer-identification  %l:%c  mode-line-modes  )) (quote ((:propertize (:eval (when vc-mode (cond ((string-match Git[:-] vc-mode) (-custom-modeline-github-vc)) ((string-match SVN- vc-mode) (-custom-modeline-svn-vc)) (t (format %s vc-mode))))) face mode-line-vc))) (quote (  mode-line-misc-info))) |
-
 Move the backup files into the temporaty directory so that they are out of the
 way.
 
@@ -245,9 +232,6 @@ way.
         `((".*" ,temporary-file-directory t)))
 #+END_SRC
 
-#+RESULTS:
-| .* | /tmp/ | t |
-
 Make emacs follow symlinks every time, this means that it will open the actual
 file and go to where the file is actually stored instead of editing it through
 the symlink. This enables the use of git and other version control when editing
@@ -256,16 +240,10 @@ the file.
   (setq vc-follow-symlinks t)
 #+END_SRC
 
-#+RESULTS:
-: t
-
 This stops paren mode with interfering with the modeline.
 #+BEGIN_SRC emacs-lisp
   (show-paren-mode 'expression)
 #+END_SRC
-
-#+RESULTS:
-: t
 
 Revert the buffer automatically when a file changes on disc. This is useful when
 monitoring a file such as a log file. It will also do this silently.
@@ -273,8 +251,6 @@ monitoring a file such as a log file. It will also do this silently.
   (global-auto-revert-mode 1)
   (setq auto-revert-verbose nil)
 #+END_SRC
-
-#+RESULTS:
 
 Disable tabs, I want to move towards only using spaces everywhere as that is my
 preferred style. This is just personal preference though.
@@ -287,24 +263,15 @@ preferred style. This is just personal preference though.
   (setq-default python-indent 4)
 #+END_SRC
 
-#+RESULTS:
-: 4
-
 Set the line number display very high so that it is always shown in the modeline.
 #+BEGIN_SRC emacs-lisp
   (setq line-number-display-limit 2000000)
 #+END_SRC
 
-#+RESULTS:
-: 2000000
-
 Set the undo correctly
 #+BEGIN_SRC emacs-lisp
   (define-key global-map (kbd "C-\\") 'undo-only)
 #+END_SRC
-
-#+RESULTS:
-: undo-only
 
 Setting up my keybindings
 
@@ -348,9 +315,6 @@ Setting up my keybindings
   (define-key y-map (kbd "r") 'toggle-rot13-mode)
 #+END_SRC
 
-#+RESULTS:
-: password-store-generate
-
 Set the font to Hack, which is an opensource monospace font designed for
 programming and looking at source code.
 
@@ -360,12 +324,13 @@ programming and looking at source code.
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka Medium-12")
-  (setq default-frame-alist '((font . "Iosevka Medium-12")))
+  (if (string= system-type "darwin")
+      (set-face-attribute 'default nil
+                          :family "Iosevka" :height 145 :weight 'normal)
+    (progn
+      (set-default-font "Iosevka Medium-16")
+      (setq default-frame-alist '((font . "Iosevka Medium-16")))))
 #+END_SRC
-
-#+RESULTS:
-: ((font . Iosevka Medium-14))
 
 #+BEGIN_SRC emacs-lisp
   (use-package eshell
@@ -402,9 +367,6 @@ programming and looking at source code.
         (eshell-send-input))))
 #+END_SRC
 
-#+RESULTS:
-: eshell
-
 *** Reload
 
 #+BEGIN_SRC emacs-lisp
@@ -438,12 +400,9 @@ the ~-a~ flag.
 
 Finally, remove buffers when an email has been sent.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC text
   (load-user-file "personal.el")
 #+END_SRC
-
-#+RESULTS:
-: t
 
 ** Elfeed
 
@@ -461,9 +420,6 @@ Finally, remove buffers when an email has been sent.
                 ("D" . y/elfeed-show-daily)
                 ("q" . y/elfeed-save-db-and-bury)))
 #+END_SRC
-
-#+RESULTS:
-: y/elfeed-save-db-and-bury
 
 Define utility functions to make the reader work.
 
@@ -500,9 +456,6 @@ Define utility functions to make the reader work.
     (quit-window))
 #+END_SRC
 
-#+RESULTS:
-: y/elfeed-save-db-and-bury
-
 * Utility
 ** Zettelkasten
 
@@ -535,9 +488,6 @@ Set navigation commands in all the buffers
     (set-mark-command 1))
 #+END_SRC
 
-#+RESULTS:
-: jump-to-mark
-
 Enable winner mode to save window state.
 #+BEGIN_SRC emacs-lisp
   (winner-mode 1)
@@ -566,9 +516,6 @@ Enable winner mode to save window state.
           '((t . ivy--regex-fuzzy))))
 #+END_SRC
 
-#+RESULTS:
-: counsel-unicode-char
-
 #+begin_src emacs-lisp
   (use-package avy
     :bind
@@ -577,16 +524,11 @@ Enable winner mode to save window state.
     (setq avy-keys '(?a ?r ?s ?t ?d ?h ?n ?e ?i ?o)))
 #+end_src
 
-#+RESULTS:
-: avy-goto-char-2
-
 ** Visual
 *** All the icons
 #+BEGIN_SRC emacs-lisp
   (use-package all-the-icons)
 #+END_SRC
-
-#+RESULTS:
 
 ** Editing
 *** Hungry Delete
@@ -595,9 +537,6 @@ Enable winner mode to save window state.
     :config
     (global-hungry-delete-mode))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 *** SmartParens
 #+BEGIN_SRC emacs-lisp
@@ -660,9 +599,6 @@ incrementally selecting more and more of the text.
     :bind ("M-o" . er/expand-region))
 #+END_SRC
 
-#+RESULTS:
-: er/expand-region
-
 *** Dired
 
 #+BEGIN_SRC emacs-lisp
@@ -680,9 +616,6 @@ incrementally selecting more and more of the text.
     :bind (("C-c d" . deadgrep)))
 #+END_SRC
 
-#+RESULTS:
-: deadgrep
-
 ** Yasnippets
 
 #+BEGIN_SRC emacs-lisp
@@ -690,11 +623,13 @@ incrementally selecting more and more of the text.
     :config
     (yas-global-mode))
 #+END_SRC
-** Tramp
 
-#+begin_src emacs-lisp
-  (setq tramp-default-method "ssh")
-#+end_src
+** Nix
+
+#+BEGIN_SRC emacs-lisp
+  (use-package direnv
+    :config (direnv-mode))
+#+END_SRC
 
 * Writing
 
@@ -717,10 +652,10 @@ incrementally selecting more and more of the text.
 
 ** Latex
 #+BEGIN_SRC emacs-lisp
-  (use-package latex
+  (use-package tex-site
     :ensure auctex
+    :mode (".tex'" . latex-mode)
     :config
-    (require 'tex-site)
     ;; to use pdfview with auctex
     (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
           TeX-view-program-list '(("PDF Tools" TeX-pdf-tools-sync-view))
@@ -728,7 +663,7 @@ incrementally selecting more and more of the text.
     ;; to have the buffer refresh after compilation
     (add-hook 'TeX-after-compilation-finished-functions
               #'TeX-revert-document-buffer)
-    (setq TeX-engine 'xetex)
+    (setq TeX-engine 'luatex)
     (setq TeX-auto-save t)
     (setq TeX-parse-self t)
     (setq-default TeX-command-extra-options "-shell-escape")
@@ -748,12 +683,10 @@ incrementally selecting more and more of the text.
     (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
     (setq reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
     (setq org-latex-listings 'minted)
-    (require 'ox-latex)
-    (add-to-list 'org-latex-packages-alist '("" "minted"))) ; with Emacs latex mode
-#+END_SRC
+    (add-to-list 'org-latex-packages-alist '("" "minted")) ; with Emacs latex mode
 
-#+RESULTS:
-: t
+    (require 'ox-latex))
+#+END_SRC
 
 ** Markdown
 Markdown is the standard for writing documentation. This snippet loads GFM
@@ -794,9 +727,6 @@ Markdown is the standard for writing documentation. This snippet loads GFM
     (add-hook 'org-trigger-hook 'save-buffer))
 #+END_SRC
 
-#+RESULTS:
-: t
-
 Set up ob for executing code blocks
 
 #+BEGIN_SRC emacs-lisp
@@ -818,9 +748,6 @@ Set up ob for executing code blocks
        (dot        . t)
        (shell      . t))))
 #+END_SRC
-
-#+RESULTS:
-: t
 
 Exporting to html needs htmlize.
 
@@ -862,9 +789,6 @@ Add org noter
     (setq org-ref-completion-library 'org-ref-ivy-cite))
 #+END_SRC
 
-#+RESULTS:
-: org-ref-bibtex-hydra/body
-
 *** Org ID
 
 #+begin_src emacs-lisp
@@ -895,7 +819,7 @@ Add org noter
                              (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
         org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
 
-  (setq org-agenda-custom-commands 
+  (setq org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
            ((org-agenda-overriding-header "Work")))
           ("h" "At home" tags-todo "@home"
@@ -904,20 +828,12 @@ Add org noter
            ((org-agenda-overriding-header "University")))))
 #+END_SRC
 
-#+RESULTS:
-| w | At work | tags-todo | @work | ((org-agenda-overriding-header Work))       |
-| h | At home | tags-todo | @home | ((org-agenda-overriding-header Home))       |
-| u | At uni  | tags-todo | @uni  | ((org-agenda-overriding-header University)) |
-
 *** Contacts
 
 #+BEGIN_SRC emacs-lisp
   (setq org-contacts-files (mapcar 'expand-file-name
                                    '("~/Dropbox/org/contacts.org")))
 #+END_SRC
-
-#+RESULTS:
-| /home/yannherklotz/Dropbox/org/contacts.org |
 
 *** Remove Binding
 #+BEGIN_SRC emacs-lisp
@@ -954,9 +870,6 @@ Add org noter
     (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward))
 #+END_SRC
 
-#+RESULTS:
-| pdf-view-mode |
-
 ** Writeroom
 
 #+begin_src emacs-lisp
@@ -977,9 +890,6 @@ lot of different language support.
     :config
     (setq server-switch-hook nil))
 #+END_SRC
-
-#+RESULTS:
-: magit-status
 
 *** Projectile
 #+BEGIN_SRC emacs-lisp
@@ -1007,9 +917,6 @@ lot of different language support.
   (add-to-list 'command-switch-alist '("diff" . command-line-diff))
   (setq-default ediff-forward-word-function 'forward-char)
 #+END_SRC
-
-#+RESULTS:
-: forward-char
 
 ** Language Support
 *** C++
@@ -1075,9 +982,6 @@ to install clang format script).
            ("C-c u" . 'clang-format-buffer)))
 #+END_SRC
 
-#+RESULTS:
-: clang-format-buffer
-
 *** Clojure
 Using Cider for clojure environment.
 
@@ -1115,9 +1019,6 @@ Adding hook to clojure mode to enable strict parentheses mode.
     (setq coq-compile-before-require t)
     (setq proof-splash-enable nil))
 #+end_src
-
-#+RESULTS:
-: t
 
 *** Elm
 
@@ -1190,9 +1091,6 @@ Haskell mode with company mode completion.
     :hook haskell-mode)
 #+END_SRC
 
-#+RESULTS:
-| (lambda nil (set (make-local-variable (quote projectile-tags-command)) hasktags -Re -f "%s" %s "%s")) | (lambda nil (local-set-key (kbd C-c v) (quote haskell-add-import))) | (lambda nil (local-set-key (kbd C-c y a) (quote y/haskell-align-comment))) | haskell-decl-scan-mode | interactive-haskell-mode |
-
 *** LLVM IR
 
 #+begin_src emacs-lisp
@@ -1231,9 +1129,6 @@ Elpy package for python, which provides an IDE type environment for python.
          nil "_"))))
 #+END_SRC
 
-#+RESULTS:
-: python-shell-completion-native-try
-
 *** JSON
 JSON files should be opened in js-mode.
 #+BEGIN_SRC emacs-lisp
@@ -1256,8 +1151,6 @@ JSON files should be opened in js-mode.
   (use-package scala-mode)
 #+end_src
 
-#+RESULTS:
-
 *** Shell
 #+BEGIN_SRC emacs-lisp
   (setq sh-basic-offset 2)
@@ -1276,9 +1169,6 @@ JSON files should be opened in js-mode.
 #+begin_src emacs-lisp
   (setq flycheck-verilog-verilator-executable "verilator_bin")
 #+end_src
-
-#+RESULTS:
-: verilator_bin
 
 ** Completion Support
 *** Company
@@ -1352,47 +1242,7 @@ Shamelessly taken from https://github.com/alphapapa/unpackaged.el#hydra.
                                        (unpackaged/smerge-hydra/body)))))
 #+END_SRC
 
-#+RESULTS:
-| lambda | nil | (when smerge-mode (unpackaged/smerge-hydra/body)) |
-
 * Look and Feel
-
-Keybindings
-
-#+BEGIN_SRC emacs-lisp
-  (defun y/set-theme (theme)
-    (load-theme theme t)
-    (toggle-scroll-bar -1))
-
-  (defun y/sanityinc-tomorrow-bright ()
-    (interactive)
-    (y/set-theme 'sanityinc-tomorrow-bright))
-
-  (defun y/inkpot ()
-    (interactive)
-    (y/set-theme 'inkpot))
-
-  (defun y/zenburn ()
-    (interactive)
-    (y/set-theme 'zenburn))
-
-  (defun y/solarized-light ()
-    (interactive)
-    (y/set-theme 'solarized-light))
-
-  (defun y/gruvbox ()
-    (interactive)
-    (y/set-theme 'gruvbox))
-
-  (define-key y-map (kbd "1") 'y/sanityinc-tomorrow-bright)
-  (define-key y-map (kbd "2") 'y/zenburn)
-  (define-key y-map (kbd "3") 'y/solarized-light)
-  (define-key y-map (kbd "4") 'y/gruvbox)
-  (define-key y-map (kbd "5") 'y/inkpot)
-#+END_SRC
-
-#+RESULTS:
-: y/inkpot
 
 #+BEGIN_SRC emacs-lisp
   (defadvice load-theme
@@ -1409,13 +1259,10 @@ Keybindings
            (toggle-scroll-bar -1)))
 #+END_SRC
 
-#+RESULTS:
-| (lambda (frame) (select-frame frame) (load-theme (quote sanityinc-tomorrow-night) t) (toggle-scroll-bar -1)) | (lambda (frame) (select-frame frame) (load-theme (quote gruvbox-light-soft) t) (toggle-scroll-bar -1)) | x-dnd-init-frame |
-
 * Conclusion
 Setting the gc-cons threshold back to what it was at the beginning.
 
 #+BEGIN_SRC emacs-lisp
   (server-start)
-  (setq gc-cons-threshold 10000000)
+  (setq gc-cons-threshold (* 1024 1024 10))
 #+END_SRC
