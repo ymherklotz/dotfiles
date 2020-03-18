@@ -57,4 +57,4 @@
 (package! hungry-delete)
 (package! color-theme-sanityinc-tomorrow)
 (package! zettelkasten
-  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten") :pin "a5bd657820")
