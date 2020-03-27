@@ -51,13 +51,21 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 
 ;; Disabling packages
-(package! undo-tree :disable t)
+(disable-packages! undo-tree org-bullets helm)
 
-;; Org mode dependencies
+;; `org-mode' dependencies
 (package! org-ref)
+(package! org-noter)
+;; `org-bullets' replacement
+(package! org-superstar)
+
+;; Proof general
+(package! proof-general)
 
 ;; Misc dependencies
 (package! hungry-delete)
 (package! color-theme-sanityinc-tomorrow)
+(package! modus-operandi-theme)
+(package! modus-vivendi-theme)
 (package! zettelkasten
-  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten") :pin "a5bd657820")
+  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))

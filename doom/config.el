@@ -26,7 +26,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'sanityinc-tomorrow-night)
+(setq doom-theme 'modus-operandi)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -76,19 +76,6 @@
 (global-set-key (kbd "C-`")   #'push-mark-no-activate)
 (global-set-key (kbd "M-`")   #'jump-to-mark)
 
-;; Delete an emacs client frame.
-(defun y/exit-emacs-client ()
-  "consistent exit emacsclient. If not in emacs client, echo a
-  message in minibuffer, don't exit emacs. If in server mode and
-  editing file, do C-x # server-edit else do C-x 5 0
-  delete-frame"
-  (interactive)
-  (if server-buffer-clients
-      (server-edit)
-    (delete-frame)))
-
-(global-set-key (kbd "C-c q") #'y/exit-emacs-client)
-
 ;; Swap two window positions.
 (defun y/swap-windows ()
   "Swaps two windows and leaves the cursor in the original one"
@@ -105,6 +92,14 @@
 (define-key y-map (kbd "i") 'password-store-insert)
 (define-key y-map (kbd "g") 'password-store-generate)
 (define-key y-map (kbd "r") 'toggle-rot13-mode)
+
+;; Mac configuration
+(when (eq system-type 'darwin)
+  (setq mac-right-option-modifier 'none
+        mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier nil))
 
 (defun y/insert-date ()
   "Insert a timestamp according to locale's date and time format."
@@ -148,7 +143,7 @@
   :config (global-hungry-delete-mode))
 
 ;; Org configuration
-(use-package org
+(use-package! org
   :mode ("\\.org\\'" . org-mode)
   :init
   (map! :map org-mode-map
@@ -192,16 +187,14 @@
                            ("~/Dropbox/org/someday.org" :level . 1)
                            ("~/Dropbox/org/tickler.org" :maxlevel . 2)
                            (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
-      org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-
-;; Set custom agenda commands which can be activated in the agenda viewer.
-(setq org-agenda-custom-commands
-        '(("w" "At work" tags-todo "@work"
-           ((org-agenda-overriding-header "Work")))
-          ("h" "At home" tags-todo "@home"
-           ((org-agenda-overriding-header "Home")))
-          ("u" "At uni" tags-todo "@uni"
-           ((org-agenda-overriding-header "University")))))
+      ;; Set custom agenda commands which can be activated in the agenda viewer.
+      org-agenda-custom-commands
+      '(("w" "At work" tags-todo "@work"
+         ((org-agenda-overriding-header "Work")))
+        ("h" "At home" tags-todo "@home"
+         ((org-agenda-overriding-header "Home")))
+        ("u" "At uni" tags-todo "@uni"
+         ((org-agenda-overriding-header "University")))))
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
@@ -214,6 +207,20 @@
         org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
   (setq org-ref-completion-library 'org-ref-ivy-cite))
 
+;; Set up org-noter
+(use-package! org-noter
+  :after org
+  :commands org-noter
+  :config (setq org-noter-default-notes-file-names '("notes.org")
+                org-noter-notes-search-path '("~/org/bibliography")
+                org-noter-separate-notes-from-heading t))
+
+(use-package! org-superstar
+  :hook (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸")
+        org-superstar-special-todo-items t))
+
 ;; Set up org registers to quickly jump to files that I use often.
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
 (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
@@ -224,14 +231,15 @@
 (setq ispell-dictionary "en_GB")
 
 (use-package! flyspell
+  :hook (text-mode . flyspell-mode)
   :config
   (define-key flyspell-mode-map (kbd "C-.") nil)
   (define-key flyspell-mode-map (kbd "C-,") nil))
 
 ;; Set up zettelkasten mode
 (use-package! zettelkasten
-  :config
-  (zettelkasten-mode t))
+  :bind-keymap
+  ("C-c k" . zettelkasten-mode-map))
 
 ;; Publishing projects, this one is for the zettelkasten
 (setq org-publish-project-alist
@@ -249,13 +257,15 @@
          )))
 (add-hook 'org-export-before-processing-hook 'zettelkasten-org-export-preprocessor)
 
-;; Mac configuration
-(when (eq system-type 'darwin)
-  (setq mac-right-option-modifier 'none
-        mac-option-key-is-meta nil
-        mac-command-key-is-meta t
-        mac-command-modifier 'meta
-        mac-option-modifier nil))
+;; Proof general configuration
+(use-package! proof-general
+  :mode "\\.v\\'"
+  :config
+  (setq coq-compile-before-require t
+        proof-splash-enable nil
+        proof-auto-action-when-deactivating-scripting 'retract
+        proof-delete-empty-windows nil
+        proof-auto-raise-buffers t))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
