@@ -19,6 +19,7 @@ if [[ -d "${HOME}/.gem/ruby/2.7.0/bin" ]]; then export PATH="${HOME}/.gem/ruby/2
 export PATH="/usr/local/bin:${PATH}"
 export PATH="/Library/TeX/texbin:${PATH}"
 export PATH="${PATH}:/Users/yannherklotz/Library/Python/3.7/bin"
+export PATH="/usr/local/opt/bison/bin:$PATH"
 
 # Stop dotnet telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -38,3 +39,6 @@ if [[ "$?" -eq 0 ]]; then
     test -r /home/yannherklotz/.opam/opam-init/init.zsh && . /home/yannherklotz/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
     eval "$(opam env)";
 fi
+
+# Load rust environment
+if [[ -f $HOME/.cargo/env ]]; then source $HOME/.cargo/env; fi
