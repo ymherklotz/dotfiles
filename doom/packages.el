@@ -64,8 +64,12 @@
 
 ;; Misc dependencies
 (package! hungry-delete)
+(package! vagrant-tramp)
+(package! zettelkasten
+  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+(package! pinentry)
+
+;; Themes
 (package! color-theme-sanityinc-tomorrow)
 (package! modus-operandi-theme)
 (package! modus-vivendi-theme)
-(package! zettelkasten
-  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))

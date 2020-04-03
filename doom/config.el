@@ -174,27 +174,27 @@
 
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
-  (setq org-startup-indented nil)
-  (define-key org-mode-map (kbd "C-,") nil))
-
-;; Set agenda files, refile targets and todo keywords.
-(setq org-agenda-files (mapcar 'expand-file-name
-                               (list "~/Dropbox/org/inbox.org"
-                                     "~/Dropbox/org/main.org"
-                                     "~/Dropbox/org/tickler.org"
-                                     (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
-      org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
-                           ("~/Dropbox/org/someday.org" :level . 1)
-                           ("~/Dropbox/org/tickler.org" :maxlevel . 2)
-                           (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
-      ;; Set custom agenda commands which can be activated in the agenda viewer.
-      org-agenda-custom-commands
-      '(("w" "At work" tags-todo "@work"
-         ((org-agenda-overriding-header "Work")))
-        ("h" "At home" tags-todo "@home"
-         ((org-agenda-overriding-header "Home")))
-        ("u" "At uni" tags-todo "@uni"
-         ((org-agenda-overriding-header "University")))))
+  (define-key org-mode-map (kbd "C-,") nil)
+  ;; Set agenda files, refile targets and todo keywords.
+  (setq org-startup-indented nil
+        org-agenda-files (mapcar 'expand-file-name
+                                 (list "~/Dropbox/org/inbox.org"
+                                       "~/Dropbox/org/main.org"
+                                       "~/Dropbox/org/tickler.org"
+                                       (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+        org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
+                             ("~/Dropbox/org/someday.org" :level . 1)
+                             ("~/Dropbox/org/tickler.org" :maxlevel . 2)
+                             (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
+        ;; Set custom agenda commands which can be activated in the agenda viewer.
+        org-agenda-custom-commands
+        '(("w" "At work" tags-todo "@work"
+           ((org-agenda-overriding-header "Work")))
+          ("h" "At home" tags-todo "@home"
+           ((org-agenda-overriding-header "Home")))
+          ("u" "At uni" tags-todo "@uni"
+           ((org-agenda-overriding-header "University"))))
+        org-log-done 'time))
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
@@ -218,7 +218,7 @@
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
   :config
-  (setq org-superstar-headline-bullets-list '("⁖" "◉" "○" "✸")
+  (setq org-superstar-headline-bullets-list '("♠" "♣" "♥" "♦")
         org-superstar-special-todo-items t))
 
 ;; Set up org registers to quickly jump to files that I use often.
@@ -259,13 +259,42 @@
 
 ;; Proof general configuration
 (use-package! proof-general
-  :mode "\\.v\\'"
   :config
   (setq coq-compile-before-require t
         proof-splash-enable nil
         proof-auto-action-when-deactivating-scripting 'retract
         proof-delete-empty-windows nil
         proof-auto-raise-buffers t))
+
+  (use-package smartparens
+    :bind (("M-["              . sp-backward-unwrap-sexp)
+           ("M-]"              . sp-unwrap-sexp)
+           ("C-M-f"            . sp-forward-sexp)
+           ("C-M-b"            . sp-backward-sexp)
+           ("C-M-d"            . sp-down-sexp)
+           ("C-M-a"            . sp-backward-down-sexp)
+           ("C-M-e"            . sp-up-sexp)
+           ("C-M-u"            . sp-backward-up-sexp)
+           ("C-M-t"            . sp-transpose-sexp)
+           ("C-M-n"            . sp-next-sexp)
+           ("C-M-p"            . sp-previous-sexp)
+           ("C-M-k"            . sp-kill-sexp)
+           ("C-M-w"            . sp-copy-sexp)
+           ("C-)"              . sp-forward-slurp-sexp)
+           ("C-}"              . sp-forward-barf-sexp)
+           ("C-("              . sp-backward-slurp-sexp)
+           ("C-{"              . sp-backward-barf-sexp)
+           ("M-D"              . sp-splice-sexp)
+           ("C-]"              . sp-select-next-thing-exchange)
+           ("C-<left_bracket>" . sp-select-previous-thing)
+           ("C-M-]"            . sp-select-next-thing)
+           ("M-F"              . sp-forward-symbol)
+           ("M-B"              . sp-backward-symbol)
+           ("M-r"              . sp-split-sexp))
+    :config
+    (require 'smartparens-config)
+    (show-smartparens-global-mode +1)
+    (smartparens-global-mode 1))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
