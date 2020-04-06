@@ -2,7 +2,7 @@ os=$(uname -s)
 
 . $HOME/.nix-profile/etc/profile.d/nix.sh
 
-[ -n $SSH_CLIENT ] && export MINIMAL_USER_CHAR="$(hostname)"
+[ -n "$SSH_CLIENT" ] && export MINIMAL_USER_CHAR="$(hostname)"
 
 export GITHUB_HOME=$HOME/Projects
 export FZF_DEFAULT_COMMAND='fd --type file --hidden --no-ignore'
@@ -13,11 +13,11 @@ export TERM='xterm-256color'
 export CLICOLOR=1
 
 prepend_path() {
-    test -d "$1" && PATH="$1:$PATH"
+    [ -d "$1" ] && PATH="$1:$PATH"
 }
 
 append_path() {
-    test -d "$1" && PATH="$PATH:$1"
+    [ -d "$1" ] && PATH="$PATH:$1"
 }
 
 if [ $os = "Darwin" ]; then
@@ -57,7 +57,7 @@ if [ "$?" -eq 0 ]; then
 fi
 
 # Load rust environment
-[ -r $HOME/.cargo/env ] && source $HOME/.cargo/env
+[ -r "$HOME/.cargo/env" ] && source $HOME/.cargo/env
 
 # Travis
 [ -r "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
