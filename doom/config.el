@@ -1,9 +1,5 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Yann Herklotz"
@@ -49,7 +45,7 @@
 (global-set-key (kbd "C-,")   #'(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)
+(global-set-key (kbd "C-c /") #'avy-goto-word-1)
 
 ;; Set undo-only correctly
 (global-set-key (kbd "C-\\") 'undo-only)
@@ -109,10 +105,28 @@
 (define-key y-map (kbd "d") 'y/insert-date)
 
 ;; Set backup directories into the tmp folder
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(defvar --backup-directory (concat user-emacs-directory "backups"))
+(if (not (file-exists-p --backup-directory))
+        (make-directory --backup-directory t))
+(setq backup-directory-alist `(("." . ,--backup-directory)))
+(setq make-backup-files t               ; backup of a file the first time it is saved.
+      backup-by-copying t               ; don't clobber symlinks
+      version-control t                 ; version numbers for backup files
+      delete-old-versions t             ; delete excess backup files silently
+      delete-by-moving-to-trash t
+      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+      auto-save-default t               ; auto-save every buffer that visits a file
+      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+      )
+
+;; Set sensitive data mode
+(setq auto-mode-alist
+      (append
+       (list '("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
+             '("\\.sv\\'" . verilog-mode))
+       auto-mode-alist))
 
 ;; Remove the ring for emacs
 (setq ring-bell-function 'ignore)
@@ -120,6 +134,9 @@
 ;; Automatically refresh files
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
+
+;; Set sentence to end with double space
+(setq sentence-end-double-space t)
 
 ;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode',
 ;; which is a personal preference.
@@ -172,6 +189,11 @@
   :init
   (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
 
+(use-package! org-contacts
+  :after org
+  :init
+  (setq org-contacts-files '("~/Dropbox/org/contacts.org")))
+
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
   (define-key org-mode-map (kbd "C-,") nil)
@@ -181,10 +203,12 @@
                                  (list "~/Dropbox/org/inbox.org"
                                        "~/Dropbox/org/main.org"
                                        "~/Dropbox/org/tickler.org"
+                                       "~/Dropbox/org/projects.org"
                                        (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
         org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
                              ("~/Dropbox/org/someday.org" :level . 1)
                              ("~/Dropbox/org/tickler.org" :maxlevel . 2)
+                             ("~/Dropbox/org/projects.org" :level . 1)
                              (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
         ;; Set custom agenda commands which can be activated in the agenda viewer.
         org-agenda-custom-commands
@@ -194,7 +218,15 @@
            ((org-agenda-overriding-header "Home")))
           ("u" "At uni" tags-todo "@uni"
            ((org-agenda-overriding-header "University"))))
-        org-log-done 'time))
+        org-log-done 'time
+        org-capture-templates
+        `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") "Today")
+           "* TODO %^{Title}\nCreated: %U\n\n%?\n")
+          ("c" "Contacts" entry (file "~/Dropbox/org/contacts.org")
+         "* %(org-contacts-template-name)
+  :PROPERTIES:
+  :EMAIL: %(org-contacts-template-email)
+  :END:"))))
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
@@ -226,6 +258,12 @@
 (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+
+;; Bibtex stuff
+(use-package! ebib
+  :bind (("C-c y b" . ebib))
+  :init
+  (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")))
 
 ;; Set up dictionaries
 (setq ispell-dictionary "en_GB")
