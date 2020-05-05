@@ -62,6 +62,9 @@
 ;; Proof general
 (package! proof-general)
 
+;; Bibtex stuff
+(package! ebib)
+
 ;; Misc dependencies
 (package! hungry-delete)
 (package! vagrant-tramp)
