@@ -76,7 +76,7 @@
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
-       (spell +hunspell)   ; tasing you for misspelling mispelling
+       (spell +aspell)   ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
@@ -163,8 +163,8 @@
        ;;web               ; the tubes
 
        :email
-       (mu4e +gmail)
-       ;;notmuch
+       ;;(mu4e +gmail)
+       notmuch
        ;;(wanderlust +gmail)
 
        :app
