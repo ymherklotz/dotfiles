@@ -51,7 +51,7 @@
 ;(package! builtin-package :recipe (:branch "develop"))
 
 ;; Disabling packages
-(disable-packages! undo-tree org-bullets helm)
+(disable-packages! undo-tree org-bullets helm pretty-code company-coq)
 
 ;; `org-mode' dependencies
 (package! org-ref)
@@ -59,11 +59,11 @@
 ;; `org-bullets' replacement
 (package! org-superstar)
 
-;; Proof general
-(package! proof-general)
-
 ;; Bibtex stuff
 (package! ebib)
+
+;; Haskell stuff
+(package! ormolu)
 
 ;; Misc dependencies
 (package! hungry-delete)

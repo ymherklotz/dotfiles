@@ -16,8 +16,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "Iosevka" :size 16)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-      doom-serif-font (font-spec :family "Libre Baskerville"))
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville" :size 12)
+      doom-serif-font (font-spec :family "Libre Baskerville" :size 12))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -46,6 +46,7 @@
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
+(global-set-key (kbd "M-=")   #'count-words)
 
 ;; Set undo-only correctly
 (global-set-key (kbd "C-\\") 'undo-only)
@@ -89,6 +90,8 @@
 (define-key y-map (kbd "g") 'password-store-generate)
 (define-key y-map (kbd "r") 'toggle-rot13-mode)
 
+(electric-indent-mode -1)
+
 ;; Mac configuration
 (when (eq system-type 'darwin)
   (setq mac-right-option-modifier 'none
@@ -107,7 +110,7 @@
 ;; Set backup directories into the tmp folder
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-directory))
-        (make-directory --backup-directory t))
+    (make-directory --backup-directory t))
 (setq backup-directory-alist `(("." . ,--backup-directory)))
 (setq make-backup-files t               ; backup of a file the first time it is saved.
       backup-by-copying t               ; don't clobber symlinks
@@ -140,8 +143,10 @@
 
 ;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode',
 ;; which is a personal preference.
+(setq-default fill-column 100)
 (remove-hook 'text-mode-hook #'auto-fill-mode)
 (add-hook 'text-mode-hook #'+word-wrap-mode)
+(add-hook 'text-mode-hook #'visual-fill-column-mode)
 
 ;; Set up magit when C-c g is called
 (use-package! magit
@@ -170,6 +175,9 @@
         org-return-follows-link t
         org-confirm-babel-evaluate nil
         org-use-speed-commands t
+        org-hide-emphasis-markers t
+        org-adapt-indentation nil
+        org-cycle-separator-lines 1
         org-structure-template-alist '(("a" . "export ascii")
                                        ("c" . "center")
                                        ("C" . "comment")
@@ -182,12 +190,10 @@
                                        ("v" . "verse")
                                        ("el" . "src emacs-lisp")
                                        ("d" . "definition")
-                                       ("t" . "theorem"))))
-
-(use-package! org-id
-  :after org
-  :init
-  (setq org-id-link-to-org-use-id 'create-if-interactive-and-no-custom-id))
+                                       ("t" . "theorem")))
+  (customize-set-variable 'org-blank-before-new-entry
+                          '((heading . nil)
+                            (plain-list-item . nil))))
 
 (use-package! org-contacts
   :after org
@@ -204,6 +210,7 @@
                                        "~/Dropbox/org/main.org"
                                        "~/Dropbox/org/tickler.org"
                                        "~/Dropbox/org/projects.org"
+                                       "~/Dropbox/org/pldi2020.org"
                                        (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
         org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
                              ("~/Dropbox/org/someday.org" :level . 1)
@@ -223,7 +230,7 @@
         `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") "Today")
            "* TODO %^{Title}\nCreated: %U\n\n%?\n")
           ("c" "Contacts" entry (file "~/Dropbox/org/contacts.org")
-         "* %(org-contacts-template-name)
+           "* %(org-contacts-template-name)
   :PROPERTIES:
   :EMAIL: %(org-contacts-template-email)
   :END:"))))
@@ -263,7 +270,13 @@
 (use-package! ebib
   :bind (("C-c y b" . ebib))
   :init
-  (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")))
+  (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
+        ebib-notes-directory "~/Dropbox/bibliography/notes/")
+  (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
+  (add-to-list 'ebib-file-associations '("pdf" . "open"))
+  (advice-add 'bibtex-generate-autokey :around
+              #'(lambda (orig-func &rest args)
+                  (replace-regexp-in-string ":" "" (apply orig-func args)))))
 
 ;; Set up dictionaries
 (setq ispell-dictionary "en_GB")
@@ -279,60 +292,58 @@
   :bind-keymap
   ("C-c k" . zettelkasten-mode-map))
 
-;; Publishing projects, this one is for the zettelkasten
-(setq org-publish-project-alist
-      '(("zettelkasten"
-         :base-directory "~/Dropbox/org/zettelkasten/"
-         :base-extension "org"
-         :publishing-directory "~/Dropbox/org/zettelkasten/html/"
-         :publishing-function org-html-publish-to-html
-         :headline-levels 4
-         :auto-preamble t
-         :with-toc nil
-         :section-numbers nil
-         :html-head "<link rel=\"stylesheet\" href=\"css/fonts.css\" />
-<link rel=\"stylesheet\" href=\"css/default.css\" />"
-         )))
-(add-hook 'org-export-before-processing-hook 'zettelkasten-org-export-preprocessor)
-
 ;; Proof general configuration
-(use-package! proof-general
-  :config
-  (setq coq-compile-before-require t
-        proof-splash-enable nil
-        proof-auto-action-when-deactivating-scripting 'retract
-        proof-delete-empty-windows nil
-        proof-auto-raise-buffers t))
+(setq proof-splash-enable nil
+      proof-auto-action-when-deactivating-scripting 'retract
+      proof-delete-empty-windows nil
+      proof-auto-raise-buffers t
+      coq-compile-before-require t)
 
-  (use-package smartparens
-    :bind (("M-["              . sp-backward-unwrap-sexp)
-           ("M-]"              . sp-unwrap-sexp)
-           ("C-M-f"            . sp-forward-sexp)
-           ("C-M-b"            . sp-backward-sexp)
-           ("C-M-d"            . sp-down-sexp)
-           ("C-M-a"            . sp-backward-down-sexp)
-           ("C-M-e"            . sp-up-sexp)
-           ("C-M-u"            . sp-backward-up-sexp)
-           ("C-M-t"            . sp-transpose-sexp)
-           ("C-M-n"            . sp-next-sexp)
-           ("C-M-p"            . sp-previous-sexp)
-           ("C-M-k"            . sp-kill-sexp)
-           ("C-M-w"            . sp-copy-sexp)
-           ("C-)"              . sp-forward-slurp-sexp)
-           ("C-}"              . sp-forward-barf-sexp)
-           ("C-("              . sp-backward-slurp-sexp)
-           ("C-{"              . sp-backward-barf-sexp)
-           ("M-D"              . sp-splice-sexp)
-           ("C-]"              . sp-select-next-thing-exchange)
-           ("C-<left_bracket>" . sp-select-previous-thing)
-           ("C-M-]"            . sp-select-next-thing)
-           ("M-F"              . sp-forward-symbol)
-           ("M-B"              . sp-backward-symbol)
-           ("M-r"              . sp-split-sexp))
-    :config
-    (require 'smartparens-config)
-    (show-smartparens-global-mode +1)
-    (smartparens-global-mode 1))
+(setq coq-may-use-prettify nil
+      company-coq-prettify-symbols nil)
+(global-prettify-symbols-mode -1)
+
+(use-package smartparens
+  :bind (("M-["              . sp-backward-unwrap-sexp)
+         ("M-]"              . sp-unwrap-sexp)
+         ("C-M-f"            . sp-forward-sexp)
+         ("C-M-b"            . sp-backward-sexp)
+         ("C-M-d"            . sp-down-sexp)
+         ("C-M-a"            . sp-backward-down-sexp)
+         ("C-M-e"            . sp-up-sexp)
+         ("C-M-u"            . sp-backward-up-sexp)
+         ("C-M-t"            . sp-transpose-sexp)
+         ("C-M-n"            . sp-next-sexp)
+         ("C-M-p"            . sp-previous-sexp)
+         ("C-M-k"            . sp-kill-sexp)
+         ("C-M-w"            . sp-copy-sexp)
+         ("C-)"              . sp-forward-slurp-sexp)
+         ("C-}"              . sp-forward-barf-sexp)
+         ("C-("              . sp-backward-slurp-sexp)
+         ("C-{"              . sp-backward-barf-sexp)
+         ("M-D"              . sp-splice-sexp)
+         ("C-]"              . sp-select-next-thing-exchange)
+         ("C-<left_bracket>" . sp-select-previous-thing)
+         ("C-M-]"            . sp-select-next-thing)
+         ("M-F"              . sp-forward-symbol)
+         ("M-B"              . sp-backward-symbol)
+         ("M-r"              . sp-split-sexp))
+  :config
+  (require 'smartparens-config)
+  (show-smartparens-global-mode +1)
+  (smartparens-global-mode 1))
+
+(use-package! ormolu
+  :hook (haskell-mode . ormolu-format-on-save-mode)
+  :bind
+  (:map haskell-mode-map
+   ("C-c r" . ormolu-format-buffer)))
+
+(after! writeroom-mode (setq +zen-text-scale 1))
+
+(setq pdf-view-use-scaling t)
+
+(setq doc-view-resolution 300)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -350,3 +361,26 @@
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-blank-before-new-entry (quote ((heading) (plain-list-item))))
+ '(package-selected-packages (quote (org-plus-contrib)))
+ '(safe-local-variable-values
+   (quote
+    ((eval add-to-list
+           (quote auto-mode-alist)
+           (quote
+            ("\\.v\\'" . verilog-mode)))
+     (eval setq org-ref-pdf-directory
+           (concat
+            (projectile-project-root)
+            "papers/"))))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
