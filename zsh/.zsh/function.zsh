@@ -1,5 +1,6 @@
 alias emc='emacsclient -c -a ""'
 alias em='emacsclient -nw -a ""'
+alias ls='exa'
 alias ff='firefox'
 alias vim=nvim
 # alias lspasscp='lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\\]//g')'
