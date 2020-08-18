@@ -71,7 +71,7 @@
 #               an EOL character signifies the end of the bind.
 
 # Open a new terminal
-cmd - return : open /System/Applications/Utilities/Terminal.app
+cmd - return : /Applications/Alacritty.app/Contents/MacOS/alacritty
 
 # focus window
 alt - u : yabai -m window --focus north
