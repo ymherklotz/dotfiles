@@ -15,6 +15,10 @@ export PATH="${HOME}/.cargo/bin:${PATH}"
 export PATH="${HOME}/.cabal/bin:${PATH}"
 if [[ -d "${HOME}/.gem/ruby/2.7.0/bin" ]]; then export PATH="${HOME}/.gem/ruby/2.7.0/bin:${PATH}"; fi
 
+if [[ -n $SSH_CLIENT ]]; then
+    export MINIMAL_USER_CHAR="$(hostname)"
+fi
+
 # Stop dotnet telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
