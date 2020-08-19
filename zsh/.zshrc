@@ -25,24 +25,18 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 
-(cat ~/.cache/wal/sequences &) >/dev/null 2>&1
+if [ -d ~/.cache/wal ]; then (cat ~/.cache/wal/sequences &) fi
 
 # Sourcing everything
-source /usr/share/fzf/key-bindings.zsh
-source /usr/share/fzf/completion.zsh
-source $HOME/.zsh/export.zsh
-source $HOME/.zsh/minimal.zsh
-source $HOME/.zsh/function.zsh
-source $HOME/.zsh/startup.zsh
-source $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh
-source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+if [ -e /usr/share/fzf/key-bindings.zsh ]; then source /usr/share/fzf/key-bindings.zsh; fi
+if [ -e /usr/share/fzf/completion.zsh ]; then source /usr/share/fzf/completion.zsh; fi
+if [ -e $HOME/.zsh/export.zsh ]; then source $HOME/.zsh/export.zsh; fi
+if [ -e $HOME/.zsh/minimal.zsh ]; then source $HOME/.zsh/minimal.zsh; fi
+if [ -e $HOME/.zsh/function.zsh ]; then source $HOME/.zsh/function.zsh; fi
+if [ -e $HOME/.zsh/startup.zsh ]; then source $HOME/.zsh/startup.zsh; fi
+if [ -e $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh ]; then source $HOME/.zsh/zsh-history-substring-search/zsh-history-substring-search.zsh; fi
+if [ -e $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then source $HOME/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh; fi
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs ^N history-substring-search-down
-
-# opam configuration
-test -r /home/yannherklotz/.opam/opam-init/init.zsh && . /home/yannherklotz/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-
-# added by travis gem
-[ -f /home/ymherklotz/.travis/travis.sh ] && source /home/ymherklotz/.travis/travis.sh

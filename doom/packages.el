@@ -50,7 +50,29 @@
 ;; our package manager can't deal with; see raxod502/straight.el#279)
 ;(package! builtin-package :recipe (:branch "develop"))
 
+;; Disabling packages
+(disable-packages! undo-tree org-bullets helm pretty-code company-coq)
+
+;; `org-mode' dependencies
+(package! org-ref)
+(package! org-noter)
+;; `org-bullets' replacement
+(package! org-superstar)
+
+;; Bibtex stuff
+(package! ebib)
+
+;; Haskell stuff
+(package! ormolu)
+
+;; Misc dependencies
 (package! hungry-delete)
-(package! color-theme-sanityinc-tomorrow)
+(package! vagrant-tramp)
 (package! zettelkasten
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+(package! pinentry)
+
+;; Themes
+(package! color-theme-sanityinc-tomorrow)
+(package! modus-operandi-theme)
+(package! modus-vivendi-theme)

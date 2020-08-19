@@ -1,12 +1,8 @@
-alias fdisk='fdisk --color=always'
-alias grep='grep --color=always'
-alias ls='ls --color=always'
-alias l='ls -la --color=always'
-alias vi='nvim'
-alias vim='nvim'
 alias emc='emacsclient -c -a ""'
 alias em='emacsclient -nw -a ""'
+alias ls='exa'
 alias ff='firefox'
+alias vim=nvim
 # alias lspasscp='lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\\]//g')'
 
 # fixing pdflatex

@@ -1,9 +1,5 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
-
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Yann Herklotz"
@@ -20,13 +16,13 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "Iosevka" :size 16)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville")
-      doom-serif-font (font-spec :family "Libre Baskerville"))
+      doom-variable-pitch-font (font-spec :family "Libre Baskerville" :size 12)
+      doom-serif-font (font-spec :family "Libre Baskerville" :size 12))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'sanityinc-tomorrow-night)
+(setq doom-theme 'modus-operandi)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -49,7 +45,8 @@
 (global-set-key (kbd "C-,")   #'(lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
-(global-set-key (kbd "C-c c") #'org-capture)
+(global-set-key (kbd "C-c /") #'avy-goto-word-1)
+(global-set-key (kbd "M-=")   #'count-words)
 
 ;; Set undo-only correctly
 (global-set-key (kbd "C-\\") 'undo-only)
@@ -76,19 +73,6 @@
 (global-set-key (kbd "C-`")   #'push-mark-no-activate)
 (global-set-key (kbd "M-`")   #'jump-to-mark)
 
-;; Delete an emacs client frame.
-(defun y/exit-emacs-client ()
-  "consistent exit emacsclient. If not in emacs client, echo a
-  message in minibuffer, don't exit emacs. If in server mode and
-  editing file, do C-x # server-edit else do C-x 5 0
-  delete-frame"
-  (interactive)
-  (if server-buffer-clients
-      (server-edit)
-    (delete-frame)))
-
-(global-set-key (kbd "C-c q") #'y/exit-emacs-client)
-
 ;; Swap two window positions.
 (defun y/swap-windows ()
   "Swaps two windows and leaves the cursor in the original one"
@@ -106,6 +90,16 @@
 (define-key y-map (kbd "g") 'password-store-generate)
 (define-key y-map (kbd "r") 'toggle-rot13-mode)
 
+(electric-indent-mode -1)
+
+;; Mac configuration
+(when (eq system-type 'darwin)
+  (setq mac-right-option-modifier 'none
+        mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier nil))
+
 (defun y/insert-date ()
   "Insert a timestamp according to locale's date and time format."
   (interactive)
@@ -114,14 +108,45 @@
 (define-key y-map (kbd "d") 'y/insert-date)
 
 ;; Set backup directories into the tmp folder
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+(defvar --backup-directory (concat user-emacs-directory "backups"))
+(if (not (file-exists-p --backup-directory))
+    (make-directory --backup-directory t))
+(setq backup-directory-alist `(("." . ,--backup-directory)))
+(setq make-backup-files t               ; backup of a file the first time it is saved.
+      backup-by-copying t               ; don't clobber symlinks
+      version-control t                 ; version numbers for backup files
+      delete-old-versions t             ; delete excess backup files silently
+      delete-by-moving-to-trash t
+      kept-old-versions 6               ; oldest versions to keep when a new numbered backup is made (default: 2)
+      kept-new-versions 9               ; newest versions to keep when a new numbered backup is made (default: 2)
+      auto-save-default t               ; auto-save every buffer that visits a file
+      auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
+      auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
+      )
+
+;; Set sensitive data mode
+(setq auto-mode-alist
+      (append
+       (list '("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
+             '("\\.sv\\'" . verilog-mode))
+       auto-mode-alist))
+
+;; Remove the ring for emacs
+(setq ring-bell-function 'ignore)
 
 ;; Automatically refresh files
 (global-auto-revert-mode 1)
 (setq auto-revert-verbose nil)
+
+;; Set sentence to end with double space
+(setq sentence-end-double-space t)
+
+;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode',
+;; which is a personal preference.
+(setq-default fill-column 100)
+(remove-hook 'text-mode-hook #'auto-fill-mode)
+(add-hook 'text-mode-hook #'+word-wrap-mode)
+(add-hook 'text-mode-hook #'visual-fill-column-mode)
 
 ;; Set up magit when C-c g is called
 (use-package! magit
@@ -140,7 +165,7 @@
   :config (global-hungry-delete-mode))
 
 ;; Org configuration
-(use-package org
+(use-package! org
   :mode ("\\.org\\'" . org-mode)
   :init
   (map! :map org-mode-map
@@ -150,6 +175,9 @@
         org-return-follows-link t
         org-confirm-babel-evaluate nil
         org-use-speed-commands t
+        org-hide-emphasis-markers t
+        org-adapt-indentation nil
+        org-cycle-separator-lines 1
         org-structure-template-alist '(("a" . "export ascii")
                                        ("c" . "center")
                                        ("C" . "comment")
@@ -162,36 +190,75 @@
                                        ("v" . "verse")
                                        ("el" . "src emacs-lisp")
                                        ("d" . "definition")
-                                       ("t" . "theorem"))))
+                                       ("t" . "theorem")))
+  (customize-set-variable 'org-blank-before-new-entry
+                          '((heading . nil)
+                            (plain-list-item . nil))))
 
-(use-package! org-id
-  :after org)
+(use-package! org-contacts
+  :after org
+  :init
+  (setq org-contacts-files '("~/Dropbox/org/contacts.org")))
 
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
-  (setq org-startup-indented nil)
-  (define-key org-mode-map (kbd "C-,") nil))
-
-;; Set agenda files, refile targets and todo keywords.
-(setq org-agenda-files (mapcar 'expand-file-name
-                               (list "~/Dropbox/org/inbox.org"
-                                     "~/Dropbox/org/main.org"
-                                     "~/Dropbox/org/tickler.org"
-                                     (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
-      org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
-                           ("~/Dropbox/org/someday.org" :level . 1)
-                           ("~/Dropbox/org/tickler.org" :maxlevel . 2)
-                           (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
-      org-todo-keywords '((sequence "TODO(t)" "WAITING(w)" "|" "DONE(d)" "CANCELLED(c)")))
-
-;; Set custom agenda commands which can be activated in the agenda viewer.
-(setq org-agenda-custom-commands
+  (define-key org-mode-map (kbd "C-,") nil)
+  ;; Set agenda files, refile targets and todo keywords.
+  (setq org-startup-indented nil
+        org-agenda-files (mapcar 'expand-file-name
+                                 (list "~/Dropbox/org/inbox.org"
+                                       "~/Dropbox/org/main.org"
+                                       "~/Dropbox/org/tickler.org"
+                                       "~/Dropbox/org/projects.org"
+                                       "~/Dropbox/org/pldi2020.org"
+                                       (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+        org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
+                             ("~/Dropbox/org/someday.org" :level . 1)
+                             ("~/Dropbox/org/tickler.org" :maxlevel . 2)
+                             ("~/Dropbox/org/projects.org" :level . 1)
+                             (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
+        ;; Set custom agenda commands which can be activated in the agenda viewer.
+        org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
            ((org-agenda-overriding-header "Work")))
           ("h" "At home" tags-todo "@home"
            ((org-agenda-overriding-header "Home")))
           ("u" "At uni" tags-todo "@uni"
-           ((org-agenda-overriding-header "University")))))
+           ((org-agenda-overriding-header "University"))))
+        org-log-done 'time
+        org-capture-templates
+        `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") "Today")
+           "* TODO %^{Title}\nCreated: %U\n\n%?\n")
+          ("c" "Contacts" entry (file "~/Dropbox/org/contacts.org")
+           "* %(org-contacts-template-name)
+  :PROPERTIES:
+  :EMAIL: %(org-contacts-template-email)
+  :END:"))))
+
+;; Set up org ref for PDFs
+(use-package! org-ref
+  :after org
+  :bind (("C-c r" . org-ref-cite-hydra/body)
+         ("C-c b" . org-ref-bibtex-hydra/body))
+  :config
+  (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
+        org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
+        org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
+  (setq org-ref-completion-library 'org-ref-ivy-cite))
+
+;; Set up org-noter
+(use-package! org-noter
+  :after org
+  :commands org-noter
+  :config (setq org-noter-default-notes-file-names '("notes.org")
+                org-noter-notes-search-path '("~/org/bibliography")
+                org-noter-separate-notes-from-heading t))
+
+(use-package! org-superstar
+  :hook (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list '("♠" "♣" "♥" "♦")
+        org-superstar-special-todo-items t))
 
 ;; Set up org registers to quickly jump to files that I use often.
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
@@ -199,18 +266,84 @@
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
 
+;; Bibtex stuff
+(use-package! ebib
+  :bind (("C-c y b" . ebib))
+  :init
+  (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
+        ebib-notes-directory "~/Dropbox/bibliography/notes/")
+  (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
+  (add-to-list 'ebib-file-associations '("pdf" . "open"))
+  (advice-add 'bibtex-generate-autokey :around
+              #'(lambda (orig-func &rest args)
+                  (replace-regexp-in-string ":" "" (apply orig-func args)))))
+
 ;; Set up dictionaries
 (setq ispell-dictionary "en_GB")
 
 (use-package! flyspell
+  :hook (text-mode . flyspell-mode)
   :config
   (define-key flyspell-mode-map (kbd "C-.") nil)
   (define-key flyspell-mode-map (kbd "C-,") nil))
 
 ;; Set up zettelkasten mode
 (use-package! zettelkasten
+  :bind-keymap
+  ("C-c k" . zettelkasten-mode-map))
+
+;; Proof general configuration
+(setq proof-splash-enable nil
+      proof-auto-action-when-deactivating-scripting 'retract
+      proof-delete-empty-windows nil
+      proof-auto-raise-buffers t
+      coq-compile-before-require t)
+
+(setq coq-may-use-prettify nil
+      company-coq-prettify-symbols nil)
+(global-prettify-symbols-mode -1)
+
+(use-package smartparens
+  :bind (("M-["              . sp-backward-unwrap-sexp)
+         ("M-]"              . sp-unwrap-sexp)
+         ("C-M-f"            . sp-forward-sexp)
+         ("C-M-b"            . sp-backward-sexp)
+         ("C-M-d"            . sp-down-sexp)
+         ("C-M-a"            . sp-backward-down-sexp)
+         ("C-M-e"            . sp-up-sexp)
+         ("C-M-u"            . sp-backward-up-sexp)
+         ("C-M-t"            . sp-transpose-sexp)
+         ("C-M-n"            . sp-next-sexp)
+         ("C-M-p"            . sp-previous-sexp)
+         ("C-M-k"            . sp-kill-sexp)
+         ("C-M-w"            . sp-copy-sexp)
+         ("C-)"              . sp-forward-slurp-sexp)
+         ("C-}"              . sp-forward-barf-sexp)
+         ("C-("              . sp-backward-slurp-sexp)
+         ("C-{"              . sp-backward-barf-sexp)
+         ("M-D"              . sp-splice-sexp)
+         ("C-]"              . sp-select-next-thing-exchange)
+         ("C-<left_bracket>" . sp-select-previous-thing)
+         ("C-M-]"            . sp-select-next-thing)
+         ("M-F"              . sp-forward-symbol)
+         ("M-B"              . sp-backward-symbol)
+         ("M-r"              . sp-split-sexp))
   :config
-  (zettelkasten-mode t))
+  (require 'smartparens-config)
+  (show-smartparens-global-mode +1)
+  (smartparens-global-mode 1))
+
+(use-package! ormolu
+  :hook (haskell-mode . ormolu-format-on-save-mode)
+  :bind
+  (:map haskell-mode-map
+   ("C-c r" . ormolu-format-buffer)))
+
+(after! writeroom-mode (setq +zen-text-scale 1))
+
+(setq pdf-view-use-scaling t)
+
+(setq doc-view-resolution 300)
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -228,3 +361,26 @@
 ;;
 ;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
 ;; they are implemented.
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(org-blank-before-new-entry (quote ((heading) (plain-list-item))))
+ '(package-selected-packages (quote (org-plus-contrib)))
+ '(safe-local-variable-values
+   (quote
+    ((eval add-to-list
+           (quote auto-mode-alist)
+           (quote
+            ("\\.v\\'" . verilog-mode)))
+     (eval setq org-ref-pdf-directory
+           (concat
+            (projectile-project-root)
+            "papers/"))))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
