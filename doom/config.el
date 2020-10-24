@@ -124,12 +124,43 @@
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
       )
 
+(setq tramp-auto-save-directory "/tmp")
+(defvar disable-tramp-backups '(all))
+(eval-after-load "tramp"
+  '(progn
+     ;; Modified from https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
+     (setq backup-enable-predicate
+           (lambda (name)
+             (and (normal-backup-enable-predicate name)
+              ;; Disable all tramp backups
+              (and disable-tramp-backups
+                   (member 'all disable-tramp-backups)
+                   (not (file-remote-p name 'method)))
+              (not ;; disable backup for tramp with the listed methods
+               (let ((method (file-remote-p name 'method)))
+                 (when (stringp method)
+                   (member method disable-tramp-backups)))))))
+
+     (defun tramp-set-auto-save--check (original)
+       (if (funcall backup-enable-predicate (buffer-file-name))
+           (funcall original)
+         (auto-save-mode -1)))
+
+     (advice-add 'tramp-set-auto-save :around #'tramp-set-auto-save--check)
+
+     ;; Use my ~/.ssh/config control master settings according to https://puppet.com/blog/speed-up-ssh-by-reusing-connections
+     (setq tramp-ssh-controlmaster-options "")))
+
+
 ;; Set sensitive data mode
 (setq auto-mode-alist
       (append
        (list '("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
              '("\\.sv\\'" . verilog-mode))
        auto-mode-alist))
+
+(after! verilog-mode
+  (setq verilog-simulator "iverilog"))
 
 ;; Remove the ring for emacs
 (setq ring-bell-function 'ignore)
@@ -210,13 +241,11 @@
                                        "~/Dropbox/org/main.org"
                                        "~/Dropbox/org/tickler.org"
                                        "~/Dropbox/org/projects.org"
-                                       "~/Dropbox/org/pldi2020.org"
-                                       (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+                                       (format-time-string "~/Dropbox/org/%Y-%m.org")))
         org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
                              ("~/Dropbox/org/someday.org" :level . 1)
-                             ("~/Dropbox/org/tickler.org" :maxlevel . 2)
                              ("~/Dropbox/org/projects.org" :level . 1)
-                             (,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") :maxlevel . 2))
+                             (,(format-time-string "~/Dropbox/org/%Y-%m.org") :level . 1))
         ;; Set custom agenda commands which can be activated in the agenda viewer.
         org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
@@ -227,24 +256,41 @@
            ((org-agenda-overriding-header "University"))))
         org-log-done 'time
         org-capture-templates
-        `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/journals/%Y-%m.org") "Today")
+        `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/%Y-%m.org") "Tasks")
            "* TODO %^{Title}\nCreated: %U\n\n%?\n")
           ("c" "Contacts" entry (file "~/Dropbox/org/contacts.org")
            "* %(org-contacts-template-name)
   :PROPERTIES:
   :EMAIL: %(org-contacts-template-email)
-  :END:"))))
+  :END:"))
+        org-todo-keywords
+        '((sequence
+           "TODO(t)"  ; A task that needs doing & is ready to do
+           "PROJ(p)"  ; A project, which usually contains other tasks
+           "STRT(s)"  ; A task that is in progress
+           "WAIT(w)"  ; Something external is holding up this task
+           "HOLD(h)"  ; This task is paused/on hold because of me
+           "|"
+           "DONE(d!)"  ; Task successfully completed
+           "KILL(k)") ; Task was cancelled, aborted or is no longer applicable
+          (sequence
+           "[ ](T)"   ; A task that needs doing
+           "[-](S)"   ; Task is in progress
+           "[?](W)"   ; Task is being held up or paused
+           "|"
+           "[X](D)")))) ; Task was completed))
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
   :after org
   :bind (("C-c r" . org-ref-cite-hydra/body)
          ("C-c b" . org-ref-bibtex-hydra/body))
-  :config
+  :init
   (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
         org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
         org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
-  (setq org-ref-completion-library 'org-ref-ivy-cite))
+  (setq org-ref-completion-library 'org-ref-ivy-cite)
+  (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")))
 
 ;; Set up org-noter
 (use-package! org-noter
@@ -264,7 +310,7 @@
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
 (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
-(set-register ?c (cons 'file (format-time-string "~/Dropbox/org/journals/%Y-%m.org")))
+(set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
 
 ;; Bibtex stuff
 (use-package! ebib
@@ -272,6 +318,7 @@
   :init
   (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
         ebib-notes-directory "~/Dropbox/bibliography/notes/")
+  :config
   (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
   (add-to-list 'ebib-file-associations '("pdf" . "open"))
   (advice-add 'bibtex-generate-autokey :around
@@ -344,6 +391,12 @@
 (setq pdf-view-use-scaling t)
 
 (setq doc-view-resolution 300)
+
+(after! tuareg-mode
+  (add-hook 'tuareg-mode-hook
+            (lambda ()
+              (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
+              (add-hook 'before-save-hook #'ocamlformat-before-save))))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
