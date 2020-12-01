@@ -25,7 +25,7 @@ if [ $os = "Darwin" ]; then
     prepend_path "/Library/TeX/texbin"
     prepend_path "/usr/local/opt/bison/bin"
 
-    append_path "${HOME}/Library/Python/3.8/bin"
+    append_path "${HOME}/Library/Python/3.9/bin"
 fi
 
 prepend_path "/usr/local/bin"
