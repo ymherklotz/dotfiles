@@ -34,7 +34,6 @@ Slave :imperial-local:
 Patterns "Sent Items" Archive1 "Deleted Items" INBOX Drafts
 Create Both
 SyncState *
-MaxMessages 100
 ExpireUnread no
 Expunge Both
 
@@ -44,6 +43,5 @@ Slave :mailbox-local:
 Patterns *
 Create Both
 SyncState *
-MaxMessages 100
 ExpireUnread no
 Expunge Both
