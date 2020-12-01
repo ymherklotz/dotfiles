@@ -88,9 +88,8 @@
        ;;ein               ; tame Jupyter notebooks with emacs
        (eval +overlay)     ; run code, run (also, repls)
        ;;gist              ; interacting with github gists
-       ;;lookup              ; navigate your code and its documentation
-       ;;lsp
-       macos             ; MacOS-specific commands
+       lookup              ; navigate your code and its documentation
+       lsp
        magit             ; a git porcelain for Emacs
        ;;make              ; run make tasks from Emacs
        pass              ; password manager for nerds
@@ -103,7 +102,7 @@
 
        :lang
        agda              ; types of types of types of types...
-       ;;assembly          ; assembly for fun or debugging
+       assembly          ; assembly for fun or debugging
        cc                  ; C/C++/Obj-C madness
        clojure             ; java with a lisp
        common-lisp       ; if you've seen one lisp, you've seen them all
@@ -147,12 +146,12 @@
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
-       ;;purescript        ; javascript, but functional
+       purescript        ; javascript, but functional
        python            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
        racket            ; a DSL for DSLs
-       ;;rest              ; Emacs as a REST client
-       ;;rst               ; ReST in peace
+       rest              ; Emacs as a REST client
+       rst               ; ReST in peace
        ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        scala             ; java, but good
@@ -176,4 +175,6 @@
 
        :config
        ;;literate
-       (default +bindings +smartparens))
+       (default +bindings +smartparens)
+
+       :os macos)

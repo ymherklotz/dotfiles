@@ -58,12 +58,17 @@
 (package! org-noter)
 ;; `org-bullets' replacement
 (package! org-superstar)
+(package! ox-reveal)
+;(package! ox-ssh)
 
 ;; Bibtex stuff
 (package! ebib)
 
 ;; Haskell stuff
 (package! ormolu)
+
+(package! direnv)
+(package! yaml-mode)
 
 ;; Misc dependencies
 (package! hungry-delete)

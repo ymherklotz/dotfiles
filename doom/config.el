@@ -278,18 +278,60 @@
            "[-](S)"   ; Task is in progress
            "[?](W)"   ; Task is being held up or paused
            "|"
-           "[X](D)")))) ; Task was completed))
+           "[X](D)"))); Task was completed
+  (setq org-html-head-extra
+        "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js\"></script>
+<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.css\">
+<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
+
+        org-html-head-include-default-style nil
+        org-html-head-include-scripts nil
+        org-html-postamble-format
+        '(("en" "<script>tocbot.init({
+  tocSelector: '#table-of-contents',
+  contentSelector: '#content',
+  headingSelector: 'h2, h3',
+  hasInnerContainers: true,
+});</script>"))
+        org-html-postamble t)
+
+  (require 'ox-beamer)
+  (require 'ox-latex)
+  (add-to-list 'org-latex-classes
+               '("beamer"
+                 "\\documentclass\[presentation\]\{beamer\}"
+                 ("\\section\{%s\}" . "\\section*\{%s\}")
+                 ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+                 ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")))
+  (add-to-list 'org-latex-classes
+               '("scrartcl"
+                 "\\documentclass\{scrartcl\}"
+                 ("\\section\{%s\}" . "\\section*\{%s\}")
+                 ("\\subsection\{%s\}" . "\\subsection*\{%s\}")
+                 ("\\subsubsection\{%s\}" . "\\subsubsection*\{%s\}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+  (add-to-list 'org-latex-packages-alist '("" "minted"))
+  (setq org-latex-listings 'minted)
+
+  (setq org-latex-pdf-process
+        '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (setq-default TeX-command-extra-options "-shell-escape"
+        TeX-engine 'xetex)
+  (setq org-beamer-environments-extra '(("onlyenv" "o" "\\begin{onlyenv}%a{%h}" "\\end{onlyenv}")
+                                        ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
+                                        ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}"))))
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
-  :after org
-  :bind (("C-c r" . org-ref-cite-hydra/body)
-         ("C-c b" . org-ref-bibtex-hydra/body))
+  :demand
   :init
+  (setq org-ref-completion-library 'org-ref-ivy-cite)
+  :config
   (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
         org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-        org-ref-pdf-directory "~/Dropbox/bibliography/papers/")
-  (setq org-ref-completion-library 'org-ref-ivy-cite)
+        org-ref-pdf-directory "~/Dropbox/bibliography/papers")
   (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")))
 
 ;; Set up org-noter
@@ -310,6 +352,7 @@
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
 (set-register ?m (cons 'file "~/Dropbox/org/main.org"))
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
+(set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
 
 ;; Bibtex stuff
@@ -344,47 +387,53 @@
       proof-auto-action-when-deactivating-scripting 'retract
       proof-delete-empty-windows nil
       proof-auto-raise-buffers t
-      coq-compile-before-require t)
+      coq-compile-before-require nil
+      coq-compile-vos t
+      coq-compile-parallel-in-background t
+      coq-max-background-compilation-jobs 4
+      coq-compile-keep-going nil
+      coq-compile-quick 'no-quick)
 
 (setq coq-may-use-prettify nil
       company-coq-prettify-symbols nil)
 (global-prettify-symbols-mode -1)
 
-(use-package smartparens
-  :bind (("M-["              . sp-backward-unwrap-sexp)
-         ("M-]"              . sp-unwrap-sexp)
-         ("C-M-f"            . sp-forward-sexp)
-         ("C-M-b"            . sp-backward-sexp)
-         ("C-M-d"            . sp-down-sexp)
-         ("C-M-a"            . sp-backward-down-sexp)
-         ("C-M-e"            . sp-up-sexp)
-         ("C-M-u"            . sp-backward-up-sexp)
-         ("C-M-t"            . sp-transpose-sexp)
-         ("C-M-n"            . sp-next-sexp)
-         ("C-M-p"            . sp-previous-sexp)
-         ("C-M-k"            . sp-kill-sexp)
-         ("C-M-w"            . sp-copy-sexp)
-         ("C-)"              . sp-forward-slurp-sexp)
-         ("C-}"              . sp-forward-barf-sexp)
-         ("C-("              . sp-backward-slurp-sexp)
-         ("C-{"              . sp-backward-barf-sexp)
-         ("M-D"              . sp-splice-sexp)
-         ("C-]"              . sp-select-next-thing-exchange)
-         ("C-<left_bracket>" . sp-select-previous-thing)
-         ("C-M-]"            . sp-select-next-thing)
-         ("M-F"              . sp-forward-symbol)
-         ("M-B"              . sp-backward-symbol)
-         ("M-r"              . sp-split-sexp))
+(use-package! smartparens
   :config
+  (map! :map smartparens-mode-map
+        "M-[" #'sp-backward-unwrap-sexp
+        "M-]" #'sp-unwrap-sexp
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-a" #'sp-backward-down-sexp
+        "C-M-e" #'sp-up-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-t" #'sp-transpose-sexp
+        "C-M-n" #'sp-next-sexp
+        "C-M-p" #'sp-previous-sexp
+        "C-M-k" #'sp-kill-sexp
+        "C-M-w" #'sp-copy-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-{" #'sp-backward-barf-sexp
+        "M-D" #'sp-splice-sexp
+        "C-]" #'sp-select-next-thing-exchange
+        "C-<left_bracket>" #'sp-select-previous-thing
+        "C-M-]" #'sp-select-next-thing
+        "M-F" #'sp-forward-symbol
+        "M-B" #'sp-backward-symbol
+        "M-r" #'sp-split-sexp)
   (require 'smartparens-config)
   (show-smartparens-global-mode +1)
   (smartparens-global-mode 1))
 
-(use-package! ormolu
-  :hook (haskell-mode . ormolu-format-on-save-mode)
-  :bind
-  (:map haskell-mode-map
-   ("C-c r" . ormolu-format-buffer)))
+;;(use-package! ormolu
+;;  :hook (haskell-mode . ormolu-format-on-save-mode)
+;;  :bind
+;;  (:map haskell-mode-map
+;;   ("C-c r" . ormolu-format-buffer)))
 
 (after! writeroom-mode (setq +zen-text-scale 1))
 
@@ -397,6 +446,22 @@
             (lambda ()
               (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
               (add-hook 'before-save-hook #'ocamlformat-before-save))))
+
+(use-package! ox-reveal
+  :after org)
+
+(use-package! direnv
+  :config
+  (direnv-mode))
+
+(use-package! alectryon
+  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
+
+;;(use-package! ox-ssh
+;;  :after org
+;;  :config
+;;  (when (eq system-type 'darwin)
+;;    (setq org-ssh-header "XAuthLocation /opt/X11/bin/xauth")))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
