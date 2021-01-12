@@ -34,7 +34,7 @@ prepend_path "${HOME}/.yarn/bin"
 prepend_path "${HOME}/.cargo/bin"
 prepend_path "${HOME}/.cabal/bin"
 prepend_path "${HOME}/.local/bin"
-prepend_path "/usr/local/opt/llvm/bin"
+# prepend_path "/usr/local/opt/llvm/bin"
 
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
