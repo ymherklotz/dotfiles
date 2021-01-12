@@ -31,7 +31,7 @@ Inbox ~/.mail/mailbox/Inbox
 Channel imperial
 Master :imperial-remote:
 Slave :imperial-local:
-Patterns "Sent Items" Archive1 "Deleted Items" INBOX Drafts
+Patterns "Sent Items" Archive "Deleted Items" INBOX Drafts
 Create Both
 SyncState *
 ExpireUnread no
