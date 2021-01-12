@@ -60,6 +60,7 @@
 (package! org-superstar)
 (package! ox-reveal)
 ;(package! ox-ssh)
+(package! ox-tufte)
 
 ;; Bibtex stuff
 (package! ebib)

@@ -16,8 +16,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "Iosevka" :size 16)
-      doom-variable-pitch-font (font-spec :family "Libre Baskerville" :size 12)
-      doom-serif-font (font-spec :family "Libre Baskerville" :size 12))
+      doom-variable-pitch-font (font-spec :family "Alegreya" :size 12)
+      doom-serif-font (font-spec :family "Alegreya" :size 12))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -84,7 +84,6 @@
 (define-prefix-command 'y-map)
 (global-set-key (kbd "C-c y") 'y-map)
 
-(define-key y-map (kbd "s") 'y/swap-windows)
 (define-key y-map (kbd "p") 'password-store-copy)
 (define-key y-map (kbd "i") 'password-store-insert)
 (define-key y-map (kbd "g") 'password-store-generate)
@@ -200,8 +199,10 @@
   :mode ("\\.org\\'" . org-mode)
   :init
   (map! :map org-mode-map
-        "M-n" #'outline-next-visible-heading
-        "M-p" #'outline-previous-visible-heading)
+        "M-n"   #'outline-next-visible-heading
+        "M-p"   #'outline-previous-visible-heading
+        "C-c ]" #'ebib-insert-citation
+        "C-,"   nil)
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-babel-evaluate nil
@@ -222,9 +223,10 @@
                                        ("el" . "src emacs-lisp")
                                        ("d" . "definition")
                                        ("t" . "theorem")))
-  (customize-set-variable 'org-blank-before-new-entry
-                          '((heading . nil)
-                            (plain-list-item . nil))))
+  ;;(customize-set-variable 'org-blank-before-new-entry
+  ;;                        '((heading . nil)
+  ;;                          (plain-list-item . nil)))
+  )
 
 (use-package! org-contacts
   :after org
@@ -233,43 +235,68 @@
 
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
-  (define-key org-mode-map (kbd "C-,") nil)
   ;; Set agenda files, refile targets and todo keywords.
-  (setq org-startup-indented nil
-        org-agenda-files (mapcar 'expand-file-name
+  (setq org-startup-indented nil)
+  (setq org-log-done 'time
+        org-log-into-drawer t)
+  (setq org-agenda-files (mapcar 'expand-file-name
                                  (list "~/Dropbox/org/inbox.org"
                                        "~/Dropbox/org/main.org"
                                        "~/Dropbox/org/tickler.org"
                                        "~/Dropbox/org/projects.org"
-                                       (format-time-string "~/Dropbox/org/%Y-%m.org")))
-        org-refile-targets `(("~/Dropbox/org/main.org" :maxlevel . 2)
+                                       (format-time-string "~/Dropbox/org/%Y-%m.org")
+                                       "~/Dropbox/bibliography/reading_list.org")))
+  (setq org-refile-targets `(("~/Dropbox/org/main.org" :level . 1)
                              ("~/Dropbox/org/someday.org" :level . 1)
                              ("~/Dropbox/org/projects.org" :level . 1)
-                             (,(format-time-string "~/Dropbox/org/%Y-%m.org") :level . 1))
+                             (,(format-time-string "~/Dropbox/org/%Y-%m.org") :level . 1)))
         ;; Set custom agenda commands which can be activated in the agenda viewer.
-        org-agenda-custom-commands
+  (setq org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
            ((org-agenda-overriding-header "Work")))
           ("h" "At home" tags-todo "@home"
            ((org-agenda-overriding-header "Home")))
           ("u" "At uni" tags-todo "@uni"
-           ((org-agenda-overriding-header "University"))))
-        org-log-done 'time
-        org-capture-templates
-        `(("t" "Todo" entry (file+headline ,(format-time-string "~/Dropbox/org/%Y-%m.org") "Tasks")
-           "* TODO %^{Title}\nCreated: %U\n\n%?\n")
+           ((org-agenda-overriding-header "University")))))
+
+  (setq org-agenda-span 7
+        org-agenda-start-day "."
+        org-agenda-start-on-week 1)
+
+  (setq org-capture-templates
+        `(("t" "Todo" entry (file "inbox.org")
+           "* TODO %?
+:PROPERTIES:
+:ID: %(org-id-uuid)
+:END:
+:LOGBOOK:
+- State \"TODO\"       from \"\"           %U
+:END:" :empty-lines 1)
+          ("l" "Link Todo" entry (file "inbox.org")
+           "* TODO %?
+:PROPERTIES:
+:ID: %(org-id-uuid)
+:END:
+:LOGBOOK:
+- State \"TODO\"       from \"\"           %U
+:END:
+
+%a" :empty-lines 1)
           ("c" "Contacts" entry (file "~/Dropbox/org/contacts.org")
            "* %(org-contacts-template-name)
   :PROPERTIES:
   :EMAIL: %(org-contacts-template-email)
-  :END:"))
+  :END:" :empty-lines 1))
+
         org-todo-keywords
         '((sequence
            "TODO(t)"  ; A task that needs doing & is ready to do
-           "PROJ(p)"  ; A project, which usually contains other tasks
-           "STRT(s)"  ; A task that is in progress
+           "PROJECT(p)"  ; A project, which usually contains other tasks
+           "START(s)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
+           "DEFERRED(h)" ; Demoted for later
+           "SOMEDAY(m)" ; todo some day
            "|"
            "DONE(d!)"  ; Task successfully completed
            "KILL(k)") ; Task was cancelled, aborted or is no longer applicable
@@ -279,21 +306,22 @@
            "[?](W)"   ; Task is being held up or paused
            "|"
            "[X](D)"))); Task was completed
-  (setq org-html-head-extra
-        "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js\"></script>
-<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.css\">
-<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
-
+;;  (setq org-html-head-extra
+;;        "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js\"></script>
+;;<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.css\">
+;;<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
+  (setq org-html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
         org-html-head-include-default-style nil
         org-html-head-include-scripts nil
         org-html-postamble-format
-        '(("en" "<script>tocbot.init({
-  tocSelector: '#table-of-contents',
-  contentSelector: '#content',
-  headingSelector: 'h2, h3',
-  hasInnerContainers: true,
-});</script>"))
-        org-html-postamble t)
+        '(("en" ""))
+        org-html-postamble t
+        org-html-divs '((preamble "header" "header")
+                        (content "article" "content")
+                        (postamble "footer" "postamble")))
+
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
 
   (require 'ox-beamer)
   (require 'ox-latex)
@@ -323,6 +351,9 @@
                                         ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
                                         ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}"))))
 
+(use-package! ox-tufte
+  :after org)
+
 ;; Set up org ref for PDFs
 (use-package! org-ref
   :demand
@@ -331,7 +362,8 @@
   :config
   (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
         org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-        org-ref-pdf-directory "~/Dropbox/bibliography/papers")
+        org-ref-pdf-directory "~/Dropbox/bibliography/papers"
+        org-ref-bib-html "")
   (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")))
 
 ;; Set up org-noter
@@ -345,8 +377,14 @@
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
   :config
-  (setq org-superstar-headline-bullets-list '("♠" "♣" "♥" "♦")
+  (setq org-superstar-headline-bullets-list '("♚" "♛" "♜" "♝" "♞" "♟" "♔" "♕" "♖" "♗" "♘" "♙")
         org-superstar-special-todo-items t))
+
+(use-package! org-id
+  :after org
+  :config
+  (setq org-id-link-to-org-use-id 'use-existing)
+  (setq org-id-track-globally t))
 
 ;; Set up org registers to quickly jump to files that I use often.
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
@@ -355,18 +393,30 @@
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
 
+(use-package counsel
+  :config
+  (setq counsel-rg-base-command
+        '("rg" "-M" "240" "--max-columns-preview" "--with-filename"
+          "--no-heading" "--line-number" "--color" "never" "%s")))
+
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
   :init
   (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
-        ebib-notes-directory "~/Dropbox/bibliography/notes/")
+        ebib-notes-directory "~/Dropbox/bibliography/notes/"
+        ebib-notes-template "#+TITLE: Notes on: %T\n\n>|<"
+        ebib-keywords-file "~/Dropbox/bibliography/keywords.txt"
+        ebib-reading-list-file "~/Dropbox/bibliography/reading_list.org")
   :config
   (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
   (add-to-list 'ebib-file-associations '("pdf" . "open"))
+  (add-to-list 'ebib-citation-commands '(org-mode (("ref" "cite:%(%K%,)"))))
+
   (advice-add 'bibtex-generate-autokey :around
               #'(lambda (orig-func &rest args)
-                  (replace-regexp-in-string ":" "" (apply orig-func args)))))
+                  (replace-regexp-in-string ":" "" (apply orig-func args))))
+  (remove-hook 'ebib-notes-new-note-hook #'org-narrow-to-subtree))
 
 ;; Set up dictionaries
 (setq ispell-dictionary "en_GB")
@@ -435,6 +485,7 @@
 ;;  (:map haskell-mode-map
 ;;   ("C-c r" . ormolu-format-buffer)))
 
+
 (after! writeroom-mode (setq +zen-text-scale 1))
 
 (setq pdf-view-use-scaling t)
@@ -456,6 +507,60 @@
 
 (use-package! alectryon
   :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
+
+(defun ymhg/incr-id (ident)
+  (let* ((ident-list (append nil ident nil))
+         (last-ident (last ident-list)))
+    (setcar last-ident (+ (car last-ident) 1))
+    (concat ident-list)))
+
+(defun ymhg/incr-id-total (ident)
+  (if (string-match-p "\\(.*[a-z]\\)\\([0-9]+\\)$" ident)
+      (progn
+        (string-match "\\(.*[a-z]\\)\\([0-9]+\\)$" ident)
+        (let ((pre (match-string 1 ident))
+              (post (match-string 2 ident)))
+          (concat pre (number-to-string (+ 1 (string-to-number post))))))
+    (ymhg/incr-id ident)))
+
+(defun ymhg/branch-id (ident)
+  (if (string-match-p ".*[0-9]$" ident)
+      (concat ident "a")
+    (concat ident "1")))
+
+(defun ymhg/org-zettelkasten-create (incr newheading)
+  (let* ((current-id (org-entry-get nil "CUSTOM_ID"))
+         (next-id (funcall incr current-id)))
+    (funcall newheading)
+    (org-set-property "CUSTOM_ID" next-id)))
+
+(defun org-zettelkasten-create-next ()
+  (ymhg/org-zettelkasten-create
+   'ymhg/incr-id 'org-insert-heading))
+
+(defun org-zettelkasten-create-branch ()
+  (ymhg/org-zettelkasten-create
+   'ymhg/branch-id '(lambda () (org-insert-subheading ""))))
+
+(defun org-zettelkasten-create-dwim ()
+  (interactive)
+  (let ((current-point (save-excursion
+                         (org-back-to-heading)
+                         (point)))
+        (next-point (save-excursion
+                      (org-forward-heading-same-level 1 t)
+                      (point))))
+    (if (= current-point next-point)
+        (org-zettelkasten-create-next)
+      (org-zettelkasten-create-branch))))
+
+(defun org-zettelkasten-search-current-id ()
+    (interactive)
+    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
+      (counsel-rg (concat "#" current-id) "~/Dropbox/zk" "-g *.org" "ID: ")))
+
+(define-key org-mode-map (kbd "C-c y n") #'org-zettelkasten-create-dwim)
+(define-key org-mode-map (kbd "C-c y s") #'org-zettelkasten-search-current-id)
 
 ;;(use-package! ox-ssh
 ;;  :after org
