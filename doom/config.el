@@ -32,6 +32,9 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
+(setq auth-sources '("~/.authinfo.gpg"
+                     "~/.authinfo"))
+
 ;; Add some keybinding customisations.
 
 ;; Stop emacs from freezing when trying to minimize it on a tiling WM.
@@ -184,7 +187,10 @@
 
 ;; Configure activation for whitespace mode
 (use-package! whitespace
-  :bind (("C-x w" . whitespace-mode)))
+  :bind (("C-x w" . whitespace-mode))
+  :init
+  (setq whitespace-style '(newline newline-mark))
+  (setq whitespace-display-mappings '((newline-mark 10 [?¬ 10]))))
 
 ;; Configure expand-region mode.
 (use-package! expand-region
@@ -209,7 +215,7 @@
         org-use-speed-commands t
         org-hide-emphasis-markers t
         org-adapt-indentation nil
-        org-cycle-separator-lines 1
+        org-cycle-separator-lines 2
         org-structure-template-alist '(("a" . "export ascii")
                                        ("c" . "center")
                                        ("C" . "comment")
@@ -248,8 +254,12 @@
                                        "~/Dropbox/bibliography/reading_list.org")))
   (setq org-refile-targets `(("~/Dropbox/org/main.org" :level . 1)
                              ("~/Dropbox/org/someday.org" :level . 1)
-                             ("~/Dropbox/org/projects.org" :level . 1)
+                             ("~/Dropbox/org/projects.org" :maxlevel . 2)
                              (,(format-time-string "~/Dropbox/org/%Y-%m.org") :level . 1)))
+  (setq org-agenda-text-search-extra-files '("~/Dropbox/zk/hls.org"
+                                             "~/Dropbox/zk/computing.org"
+                                             "~/Dropbox/zk/verification.org"
+                                             "~/Dropbox/zk/mathematics.org"))
         ;; Set custom agenda commands which can be activated in the agenda viewer.
   (setq org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
@@ -262,6 +272,7 @@
   (setq org-agenda-span 7
         org-agenda-start-day "."
         org-agenda-start-on-week 1)
+  (setq org-agenda-include-diary t)
 
   (setq org-capture-templates
         `(("t" "Todo" entry (file "inbox.org")
@@ -320,6 +331,59 @@
                         (content "article" "content")
                         (postamble "footer" "postamble")))
 
+  (require 'calendar)
+  (setq calendar-mark-diary-entries-flag t)
+  (setq calendar-mark-holidays-flag t)
+  (setq calendar-mode-line-format nil)
+  (setq calendar-time-display-form
+        '(24-hours ":" minutes
+                   (when time-zone
+                     (format "(%s)" time-zone))))
+  (setq calendar-week-start-day 1)      ; Monday
+  (setq calendar-date-style 'iso)
+  (setq calendar-date-display-form calendar-iso-date-display-form)
+  (setq calendar-time-zone-style 'numeric) ; Emacs 28.1
+
+  (require 'cal-dst)
+  (setq calendar-standard-time-zone-name "+0000")
+  (setq calendar-daylight-time-zone-name "+0100")
+
+  (require 'diary-lib)
+  (setq diary-file "~/Dropbox/org/diary")
+  (setq diary-date-forms diary-iso-date-forms)
+  (setq diary-comment-start ";;")
+  (setq diary-comment-end "")
+  (setq diary-nonmarking-symbol "!")
+  (setq diary-show-holidays-flag t)
+  (setq diary-display-function #'diary-fancy-display) ; better than its alternative
+  (setq diary-header-line-format nil)
+  (setq diary-list-include-blanks nil)
+  (setq diary-number-of-entries 2)
+  (setq diary-mail-days 2)
+  (setq diary-abbreviated-year-flag nil)
+
+  (add-hook 'calendar-today-visible-hook #'calendar-mark-today)
+  (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+
+  (add-hook 'diary-list-entries-hook 'diary-include-other-diary-files)
+  (add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
+  ;; Prevent Org from interfering with my key bindings.
+  (remove-hook 'calendar-mode-hook #'org--setup-calendar-bindings)
+
+  (let ((map calendar-mode-map))
+    (define-key map (kbd "s") #'calendar-sunrise-sunset)
+    (define-key map (kbd "l") #'lunar-phases)
+    (define-key map (kbd "i") nil) ; Org sets this, much to my chagrin (see `remove-hook' above)
+    (define-key map (kbd "i a") #'diary-insert-anniversary-entry)
+    (define-key map (kbd "i c") #'diary-insert-cyclic-entry)
+    (define-key map (kbd "i d") #'diary-insert-entry) ; for current "day"
+    (define-key map (kbd "i i") #'diary-insert-entry) ; most common action, easier to type
+    (define-key map (kbd "i m") #'diary-insert-monthly-entry)
+    (define-key map (kbd "i w") #'diary-insert-weekly-entry)
+    (define-key map (kbd "i y") #'diary-insert-yearly-entry)
+    (define-key map (kbd "M-n") #'calendar-forward-month)
+    (define-key map (kbd "M-p") #'calendar-backward-month))
+
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
 
@@ -349,10 +413,23 @@
         TeX-engine 'xetex)
   (setq org-beamer-environments-extra '(("onlyenv" "o" "\\begin{onlyenv}%a{%h}" "\\end{onlyenv}")
                                         ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
-                                        ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}"))))
+                                        ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}")
+                                        ("minipage" "o" "\\begin{minipage}[t]%o[t]{1.0\\textwidth}" "\\end{minipage}"))))
 
 (use-package! ox-tufte
   :after org)
+
+(use-package appt
+  :config
+  (setq appt-display-diary nil)
+  (setq appt-disp-window-function #'appt-disp-window)
+  (setq appt-display-mode-line t)
+  (setq appt-display-interval 3)
+  (setq appt-audible nil)
+  (setq appt-warning-time-regexp "appt \\([0-9]+\\)")
+  (setq appt-message-warning-time 15)
+  (run-at-time 10 nil #'appt-activate 1))
+
 
 ;; Set up org ref for PDFs
 (use-package! org-ref
@@ -365,6 +442,11 @@
         org-ref-pdf-directory "~/Dropbox/bibliography/papers"
         org-ref-bib-html "")
   (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")))
+
+(use-package! org-transclusion
+  :after org
+  :config
+  (setq org-transclusion-exclude-elements '(property-drawer headline)))
 
 ;; Set up org-noter
 (use-package! org-noter
@@ -432,6 +514,11 @@
   :bind-keymap
   ("C-c k" . zettelkasten-mode-map))
 
+(use-package! elfeed-org
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org")))
+
 ;; Proof general configuration
 (setq proof-splash-enable nil
       proof-auto-action-when-deactivating-scripting 'retract
@@ -484,6 +571,13 @@
 ;;  :bind
 ;;  (:map haskell-mode-map
 ;;   ("C-c r" . ormolu-format-buffer)))
+
+(use-package! lsp-haskell
+ :config
+ (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
+ ;; Comment/uncomment this line to see interactions between lsp client/server.
+ ;;(setq lsp-log-io t)
+)
 
 
 (after! writeroom-mode (setq +zen-text-scale 1))
@@ -561,6 +655,120 @@
 
 (define-key org-mode-map (kbd "C-c y n") #'org-zettelkasten-create-dwim)
 (define-key org-mode-map (kbd "C-c y s") #'org-zettelkasten-search-current-id)
+
+(use-package! ox-hugo
+  :after ox)
+
+(defun sci-hub-pdf-url (doi)
+  "Get url to the pdf from SCI-HUB using DOI."
+  (setq *doi-utils-pdf-url* (concat "https://sci-hub.do/" doi) ;captcha
+        *doi-utils-waiting* t
+        )
+  ;; try to find PDF url (if it exists)
+  (url-retrieve (concat "https://sci-hub.do/" doi)
+                (lambda (_)
+                  (goto-char (point-min))
+                  (while (search-forward-regexp
+                          "\\(https://\\|//sci-hub.do/downloads\\).+download=true'" nil t)
+                    (let ((foundurl (match-string 0)))
+                      (message foundurl)
+                      (if (string-match "https:" foundurl)
+                          (setq *doi-utils-pdf-url* foundurl)
+                        (setq *doi-utils-pdf-url* (concat "https:" foundurl))))
+                    (setq *doi-utils-waiting* nil))))
+  (while *doi-utils-waiting* (sleep-for 0.1))
+  *doi-utils-pdf-url*)
+
+(defun download-pdf-from-doi (doi key)
+  "Download pdf from doi with KEY name."
+  (url-copy-file (sci-hub-pdf-url doi)
+                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+
+(defun get-bib-from-doi (doi)
+  "Get the bibtex from DOI."
+  (shell-command (concat "curl -L -H \"Accept: application/x-bibtex; charset=utf-8\" "
+                         "https://doi.org/" doi)))
+
+(use-package erc
+  :commands (erc erc-tls)
+  :bind (:map erc-mode-map
+              ("C-c r" . reset-erc-track-mode))
+  :preface
+  (defun irc ()
+    (interactive)
+    (erc :server "ee-ymh15.ee.ic.ac.uk" :port 12844 :nick "ymherklotz"
+             :password "ymherklotz/freenode:xxx"))
+
+  (defun ymhg/erc-notify (nickname message)
+  "Displays a notification message for ERC."
+  (let* ((channel (buffer-name))
+         (nick (erc-hl-nicks-trim-irc-nick nickname))
+         (title (if (string-match-p (concat "^" nickname) channel)
+                    nick
+                  (concat nick " (" channel ")")))
+         (msg (s-trim (s-collapse-whitespace message))))
+    (alert (concat nick ": " msg) :title title)))
+  :hook ((ercn-notify . ymhg/erc-notify))
+  :config
+  (setq erc-autojoin-timing 'ident)
+  (setq erc-fill-function 'erc-fill-static)
+  (setq erc-fill-static-center 22)
+  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+  (setq erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
+  (setq erc-lurker-threshold-time 43200)
+  (setq erc-prompt-for-password nil)
+  (setq erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
+                                  "324" "329" "332" "333" "353" "477"))
+  (setq erc-fill-column 100)
+  (add-to-list 'erc-modules 'notifications)
+  (add-to-list 'erc-modules 'spelling)
+  (erc-services-mode 1)
+  (erc-update-modules)
+  (erc-track-minor-mode 1)
+  (erc-track-mode 1))
+
+(use-package erc-hl-nicks
+  :after erc)
+
+(use-package znc
+  :after erc
+  :config
+  (setq znc-servers '(("ee-ymh15.ee.ic.ac.uk" 12843 t ((freenode "ymherklotz" "xxx"))))))
+
+(use-package alert
+  :custom
+  (alert-default-style 'osx-notifier))
+
+;; Bug fixes
+
+;; Projectile compilation buffer not there anymore for some reason
+(setq compilation-buffer-name-function #'compilation--default-buffer-name)
+
+(defun diary-last-day-of-month (date)
+  "Return `t` if DATE is the last day of the month."
+  (let* ((day (calendar-extract-day date))
+         (month (calendar-extract-month date))
+         (year (calendar-extract-year date))
+         (last-day-of-month
+          (calendar-last-day-of-month month year)))
+    (= day last-day-of-month)))
+
+;;(setq smtpmail-smtp-server "smtp.mailbox.org" ;; <-- edit this !!!
+;;      smtpmail-smtp-service 587 ;; 25 is default -- uncomment and edit if needed
+;;      smtpmail-stream-type 'starttls)
+
+(setq user-mail-address "ymh15@ic.ac.uk"
+      smtpmail-smtp-server "smtp.office365.com"
+      smtpmail-smtp-service 587
+      smtpmail-stream-type 'starttls)
+
+(setq message-signature "Yann Herklotz
+Imperial College London
+https://yannherklotz.com")
+
+(setq message-send-mail-function 'message-smtpmail-send-it)
+
+(setq auth-sources '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc"))
 
 ;;(use-package! ox-ssh
 ;;  :after org

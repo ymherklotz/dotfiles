@@ -61,6 +61,9 @@
 (package! ox-reveal)
 ;(package! ox-ssh)
 (package! ox-tufte)
+(package! ox-hugo)
+(package! org-transclusion
+  :recipe (:host github :repo "nobiot/org-transclusion"))
 
 ;; Bibtex stuff
 (package! ebib)
@@ -70,6 +73,13 @@
 
 (package! direnv)
 (package! yaml-mode)
+
+(package! erc-hl-nicks)
+(package! alert)
+(package! znc)
+
+(package! elfeed)
+(package! elfeed-org)
 
 ;; Misc dependencies
 (package! hungry-delete)

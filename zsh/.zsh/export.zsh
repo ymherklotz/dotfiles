@@ -38,6 +38,8 @@ prepend_path "${HOME}/.local/bin"
 
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
+append_path "$HOME/projects/vericert/bin"
+append_path "/opt/bin"
 
 export PATH
 
