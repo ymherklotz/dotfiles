@@ -1,0 +1,9 @@
+[SpamFilter]
+[KillThreadsFilter]
+[ListMailsFilter]
+[ArchiveSentMailsFilter]
+[FolderNameFilter]
+folder_transforms = "Sent Items":sent "Archive1":archive "Deleted Items":deleted
+maildir_separator = /
+folder_lowercases = True
+[InboxFilter]
