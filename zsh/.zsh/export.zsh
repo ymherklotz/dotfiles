@@ -34,6 +34,8 @@ prepend_path "${HOME}/.cargo/bin"
 prepend_path "${HOME}/.cabal/bin"
 prepend_path "${HOME}/.local/bin"
 
+prepend_path "/mnt/data/tools/panda/bambu-9.7-dev/bin"
+
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
 
@@ -65,3 +67,8 @@ fi
 
 # Travis
 [ -r "$HOME/.travis/travis.sh" ] && source "$HOME/.travis/travis.sh"
+
+export CDS_LIC_FILE=5280@ee-llic01.ee.ic.ac.uk
+export SNPS_LICENSE_FILE=7182@ee-llic01.ee.ic.ac.uk
+export MGLS_LICENSE_FILE=1717@ee-llic01.ee.ic.ac.uk
+export LM_LICENSE_FILE=2100@ee-llic01.ee.ic.ac.uk:7193@ee-llic01.ee.ic.ac.uk:5280@ee-llic01.ee.ic.ac.uk:7182@ee-llic01.ee.ic.ac.uk:1717@ee-llic01.ee.ic.ac.uk

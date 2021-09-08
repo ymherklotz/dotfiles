@@ -25,7 +25,7 @@ setopt HIST_IGNORE_DUPS
 setopt HIST_IGNORE_SPACE
 setopt HIST_FIND_NO_DUPS
 
-if [ -d ~/.cache/wal ]; then (cat ~/.cache/wal/sequences &) fi
+#if [ -d ~/.cache/wal ]; then (cat ~/.cache/wal/sequences &) fi
 
 # Sourcing everything
 if [ -e /usr/share/fzf/key-bindings.zsh ]; then source /usr/share/fzf/key-bindings.zsh; fi
