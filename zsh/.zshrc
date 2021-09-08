@@ -27,9 +27,11 @@ setopt HIST_FIND_NO_DUPS
 
 #if [ -d ~/.cache/wal ]; then (cat ~/.cache/wal/sequences &) fi
 
+export MINIMAL_MAGIC_ENTER=no
+
 # Sourcing everything
-if [ -e /usr/share/fzf/key-bindings.zsh ]; then source /usr/share/fzf/key-bindings.zsh; fi
-if [ -e /usr/share/fzf/completion.zsh ]; then source /usr/share/fzf/completion.zsh; fi
+#if [ -e /usr/share/fzf/key-bindings.zsh ]; then source /usr/share/fzf/key-bindings.zsh; fi
+#if [ -e /usr/share/fzf/completion.zsh ]; then source /usr/share/fzf/completion.zsh; fi
 if [ -e $HOME/.zsh/export.zsh ]; then source $HOME/.zsh/export.zsh; fi
 if [ -e $HOME/.zsh/minimal.zsh ]; then source $HOME/.zsh/minimal.zsh; fi
 if [ -e $HOME/.zsh/function.zsh ]; then source $HOME/.zsh/function.zsh; fi

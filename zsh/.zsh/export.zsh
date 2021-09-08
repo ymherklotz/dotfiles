@@ -1,8 +1,9 @@
 os=$(uname -s)
 
-. $HOME/.nix-profile/etc/profile.d/nix.sh
-
 [ -n "$SSH_CLIENT" ] && export MINIMAL_USER_CHAR="$(hostname)"
+
+. $HOME/.nix-profile/etc/profile.d/nix.sh
+export NIX_IGNORE_SYMLINK_STORE=1
 
 export GITHUB_HOME=$HOME/Projects
 export FZF_DEFAULT_COMMAND='fd --type file --hidden --no-ignore'
@@ -24,7 +25,7 @@ if [ $os = "Darwin" ]; then
     prepend_path "/Library/TeX/texbin"
     prepend_path "/usr/local/opt/bison/bin"
 
-    append_path "${HOME}/Library/Python/3.8/bin"
+    append_path "${HOME}/Library/Python/3.9/bin"
 fi
 
 prepend_path "/usr/local/bin"
@@ -33,11 +34,14 @@ prepend_path "${HOME}/.yarn/bin"
 prepend_path "${HOME}/.cargo/bin"
 prepend_path "${HOME}/.cabal/bin"
 prepend_path "${HOME}/.local/bin"
+# prepend_path "/usr/local/opt/llvm/bin"
 
 prepend_path "/mnt/data/tools/panda/bambu-9.7-dev/bin"
 
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
+append_path "$HOME/projects/vericert/bin"
+append_path "/opt/bin"
 
 export PATH
 

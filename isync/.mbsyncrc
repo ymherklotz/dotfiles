@@ -29,21 +29,19 @@ Path ~/.mail/mailbox/
 Inbox ~/.mail/mailbox/Inbox
 
 Channel imperial
-Master :imperial-remote:
-Slave :imperial-local:
-Patterns "Sent Items" Archive1 "Deleted Items" INBOX Drafts
+Far :imperial-remote:
+Near :imperial-local:
+Patterns "Sent Items" Archive "Deleted Items" INBOX Drafts
 Create Both
 SyncState *
-MaxMessages 100
 ExpireUnread no
 Expunge Both
 
 Channel mailbox
-Master :mailbox-remote:
-Slave :mailbox-local:
+Far :mailbox-remote:
+Near :mailbox-local:
 Patterns *
 Create Both
 SyncState *
-MaxMessages 100
 ExpireUnread no
 Expunge Both
