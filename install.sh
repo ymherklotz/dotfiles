@@ -59,6 +59,9 @@ for i in "$@"; do
     bspwm)   BSPWM=1;   NOT_ALL=1;;
     rofi)    ROFI=1;    NOT_ALL=1;;
     termite) TERMITE=1; NOT_ALL=1;;
+    afew)    AFEW=1;    NOT_ALL=1;;
+    doom)    DOOM=1;    NOT_ALL=1;;
+    notmuch) NOTMUCH=1; NOT_ALL=1;;
 
     *)
       print_help
@@ -72,6 +75,22 @@ if [[ ! -z $EMACS ]] || [[ -z $NOT_ALL ]]; then
   mk ~/.emacs.d
   cp ${SCRIPT_DIR}/emacs/init.el ~/.emacs.d/init.el
   ln_configs emacs/loader.org ~/.emacs.d/loader.org
+fi
+
+if [[ ! -z $DOOM ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing doom config..."
+  ln_configs doom ~/.config/doom
+fi
+
+if [[ ! -z $AFEW ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing afew config..."
+  mk ~/.config/afew
+  ln_configs afew/config ~/.config/afew/config
+fi
+
+if [[ ! -z $NOTMUCH ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing notmuch config..."
+  ln_configs notmuch/.notmuch-config ~/.notmuch-config
 fi
 
 if [[ ! -z $X ]] || [[ -z $NOT_ALL ]]; then
