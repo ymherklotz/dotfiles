@@ -45,7 +45,7 @@
 (global-set-key (kbd "C-c z") #'quick-calc)
 (global-set-key (kbd "<f5>")  #'revert-buffer)
 (global-set-key (kbd "C-.")   #'other-window)
-(global-set-key (kbd "C-,")   #'(lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-,")   (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
@@ -87,10 +87,13 @@
 (define-prefix-command 'y-map)
 (global-set-key (kbd "C-c y") 'y-map)
 
-(define-key y-map (kbd "p") 'password-store-copy)
-(define-key y-map (kbd "i") 'password-store-insert)
-(define-key y-map (kbd "g") 'password-store-generate)
-(define-key y-map (kbd "r") 'toggle-rot13-mode)
+(define-key y-map (kbd "p")   #'password-store-copy)
+(define-key y-map (kbd "i")   #'password-store-insert)
+(define-key y-map (kbd "g")   #'password-store-generate)
+(define-key y-map (kbd "r")   #'toggle-rot13-mode)
+(define-key y-map (kbd "c")   #'calendar)
+(define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
+(define-key y-map (kbd "d")   #'y/insert-date)
 
 (electric-indent-mode -1)
 
@@ -106,8 +109,6 @@
   "Insert a timestamp according to locale's date and time format."
   (interactive)
   (insert (format-time-string "%c" (current-time))))
-
-(define-key y-map (kbd "d") 'y/insert-date)
 
 ;; Set backup directories into the tmp folder
 (defvar --backup-directory (concat user-emacs-directory "backups"))
@@ -148,7 +149,7 @@
            (funcall original)
          (auto-save-mode -1)))
 
-     (advice-add 'tramp-set-auto-save :around #'tramp-set-auto-save--check)
+     (advice-add #'tramp-set-auto-save :around #'tramp-set-auto-save--check)
 
      ;; Use my ~/.ssh/config control master settings according to https://puppet.com/blog/speed-up-ssh-by-reusing-connections
      (setq tramp-ssh-controlmaster-options "")))
@@ -362,6 +363,8 @@
   (setq diary-mail-days 2)
   (setq diary-abbreviated-year-flag nil)
 
+  (add-hook 'diary-sort-entries #'diary-list-entries-hook)
+
   (add-hook 'calendar-today-visible-hook #'calendar-mark-today)
   (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
 
@@ -459,7 +462,7 @@
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
   :config
-  (setq org-superstar-headline-bullets-list '("♚" "♛" "♜" "♝" "♞" "♟" "♔" "♕" "♖" "♗" "♘" "♙")
+  (setq org-superstar-headline-bullets-list '("♚" "♛" "♜" "♝" "♞" "♔" "♕" "♖" "♗" "♘" "♙")
         org-superstar-special-todo-items t))
 
 (use-package! org-id
@@ -488,16 +491,17 @@
   (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
         ebib-notes-directory "~/Dropbox/bibliography/notes/"
         ebib-notes-template "#+TITLE: Notes on: %T\n\n>|<"
-        ebib-keywords-file "~/Dropbox/bibliography/keywords.txt"
-        ebib-reading-list-file "~/Dropbox/bibliography/reading_list.org")
+        ebib-keywords (expand-file-name "~/Dropbox/bibliography/keywords.txt")
+        ebib-reading-list-file "~/Dropbox/bibliography/reading_list.org"
+        ebib-notes-storage 'multiple-notes-per-file)
   :config
   (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
   (add-to-list 'ebib-file-associations '("pdf" . "open"))
   (add-to-list 'ebib-citation-commands '(org-mode (("ref" "cite:%(%K%,)"))))
 
   (advice-add 'bibtex-generate-autokey :around
-              #'(lambda (orig-func &rest args)
-                  (replace-regexp-in-string ":" "" (apply orig-func args))))
+              (lambda (orig-func &rest args)
+                (replace-regexp-in-string ":" "" (apply orig-func args))))
   (remove-hook 'ebib-notes-new-note-hook #'org-narrow-to-subtree))
 
 ;; Set up dictionaries
@@ -739,6 +743,8 @@
   :custom
   (alert-default-style 'osx-notifier))
 
+(use-package ledger-mode)
+
 ;; Bug fixes
 
 ;; Projectile compilation buffer not there anymore for some reason
@@ -757,10 +763,13 @@
 ;;      smtpmail-smtp-service 587 ;; 25 is default -- uncomment and edit if needed
 ;;      smtpmail-stream-type 'starttls)
 
+(require 'smtpmail)
+
 (setq user-mail-address "ymh15@ic.ac.uk"
       smtpmail-smtp-server "smtp.office365.com"
       smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls)
+      smtpmail-stream-type 'starttls
+      message-send-mail-function 'message-smtpmail-send-it)
 
 (setq message-signature "Yann Herklotz
 Imperial College London
@@ -770,48 +779,28 @@ https://yannherklotz.com")
 
 (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc"))
 
+(use-package! modus-operandi-theme
+  :config
+  (custom-theme-set-faces! 'modus-operandi
+    '(proof-locked-face ((t (:extend t :background "gray90"))))))
+
+(use-package! modus-vivendi-theme
+  :config
+  (custom-theme-set-faces! 'modus-vivendi
+    '(proof-locked-face ((t (:extend t :background "gray20"))))))
+
+(use-package! notmuch
+  :config
+  (setq notmuch-saved-searches
+        '((:name "inbox" :query "tag:inbox not tag:trash" :key "n")
+          (:name "flagged" :query "tag:flagged" :key "f")
+          (:name "sent" :query "tag:sent" :key "s")
+          (:name "drafts" :query "tag:draft" :key "d")
+          (:name "mailbox" :query "tag:mailbox not tag:trash" :key "m")
+          (:name "imperial" :query "tag:imperial not tag:trash" :key "i"))))
+
 ;;(use-package! ox-ssh
 ;;  :after org
 ;;  :config
 ;;  (when (eq system-type 'darwin)
 ;;    (setq org-ssh-header "XAuthLocation /opt/X11/bin/xauth")))
-
-;; Here are some additional functions/macros that could help you configure Doom:
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c g k').
-;; This will open documentation for it, including demos of how they are used.
-;;
-;; You can also try 'gd' (or 'C-c g d') to jump to their definition and see how
-;; they are implemented.
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(org-blank-before-new-entry (quote ((heading) (plain-list-item))))
- '(package-selected-packages (quote (org-plus-contrib)))
- '(safe-local-variable-values
-   (quote
-    ((eval add-to-list
-           (quote auto-mode-alist)
-           (quote
-            ("\\.v\\'" . verilog-mode)))
-     (eval setq org-ref-pdf-directory
-           (concat
-            (projectile-project-root)
-            "papers/"))))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )

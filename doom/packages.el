@@ -88,7 +88,10 @@
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
 (package! pinentry)
 
+(package! package-lint)
+
 ;; Themes
 (package! color-theme-sanityinc-tomorrow)
-(package! modus-operandi-theme)
-(package! modus-vivendi-theme)
+(package! modus-themes)
+;;(package! modus-operandi-theme)
+;;(package! modus-vivendi-theme)

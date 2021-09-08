@@ -13,6 +13,8 @@ export VISUAL='emacsclient -c'
 export TERM='xterm-256color'
 export CLICOLOR=1
 
+export LFSCSIGS="$HOME/.opam/default/.opam-switch/sources/coq-smtcoq.dev+8.13/src/lfsc/tests/signatures"
+
 prepend_path() {
     [ -d "$1" ] && PATH="$1:$PATH"
 }
@@ -29,6 +31,7 @@ if [ $os = "Darwin" ]; then
 fi
 
 prepend_path "/usr/local/bin"
+prepend_path "/usr/local/sbin"
 prepend_path "${HOME}/.gem/ruby/2.7.0/bin"
 prepend_path "${HOME}/.yarn/bin"
 prepend_path "${HOME}/.cargo/bin"
@@ -42,6 +45,7 @@ append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
 append_path "$HOME/projects/vericert/bin"
 append_path "/opt/bin"
+append_path "$HOME/go/bin"
 
 export PATH
 
