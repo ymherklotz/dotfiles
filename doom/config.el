@@ -99,11 +99,20 @@
 
 ;; Mac configuration
 (when (eq system-type 'darwin)
-  (setq mac-right-option-modifier 'none
-        mac-option-key-is-meta nil
-        mac-command-key-is-meta t
-        mac-command-modifier 'meta
-        mac-option-modifier nil))
+  (progn (setq mac-right-option-modifier 'none
+               mac-option-key-is-meta nil
+               mac-command-key-is-meta t
+               mac-command-modifier 'meta
+               mac-option-modifier nil)
+
+         (defun ymhg/apply-theme (appearance)
+           "Load theme, taking current system APPEARANCE into consideration."
+           (mapc #'disable-theme custom-enabled-themes)
+           (pcase appearance
+             ('light (load-theme 'modus-operandi t))
+             ('dark (load-theme 'modus-vivendi t))))
+
+         (add-hook 'ns-system-appearance-change-functions #'ymhg/apply-theme)))
 
 (defun y/insert-date ()
   "Insert a timestamp according to locale's date and time format."
