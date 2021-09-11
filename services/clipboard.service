@@ -1,0 +1,9 @@
+[Unit]
+Description=Clipboard management through Syncthing.
+
+[Service]
+Type=simple
+ExecStart=/home/ymherklotz/.local/bin/clipboard.sh
+
+[Install]
+WantedBy=default.target

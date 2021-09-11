@@ -22,13 +22,14 @@ function print_help {
 }
 
 function ln_configs {
-  ln $EXTRA_OPTS ${SCRIPT_DIR}/${1} $2
+  if [[ $FORCE -eq 1 ]]; then
+    rm -rI $2
+  fi
+  ln $EXTRA_OPTS ${SCRIPT_DIR}/$1 $2
 }
 
 function mk {
-  if [[ $FORCE -eq 1 ]]; then
-    mkdir -p "$1"
-  fi
+  mkdir -p "$1"
 }
 
 EXTRA_OPTS=" -s "
@@ -45,23 +46,28 @@ for i in "$@"; do
       exit 0
       ;;
 
-    emacs)   EMACS=1;   NOT_ALL=1;;
-    X)       X=1;       NOT_ALL=1;;
-    tmux)    TMUX=1;    NOT_ALL=1;;
-    i3)      I3=1;      NOT_ALL=1;;
-    zsh)     ZSH=1;     NOT_ALL=1;;
-    isync)   ISYNC=1;   NOT_ALL=1;;
-    polybar) POLYBAR=1; NOT_ALL=1;;
-    compton) COMPTON=1; NOT_ALL=1;;
-    firefox) FIREFOX=1; NOT_ALL=1;;
-    ncmpcpp) NCMPCPP=1; NOT_ALL=1;;
-    mpd)     MPD=1;     NOT_ALL=1;;
-    bspwm)   BSPWM=1;   NOT_ALL=1;;
-    rofi)    ROFI=1;    NOT_ALL=1;;
-    termite) TERMITE=1; NOT_ALL=1;;
-    afew)    AFEW=1;    NOT_ALL=1;;
-    doom)    DOOM=1;    NOT_ALL=1;;
-    notmuch) NOTMUCH=1; NOT_ALL=1;;
+    X)        X=1;         NOT_ALL=1;;
+    afew)     AFEW=1;      NOT_ALL=1;;
+    bspwm)    BSPWM=1;     NOT_ALL=1;;
+    compton)  COMPTON=1;   NOT_ALL=1;;
+    doom)     DOOM=1;      NOT_ALL=1;;
+    emacs)    EMACS=1;     NOT_ALL=1;;
+    firefox)  FIREFOX=1;   NOT_ALL=1;;
+    i3)       I3=1;        NOT_ALL=1;;
+    isync)    ISYNC=1;     NOT_ALL=1;;
+    mpd)      MPD=1;       NOT_ALL=1;;
+    msmtp)    MSMTP=1;     NOT_ALL=1;;
+    ncmpcpp)  NCMPCPP=1;   NOT_ALL=1;;
+    notmuch)  NOTMUCH=1;   NOT_ALL=1;;
+    polybar)  POLYBAR=1;   NOT_ALL=1;;
+    scripts)  SCRIPTS=1;   NOT_ALL=1;;
+    services) SERVICES=1;  NOT_ALL=1;;
+    sxhkd)    SXHKD=1;     NOT_ALL=1;;
+    rofi)     ROFI=1;      NOT_ALL=1;;
+    termite)  TERMITE=1;   NOT_ALL=1;;
+    tmux)     TMUX_INST=1; NOT_ALL=1;;
+    zathura)  ZATHURA=1;   NOT_ALL=1;;
+    zsh)      ZSH=1;       NOT_ALL=1;;
 
     *)
       print_help
@@ -77,9 +83,25 @@ if [[ ! -z $EMACS ]] || [[ -z $NOT_ALL ]]; then
   ln_configs emacs/loader.org ~/.emacs.d/loader.org
 fi
 
+if [[ ! -z $SXHKD ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing sxhkd config..."
+  mk ~/.config/sxhkd
+  ln_configs sxhkd/sxhkdrc ~/.config/sxhkd/sxhkdrc
+fi
+
 if [[ ! -z $DOOM ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing doom config..."
   ln_configs doom ~/.config/doom
+fi
+
+if [[ ! -z $MSMTP ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing msmtp config..."
+  ln_configs msmtp ~/.config/msmtp
+fi
+
+if [[ ! -z $ZATHURA ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing zathura config..."
+  ln_configs zathura ~/.config/zathura
 fi
 
 if [[ ! -z $AFEW ]] || [[ -z $NOT_ALL ]]; then
@@ -100,7 +122,7 @@ if [[ ! -z $X ]] || [[ -z $NOT_ALL ]]; then
   ln_configs X/.xinitrc ~/.xinitrc
 fi
 
-if [[ ! -z $TMUX ]] || [[ -z $NOT_ALL ]]; then
+if [[ ! -z $TMUX_INST ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing tmux config..."
   ln_configs tmux/.tmux.conf ~/.tmux.conf
 fi
@@ -171,4 +193,13 @@ if [[ ! -z $TERMITE ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing termite config..."
   mk ~/.config/termite
   ln_configs termite/config ~/.config/termite/config
+fi
+
+if [[ ! -z $SERVICES ]] || [[ -z $NOT_ALL ]]; then
+  echo "Installing services config..."
+  mk ~/.config/systemd/user
+  ln_configs services/mailnotify.service ~/.config/systemd/user/mailnotify.service
+  ln_configs services/mbsync.service ~/.config/systemd/user/mbsync.service
+  ln_configs services/mbsync.timer ~/.config/systemd/user/mbsync.timer
+  ln_configs services/clipboard.service ~/.config/systemd/user/clipboard.service
 fi

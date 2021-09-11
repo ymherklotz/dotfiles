@@ -1,0 +1,20 @@
+defaults
+auth           on
+tls            on
+logfile        ~/.msmtp.log
+
+account        mailbox
+host           smtp.mailbox.org
+port           587
+from           yann@yannherklotz.com
+user           ymherklotz@mailbox.org
+passwordeval   "pass show mailbox/ymherklotz@mailbox.org"
+
+account        imperial
+host           smtp.office365.com
+port           587
+from           yann.herklotz15@imperial.ac.uk
+user           ymh15@ic.ac.uk
+passwordeval   "pass show imperial/ymh15"
+
+account default : mailbox
