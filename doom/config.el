@@ -32,9 +32,6 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
-(setq auth-sources '("~/.authinfo.gpg"
-                     "~/.authinfo"))
-
 ;; Add some keybinding customisations.
 
 ;; Stop emacs from freezing when trying to minimize it on a tiling WM.
@@ -199,7 +196,10 @@
 
 ;; Delete all whitespace until the first non-whitespace character.
 (use-package! hungry-delete
-  :config (global-hungry-delete-mode))
+  :config
+  (global-hungry-delete-mode)
+  ;; disable hungry delete in minibuffer-mode: https://github.com/abo-abo/swiper/issues/2761
+  (add-to-list 'hungry-delete-except-modes 'minibuffer-mode))
 
 ;; Org configuration
 (use-package! org
@@ -303,12 +303,11 @@
         org-todo-keywords
         '((sequence
            "TODO(t)"  ; A task that needs doing & is ready to do
-           "PROJECT(p)"  ; A project, which usually contains other tasks
-           "START(s)"  ; A task that is in progress
+           "PROJ(p)"  ; A project, which usually contains other tasks
+           "STRT(s)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
-           "DEFERRED(h)" ; Demoted for later
-           "SOMEDAY(m)" ; todo some day
+           "SMDY(m)" ; todo some day
            "|"
            "DONE(d!)"  ; Task successfully completed
            "KILL(k)") ; Task was cancelled, aborted or is no longer applicable
@@ -759,25 +758,17 @@
           (calendar-last-day-of-month month year)))
     (= day last-day-of-month)))
 
-;;(setq smtpmail-smtp-server "smtp.mailbox.org" ;; <-- edit this !!!
-;;      smtpmail-smtp-service 587 ;; 25 is default -- uncomment and edit if needed
-;;      smtpmail-stream-type 'starttls)
-
-(require 'smtpmail)
-
-(setq user-mail-address "ymh15@ic.ac.uk"
-      smtpmail-smtp-server "smtp.office365.com"
-      smtpmail-smtp-service 587
-      smtpmail-stream-type 'starttls
-      message-send-mail-function 'message-smtpmail-send-it)
+(setq message-send-mail-function 'message-send-mail-with-sendmail)
 
 (setq message-signature "Yann Herklotz
 Imperial College London
 https://yannherklotz.com")
 
-(setq message-send-mail-function 'message-smtpmail-send-it)
-
 (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc"))
+
+(setq mail-specify-envelope-from t
+      message-sendmail-envelope-from 'header
+      mail-envelope-from 'header)
 
 (use-package! modus-operandi-theme
   :config
@@ -791,13 +782,34 @@ https://yannherklotz.com")
 
 (use-package! notmuch
   :config
+  (defun ymhg/notmuch-search-delete-mail (&optional beg end)
+    "Delete a message."
+    (interactive (notmuch-interactive-region))
+    (if (member "deleted" (notmuch-search-get-tags))
+        (notmuch-search-tag (list "-deleted"))
+      (notmuch-search-tag (list "+deleted" "-unread") beg end)))
+
+  (defun ymhg/notmuch-show-delete-mail (&optional beg end)
+    "Delete a message."
+    (interactive (notmuch-interactive-region))
+    (if (member "deleted" (notmuch-show-get-tags))
+        (notmuch-show-tag (list "-deleted"))
+      (notmuch-show-tag (list "+deleted" "-unread") beg end)))
+
+  (map!
+   :map notmuch-show-mode-map
+   "d" #'ymhg/notmuch-show-delete-mail)
+  (map!
+   :map notmuch-search-mode-map
+   "d" #'ymhg/notmuch-search-delete-mail)
+
   (setq notmuch-saved-searches
-        '((:name "inbox" :query "tag:inbox not tag:trash" :key "n")
+        '((:name "inbox" :query "tag:inbox not tag:deleted" :key "n")
           (:name "flagged" :query "tag:flagged" :key "f")
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
-          (:name "mailbox" :query "tag:mailbox not tag:trash" :key "m")
-          (:name "imperial" :query "tag:imperial not tag:trash" :key "i"))))
+          (:name "mailbox" :query "tag:mailbox not tag:deleted" :key "m")
+          (:name "imperial" :query "tag:imperial not tag:deleted" :key "i"))))
 
 ;;(use-package! ox-ssh
 ;;  :after org

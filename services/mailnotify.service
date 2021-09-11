@@ -3,7 +3,7 @@ Description=Mailbox notification service
 
 [Service]
 Type=simple
-ExecStart=/home/yannherklotz/.local/bin/mailnotify.sh
+ExecStart=/home/ymherklotz/.local/bin/mailnotify.sh
 
 [Install]
 WantedBy=default.target

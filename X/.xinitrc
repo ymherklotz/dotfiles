@@ -32,15 +32,16 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
+xset r rate 200 30
+
 # Startup programs
 eval $(ssh-agent)
-dropbox &
 sxhkd &
 compton &
 redshift &
 dunst &
 wal -R
-xrandr --output DP-1 --auto --output DP-2 --left-of DP-1 --auto --output DVI-1-0 --rotate left --right-of DP-1 --auto
+# xrandr --output DP-1 --auto --output DP-2 --left-of DP-1 --auto --output DVI-1-0 --rotate left --right-of DP-1 --auto
 feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
 xsetroot -cursor_name left_ptr
 
