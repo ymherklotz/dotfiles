@@ -16,9 +16,9 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "Iosevka" :size 16)
-      doom-variable-pitch-font (font-spec :family "Alegreya" :size 12)
-      doom-serif-font (font-spec :family "Alegreya" :size 12))
-
+;;      doom-variable-pitch-font (font-spec :family "Alegreya" :size 12)
+;;      doom-serif-font (font-spec :family "Alegreya" :size 12))
+)
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
@@ -602,8 +602,8 @@
   :config
   (direnv-mode))
 
-(use-package! alectryon
-  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
+;;(use-package! alectryon
+;;  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
 
 (defun ymhg/incr-id (ident)
   (let* ((ident-list (append nil ident nil))
