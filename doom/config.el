@@ -32,6 +32,11 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type nil)
 
+;; Disable stuff
+(global-prettify-symbols-mode -1)
+(electric-indent-mode -1)
+(menu-bar-mode -1)
+
 ;; Add some keybinding customisations.
 
 ;; Stop emacs from freezing when trying to minimize it on a tiling WM.
@@ -91,8 +96,12 @@
 (define-key y-map (kbd "c")   #'calendar)
 (define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
 (define-key y-map (kbd "d")   #'y/insert-date)
-
-(electric-indent-mode -1)
+(define-key y-map (kbd "s")   (lambda () (interactive)
+                                (let ((org-agenda-files '("~/Dropbox/zk/hls.org"
+                                                          "~/Dropbox/zk/computing.org"
+                                                          "~/Dropbox/zk/verification.org"
+                                                          "~/Dropbox/zk/mathematics.org"
+                                                          "~/Dropbox/zk/hardware.org"))) (org-search-view))))
 
 ;; Mac configuration
 (when (eq system-type 'darwin)
@@ -257,10 +266,6 @@
                              ("~/Dropbox/org/someday.org" :level . 1)
                              ("~/Dropbox/org/projects.org" :maxlevel . 2)
                              (,(format-time-string "~/Dropbox/org/%Y-%m.org") :level . 1)))
-  (setq org-agenda-text-search-extra-files '("~/Dropbox/zk/hls.org"
-                                             "~/Dropbox/zk/computing.org"
-                                             "~/Dropbox/zk/verification.org"
-                                             "~/Dropbox/zk/mathematics.org"))
         ;; Set custom agenda commands which can be activated in the agenda viewer.
   (setq org-agenda-custom-commands
         '(("w" "At work" tags-todo "@work"
@@ -307,6 +312,7 @@
            "STRT(s)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
+           "DELG(l)"  ; This task is delegated
            "SMDY(m)" ; todo some day
            "|"
            "DONE(d!)"  ; Task successfully completed
@@ -316,7 +322,17 @@
            "[-](S)"   ; Task is in progress
            "[?](W)"   ; Task is being held up or paused
            "|"
-           "[X](D)"))); Task was completed
+           "[X](D)"))
+        org-todo-keyword-faces '(("[-]" . +org-todo-active)
+                                ("STRT" . +org-todo-active)
+                                ("[?]" . +org-todo-onhold)
+                                ("WAIT" . +org-todo-onhold)
+                                ("HOLD" . +org-todo-onhold)
+                                ("DELG" . +org-todo-onhold)
+                                ("SMDY" . +org-todo-onhold)
+                                ("PROJ" . +org-todo-project)
+                                ("NO" . +org-todo-cancel)
+                                ("KILL" . +org-todo-cancel))); Task was completed
 ;;  (setq org-html-head-extra
 ;;        "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js\"></script>
 ;;<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.css\">
@@ -495,7 +511,9 @@
         ebib-notes-storage 'multiple-notes-per-file)
   :config
   (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
-  (add-to-list 'ebib-file-associations '("pdf" . "open"))
+  (if (eq system-type 'darwin)
+      (add-to-list 'ebib-file-associations '("pdf" . "open"))
+    (add-to-list 'ebib-file-associations '("pdf" . nil)))
   (add-to-list 'ebib-citation-commands '(org-mode (("ref" "cite:%(%K%,)"))))
 
   (advice-add 'bibtex-generate-autokey :around
@@ -536,7 +554,6 @@
 
 (setq coq-may-use-prettify nil
       company-coq-prettify-symbols nil)
-(global-prettify-symbols-mode -1)
 
 (use-package! smartparens
   :config
@@ -808,8 +825,12 @@ https://yannherklotz.com")
           (:name "flagged" :query "tag:flagged" :key "f")
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
-          (:name "mailbox" :query "tag:mailbox not tag:deleted" :key "m")
-          (:name "imperial" :query "tag:imperial not tag:deleted" :key "i"))))
+          (:name "mailbox" :query "tag:mailbox not tag:deleted not tag:sent" :key "m")
+          (:name "imperial" :query "tag:imperial not tag:deleted not tag:sent" :key "i")))
+
+  (setq notmuch-fcc-dirs
+      '(("yann@yannherklotz.com"          . "mailbox/Sent -inbox +sent -unread +mailbox -new")
+        ("yann.herklotz15@imperial.ac.uk" . "\"imperial/Sent Items\" -inbox +sent -unread +imperial -new"))))
 
 ;;(use-package! ox-ssh
 ;;  :after org
