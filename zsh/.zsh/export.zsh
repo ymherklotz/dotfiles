@@ -80,3 +80,5 @@ export CDS_LIC_FILE=5280@ee-llic01.ee.ic.ac.uk
 export SNPS_LICENSE_FILE=7182@ee-llic01.ee.ic.ac.uk
 export MGLS_LICENSE_FILE=1717@ee-llic01.ee.ic.ac.uk
 export LM_LICENSE_FILE=2100@ee-llic01.ee.ic.ac.uk:7193@ee-llic01.ee.ic.ac.uk:5280@ee-llic01.ee.ic.ac.uk:7182@ee-llic01.ee.ic.ac.uk:1717@ee-llic01.ee.ic.ac.uk
+
+export QMK_HOME=$HOME/projects/qmk_firmware
