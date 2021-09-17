@@ -314,6 +314,7 @@
            "TODO(t)"  ; A task that needs doing & is ready to do
            "PROJ(p)"  ; A project, which usually contains other tasks
            "STRT(s)"  ; A task that is in progress
+           "DELG(d)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
            "SMDY(m)" ; todo some day
@@ -441,7 +442,6 @@
   (setq appt-message-warning-time 15)
   (run-at-time 10 nil #'appt-activate 1))
 
-
 ;; Set up org ref for PDFs
 (use-package! org-ref
   :demand
@@ -458,14 +458,6 @@
   :after org
   :config
   (setq org-transclusion-exclude-elements '(property-drawer headline)))
-
-;; Set up org-noter
-(use-package! org-noter
-  :after org
-  :commands org-noter
-  :config (setq org-noter-default-notes-file-names '("notes.org")
-                org-noter-notes-search-path '("~/org/bibliography")
-                org-noter-separate-notes-from-heading t))
 
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
@@ -769,6 +761,12 @@
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 
+(use-package! sendmail
+  :config
+  (if (eq system-type 'darwin)
+      (setq sendmail-program "/usr/local/bin/msmtp")
+    (setq sendmail-program "/usr/bin/msmtp")))
+
 (setq message-signature "Yann Herklotz
 Imperial College London
 https://yannherklotz.com")
@@ -813,11 +811,11 @@ https://yannherklotz.com")
    "d" #'ymhg/notmuch-search-delete-mail)
 
   (setq notmuch-saved-searches
-        '((:name "inbox" :query "tag:inbox not tag:deleted" :key "n")
-          (:name "flagged" :query "tag:flagged" :key "f")
-          (:name "sent" :query "tag:sent" :key "s")
-          (:name "drafts" :query "tag:draft" :key "d")
-          (:name "mailbox" :query "tag:mailbox not tag:deleted" :key "m")
+        '((:name "inbox"    :query "tag:inbox not tag:deleted"    :key "n")
+          (:name "flagged"  :query "tag:flagged"                  :key "f")
+          (:name "sent"     :query "tag:sent"                     :key "s")
+          (:name "drafts"   :query "tag:draft"                    :key "d")
+          (:name "mailbox"  :query "tag:mailbox not tag:deleted"  :key "m")
           (:name "imperial" :query "tag:imperial not tag:deleted" :key "i"))))
 
 ;;(use-package! ox-ssh
