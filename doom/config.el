@@ -190,16 +190,19 @@
 ;; Set sentence to end with double space
 (setq sentence-end-double-space t)
 
-;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode',
-;; which is a personal preference.
+;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode', which is a personal
+;; preference.
 (setq-default fill-column 100)
-(remove-hook 'text-mode-hook #'auto-fill-mode)
-(add-hook 'text-mode-hook #'+word-wrap-mode)
-(add-hook 'text-mode-hook #'visual-fill-column-mode)
+;;(remove-hook 'text-mode-hook #'auto-fill-mode)
+(add-hook 'text-mode-hook #'auto-fill-mode)
+;;(add-hook 'text-mode-hook #'+word-wrap-mode)
+;;(add-hook 'text-mode-hook #'visual-fill-column-mode)
 
 ;; Set up magit when C-c g is called
 (use-package! magit
-  :bind (("C-x g" . magit-status)))
+  :bind (("C-x g" . magit-status))
+  :config
+  (add-hook 'magit-status-sections-hook #'magit-insert-modules))
 
 ;; Configure activation for whitespace mode
 (use-package! whitespace
@@ -319,7 +322,6 @@
            "TODO(t)"  ; A task that needs doing & is ready to do
            "PROJ(p)"  ; A project, which usually contains other tasks
            "STRT(s)"  ; A task that is in progress
-           "DELG(d)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
            "DELG(l)"  ; This task is delegated
@@ -777,6 +779,7 @@
     (= day last-day-of-month)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
+(setq message-fill-column 80)
 
 (use-package! sendmail
   :config
