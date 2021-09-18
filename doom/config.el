@@ -496,12 +496,6 @@
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
 
-(use-package counsel
-  :config
-  (setq counsel-rg-base-command
-        '("rg" "-M" "240" "--max-columns-preview" "--with-filename"
-          "--no-heading" "--line-number" "--color" "never" "%s")))
-
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
@@ -671,10 +665,10 @@
         (org-zettelkasten-create-next)
       (org-zettelkasten-create-branch))))
 
-(defun org-zettelkasten-search-current-id ()
-    (interactive)
-    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
-      (counsel-rg (concat "#" current-id) "~/Dropbox/zk" "-g *.org" "ID: ")))
+;;(defun org-zettelkasten-search-current-id ()
+;;    (interactive)
+;;    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
+;;      (counsel-rg (concat "#" current-id) "~/Dropbox/zk" "-g *.org" "ID: ")))
 
 (define-key org-mode-map (kbd "C-c y n") #'org-zettelkasten-create-dwim)
 (define-key org-mode-map (kbd "C-c y s") #'org-zettelkasten-search-current-id)
