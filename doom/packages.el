@@ -55,7 +55,6 @@
 
 ;; `org-mode' dependencies
 (package! org-ref)
-(package! org-noter)
 ;; `org-bullets' replacement
 (package! org-superstar)
 (package! ox-reveal)

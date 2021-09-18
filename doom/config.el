@@ -105,11 +105,20 @@
 
 ;; Mac configuration
 (when (eq system-type 'darwin)
-  (setq mac-right-option-modifier 'none
-        mac-option-key-is-meta nil
-        mac-command-key-is-meta t
-        mac-command-modifier 'meta
-        mac-option-modifier nil))
+  (progn (setq mac-right-option-modifier 'none
+               mac-option-key-is-meta nil
+               mac-command-key-is-meta t
+               mac-command-modifier 'meta
+               mac-option-modifier nil)
+
+         (defun ymhg/apply-theme (appearance)
+           "Load theme, taking current system APPEARANCE into consideration."
+           (mapc #'disable-theme custom-enabled-themes)
+           (pcase appearance
+             ('light (load-theme 'modus-operandi t))
+             ('dark (load-theme 'modus-vivendi t))))
+
+         (add-hook 'ns-system-appearance-change-functions #'ymhg/apply-theme)))
 
 (defun y/insert-date ()
   "Insert a timestamp according to locale's date and time format."
@@ -310,6 +319,7 @@
            "TODO(t)"  ; A task that needs doing & is ready to do
            "PROJ(p)"  ; A project, which usually contains other tasks
            "STRT(s)"  ; A task that is in progress
+           "DELG(d)"  ; A task that is in progress
            "WAIT(w)"  ; Something external is holding up this task
            "HOLD(h)"  ; This task is paused/on hold because of me
            "DELG(l)"  ; This task is delegated
@@ -450,7 +460,6 @@
   (setq appt-message-warning-time 15)
   (run-at-time 10 nil #'appt-activate 1))
 
-
 ;; Set up org ref for PDFs
 (use-package! org-ref
   :demand
@@ -467,14 +476,6 @@
   :after org
   :config
   (setq org-transclusion-exclude-elements '(property-drawer headline)))
-
-;; Set up org-noter
-(use-package! org-noter
-  :after org
-  :commands org-noter
-  :config (setq org-noter-default-notes-file-names '("notes.org")
-                org-noter-notes-search-path '("~/org/bibliography")
-                org-noter-separate-notes-from-heading t))
 
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
@@ -778,6 +779,12 @@
     (= day last-day-of-month)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
+
+(use-package! sendmail
+  :config
+  (if (eq system-type 'darwin)
+      (setq sendmail-program "/usr/local/bin/msmtp")
+    (setq sendmail-program "/usr/bin/msmtp")))
 
 (setq message-signature "Yann Herklotz
 Imperial College London

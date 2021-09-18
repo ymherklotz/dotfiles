@@ -91,17 +91,22 @@ fi
 
 if [[ ! -z $DOOM ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing doom config..."
-  ln_configs doom ~/.config/doom
+  mk ~/.config/doom
+  ln_configs doom/config.el ~/.config/doom/config.el
+  ln_configs doom/init.el ~/.config/doom/init.el
+  ln_configs doom/packages.el ~/.config/doom/packages.el
 fi
 
 if [[ ! -z $MSMTP ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing msmtp config..."
-  ln_configs msmtp ~/.config/msmtp
+  mk ~/.config/msmtp
+  ln_configs msmtp/config ~/.config/msmtp/config
 fi
 
 if [[ ! -z $ZATHURA ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing zathura config..."
-  ln_configs zathura ~/.config/zathura
+  mk ~/.config/zathura
+  ln_configs zathura/zathurarc ~/.config/zathura/zathurarc
 fi
 
 if [[ ! -z $AFEW ]] || [[ -z $NOT_ALL ]]; then
