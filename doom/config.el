@@ -347,6 +347,8 @@
                         (content "article" "content")
                         (postamble "footer" "postamble")))
 
+  (setq org-export-with-broken-links t)
+
   (require 'calendar)
   (setq calendar-mark-diary-entries-flag t)
   (setq calendar-mark-holidays-flag t)
