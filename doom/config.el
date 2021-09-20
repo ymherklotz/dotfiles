@@ -337,6 +337,7 @@
                         (postamble "footer" "postamble")))
 
   (setq org-export-with-broken-links t)
+  (require 'org-habit)
 
   (require 'calendar)
   (setq calendar-mark-diary-entries-flag t)
