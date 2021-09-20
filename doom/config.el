@@ -178,7 +178,7 @@
 (use-package! magit
   :bind (("C-x g" . magit-status))
   :config
-  (add-hook 'magit-status-sections-hook #'magit-insert-modules))
+  (add-hook 'magit-status-sections-hook #'magit-insert-modules 90))
 
 ;; Configure activation for whitespace mode
 (use-package! whitespace
@@ -529,6 +529,8 @@
 
 (setq coq-may-use-prettify nil
       company-coq-prettify-symbols nil)
+
+;;(set-face-background 'proof-locked-face "#dddddd")
 
 (use-package! smartparens
   :config
