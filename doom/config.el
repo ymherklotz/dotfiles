@@ -395,6 +395,7 @@
 
   (require 'ox-beamer)
   (require 'ox-latex)
+  (require 'ox-texinfo)
   (add-to-list 'org-latex-classes
                '("beamer"
                  "\\documentclass\[presentation\]\{beamer\}"
