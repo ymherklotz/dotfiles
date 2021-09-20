@@ -1,6 +1,7 @@
 (setq doom-font (font-spec :family "Iosevka" :size 16))
-(setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 12))
-(setq doom-serif-font (font-spec :family "Alegreya" :size 12))
+(when (eq system-type 'darwin)
+  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 12))
+  (setq doom-serif-font (font-spec :family "Alegreya" :size 12)))
 
 (setq doom-theme 'modus-operandi)
 
