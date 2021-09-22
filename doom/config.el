@@ -3,11 +3,24 @@
   (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 12))
   (setq doom-serif-font (font-spec :family "Alegreya" :size 12)))
 
-(setq doom-theme 'modus-operandi)
-
 (setq org-directory "~/Dropbox/org/")
 
 (setq display-line-numbers-type nil)
+
+(use-package modus-themes
+  :init
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-region '(bg-only no-extend))
+
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  (custom-theme-set-faces! '(modus-vivendi modus-operandi)
+    '(proof-locked-face :inherit modus-themes-nuanced-cyan)
+    '(proof-queue-face :inherit modus-themes-nuanced-magenta))
+  :config
+  ;; Load the theme of your choice:
+  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  :bind ("<f6>" . modus-themes-toggle))
 
 ;; Disable stuff
 (global-prettify-symbols-mode -1)
@@ -522,7 +535,9 @@
 (setq proof-splash-enable nil
       proof-auto-action-when-deactivating-scripting 'retract
       proof-delete-empty-windows nil
-      proof-auto-raise-buffers t
+      proof-multiple-frames-enable nil
+      proof-three-window-enable nil
+      proof-auto-raise-buffers nil
       coq-compile-before-require nil
       coq-compile-vos t
       coq-compile-parallel-in-background t
@@ -532,8 +547,6 @@
 
 (setq coq-may-use-prettify nil
       company-coq-prettify-symbols nil)
-
-;;(set-face-background 'proof-locked-face "#dddddd")
 
 (use-package! smartparens
   :config
@@ -653,8 +666,13 @@
 ;;    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
 ;;      (counsel-rg (concat "#" current-id) "~/Dropbox/zk" "-g *.org" "ID: ")))
 
+(defun org-zettelkasten-search-current-id ()
+  (interactive)
+  (let ((current-id (org-entry-get nil "CUSTOM_ID")))
+    (consult-ripgrep "~/Dropbox/zk" (concat "[\\[:]." current-id "\\]#"))))
+
 (define-key org-mode-map (kbd "C-c y n") #'org-zettelkasten-create-dwim)
-(define-key org-mode-map (kbd "C-c y s") #'org-zettelkasten-search-current-id)
+(define-key org-mode-map (kbd "C-c y z") #'org-zettelkasten-search-current-id)
 
 (use-package! ox-hugo
   :after ox)
@@ -774,16 +792,6 @@ https://yannherklotz.com")
       message-sendmail-envelope-from 'header
       mail-envelope-from 'header)
 
-(use-package! modus-operandi-theme
-  :config
-  (custom-theme-set-faces! 'modus-operandi
-    '(proof-locked-face ((t (:extend t :background "gray90"))))))
-
-(use-package! modus-vivendi-theme
-  :config
-  (custom-theme-set-faces! 'modus-vivendi
-    '(proof-locked-face ((t (:extend t :background "gray20"))))))
-
 (use-package! notmuch
   :config
   (defun ymhg/notmuch-search-delete-mail (&optional beg end)
@@ -847,9 +855,7 @@ https://yannherklotz.com")
 
 (use-package! embark
   :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+  (("C-;" . embark-act))
   :init
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
