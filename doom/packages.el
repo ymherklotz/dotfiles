@@ -42,6 +42,11 @@
 (package! vagrant-tramp)
 (package! zettelkasten
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+
+(package! plz
+  :recipe (:host github :repo "alphapapa/plz.el"))
+(package! ement
+  :recipe (:host github :repo "alphapapa/ement.el"))
 (package! pinentry)
 
 (package! package-lint)
