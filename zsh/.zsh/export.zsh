@@ -13,7 +13,7 @@ export VISUAL='emacsclient -c'
 export TERM='xterm-256color'
 export CLICOLOR=1
 
-export LFSCSIGS="$HOME/.opam/default/.opam-switch/sources/coq-smtcoq.dev+8.13/src/lfsc/tests/signatures"
+#export LFSCSIGS="$HOME/.opam/default/.opam-switch/sources/coq-smtcoq.dev+8.13/src/lfsc/tests/signatures"
 
 prepend_path() {
     [ -d "$1" ] && PATH="$1:$PATH"
@@ -64,11 +64,11 @@ command -v direnv >/dev/null 2>&1
 [ "$?" -eq 0 ] && eval "$(direnv hook zsh)"
 
 # Opam hook setup and initialising it
-command -v opam >/dev/null 2>&1
-if [ "$?" -eq 0 ]; then
-    test -r /home/yannherklotz/.opam/opam-init/init.zsh && . /home/yannherklotz/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
-    eval "$(opam env)";
-fi
+# command -v opam >/dev/null 2>&1
+# if [ "$?" -eq 0 ]; then
+#     test -r /home/yannherklotz/.opam/opam-init/init.zsh && . /home/yannherklotz/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+#     eval "$(opam env)";
+# fi
 
 # Load rust environment
 [ -r "$HOME/.cargo/env" ] && source $HOME/.cargo/env
