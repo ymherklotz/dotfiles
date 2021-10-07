@@ -400,12 +400,26 @@
     (define-key map (kbd "i a") #'diary-insert-anniversary-entry)
     (define-key map (kbd "i c") #'diary-insert-cyclic-entry)
     (define-key map (kbd "i d") #'diary-insert-entry) ; for current "day"
-    (define-key map (kbd "i i") #'diary-insert-entry) ; most common action, easier to type
     (define-key map (kbd "i m") #'diary-insert-monthly-entry)
     (define-key map (kbd "i w") #'diary-insert-weekly-entry)
     (define-key map (kbd "i y") #'diary-insert-yearly-entry)
     (define-key map (kbd "M-n") #'calendar-forward-month)
     (define-key map (kbd "M-p") #'calendar-backward-month))
+
+  (defun diary-schedule (y1 m1 d1 y2 m2 d2 dayname)
+    "Entry applies if date is between dates on DAYNAME.
+    Order of the parameters is M1, D1, Y1, M2, D2, Y2 if
+    `european-calendar-style' is nil, and D1, M1, Y1, D2, M2, Y2 if
+    `european-calendar-style' is t. Entry does not apply on a history."
+    (let ((date1 (calendar-absolute-from-gregorian (list m1 d1 y1)))
+          (date2 (calendar-absolute-from-gregorian (list m2 d2 y2)))
+          (d (calendar-absolute-from-gregorian date)))
+      (if (and
+           (<= date1 d)
+           (<= d date2)
+           (= (calendar-day-of-week date) dayname)
+           (not (calendar-check-holidays date)))
+          entry)))
 
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
