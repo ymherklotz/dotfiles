@@ -33,6 +33,7 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
 fi
 
 xset r rate 200 30
+setxkbmap us -variant colemak -option altwin:swap_alt_win
 
 # Startup programs
 eval $(ssh-agent)
@@ -40,10 +41,8 @@ sxhkd &
 compton &
 redshift &
 dunst &
-wal -R
-# xrandr --output DP-1 --auto --output DP-2 --left-of DP-1 --auto --output DVI-1-0 --rotate left --right-of DP-1 --auto
-xrandr --output DP-1 --rotate normal --auto --output DVI-1-0 --rotate left --right-of DP-1 --auto
-feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
+xrandr --output DP-1 --rotate normal --auto --output DVI-1-0 --rotate right --right-of DP-1 --auto --output DP-2 --left-of DP-1 --auto
+feh --bg-center /home/ymherklotz/images/wp1.jpg /home/ymherklotz/images/wp3.jpg /home/ymherklotz/images/wp2.jpg
 xsetroot -cursor_name left_ptr
 
 #exec i3
