@@ -403,12 +403,26 @@
     (define-key map (kbd "i a") #'diary-insert-anniversary-entry)
     (define-key map (kbd "i c") #'diary-insert-cyclic-entry)
     (define-key map (kbd "i d") #'diary-insert-entry) ; for current "day"
-    (define-key map (kbd "i i") #'diary-insert-entry) ; most common action, easier to type
     (define-key map (kbd "i m") #'diary-insert-monthly-entry)
     (define-key map (kbd "i w") #'diary-insert-weekly-entry)
     (define-key map (kbd "i y") #'diary-insert-yearly-entry)
     (define-key map (kbd "M-n") #'calendar-forward-month)
     (define-key map (kbd "M-p") #'calendar-backward-month))
+
+  (defun diary-schedule (y1 m1 d1 y2 m2 d2 dayname)
+    "Entry applies if date is between dates on DAYNAME.
+    Order of the parameters is M1, D1, Y1, M2, D2, Y2 if
+    `european-calendar-style' is nil, and D1, M1, Y1, D2, M2, Y2 if
+    `european-calendar-style' is t. Entry does not apply on a history."
+    (let ((date1 (calendar-absolute-from-gregorian (list m1 d1 y1)))
+          (date2 (calendar-absolute-from-gregorian (list m2 d2 y2)))
+          (d (calendar-absolute-from-gregorian date)))
+      (if (and
+           (<= date1 d)
+           (<= d date2)
+           (= (calendar-day-of-week date) dayname)
+           (not (calendar-check-holidays date)))
+          entry)))
 
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
@@ -612,64 +626,17 @@
 ;;(use-package! alectryon
 ;;  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
 
-(defun ymhg/incr-id (ident)
-  (let* ((ident-list (append nil ident nil))
-         (last-ident (last ident-list)))
-    (setcar last-ident (+ (car last-ident) 1))
-    (concat ident-list)))
+(use-package! org-zettelkasten
+  :config
+  (add-hook 'org-mode-hook #'org-zettelkasten-mode)
 
-(defun ymhg/incr-id-total (ident)
-  (if (string-match-p "\\(.*[a-z]\\)\\([0-9]+\\)$" ident)
-      (progn
-        (string-match "\\(.*[a-z]\\)\\([0-9]+\\)$" ident)
-        (let ((pre (match-string 1 ident))
-              (post (match-string 2 ident)))
-          (concat pre (number-to-string (+ 1 (string-to-number post))))))
-    (ymhg/incr-id ident)))
-
-(defun ymhg/branch-id (ident)
-  (if (string-match-p ".*[0-9]$" ident)
-      (concat ident "a")
-    (concat ident "1")))
-
-(defun ymhg/org-zettelkasten-create (incr newheading)
-  (let* ((current-id (org-entry-get nil "CUSTOM_ID"))
-         (next-id (funcall incr current-id)))
-    (funcall newheading)
-    (org-set-property "CUSTOM_ID" next-id)))
-
-(defun org-zettelkasten-create-next ()
-  (ymhg/org-zettelkasten-create
-   'ymhg/incr-id 'org-insert-heading))
-
-(defun org-zettelkasten-create-branch ()
-  (ymhg/org-zettelkasten-create
-   'ymhg/branch-id '(lambda () (org-insert-subheading ""))))
-
-(defun org-zettelkasten-create-dwim ()
-  (interactive)
-  (let ((current-point (save-excursion
-                         (org-back-to-heading)
-                         (point)))
-        (next-point (save-excursion
-                      (org-forward-heading-same-level 1 t)
-                      (point))))
-    (if (= current-point next-point)
-        (org-zettelkasten-create-next)
-      (org-zettelkasten-create-branch))))
-
-;;(defun org-zettelkasten-search-current-id ()
-;;    (interactive)
-;;    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
-;;      (counsel-rg (concat "#" current-id) "~/Dropbox/zk" "-g *.org" "ID: ")))
-
-(defun org-zettelkasten-search-current-id ()
+  (defun org-zettelkasten-search-current-id ()
+  "Use `consult-ripgrep' to search for the current ID in all files."
   (interactive)
   (let ((current-id (org-entry-get nil "CUSTOM_ID")))
-    (consult-ripgrep "~/Dropbox/zk" (concat "[\\[:]." current-id "\\]#"))))
+    (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
 
-(define-key org-mode-map (kbd "C-c y n") #'org-zettelkasten-create-dwim)
-(define-key org-mode-map (kbd "C-c y z") #'org-zettelkasten-search-current-id)
+  (define-key org-zettelkasten-mode-map (kbd "s") #'org-zettelkasten-search-current-id))
 
 (use-package! ox-hugo
   :after ox)

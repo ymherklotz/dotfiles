@@ -8,7 +8,6 @@
 (package! ox-reveal)
 ;(package! ox-ssh)
 (package! ox-tufte)
-(package! ox-hugo)
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
 
@@ -40,13 +39,14 @@
 ;; Misc dependencies
 (package! hungry-delete)
 (package! vagrant-tramp)
-(package! zettelkasten
-  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
 
 (package! plz
   :recipe (:host github :repo "alphapapa/plz.el"))
 (package! ement
   :recipe (:host github :repo "alphapapa/ement.el"))
+(package! org-zettelkasten
+  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+
 (package! pinentry)
 
 (package! package-lint)
