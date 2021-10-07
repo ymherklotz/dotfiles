@@ -42,6 +42,7 @@
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
 (global-set-key (kbd "M-=")   #'count-words)
+(global-set-key (kbd "C-x m") #'+notmuch/compose)
 
 ;; Set undo-only correctly
 (global-set-key (kbd "C-\\") 'undo-only)
@@ -163,8 +164,8 @@
 ;; Set sensitive data mode
 (setq auto-mode-alist
       (append
-       (list '("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
-             '("\\.sv\\'" . verilog-mode))
+       (list ;;'("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
+        '("\\.sv\\'" . verilog-mode))
        auto-mode-alist))
 
 (after! verilog-mode
@@ -351,6 +352,8 @@
 
   (setq org-export-with-broken-links t)
   (require 'org-habit)
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
 
   (require 'calendar)
   (setq calendar-mark-diary-entries-flag t)
@@ -428,13 +431,7 @@
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")))
   (add-to-list 'org-latex-packages-alist '("" "minted"))
   (setq org-latex-listings 'minted)
-
-  (setq org-latex-pdf-process
-        '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-  (setq-default TeX-command-extra-options "-shell-escape"
-        TeX-engine 'xetex)
+  (setq org-latex-pdf-process '("latexmk -f -pdf -%latex -shell-escape -interaction=nonstopmode -output-directory=%o %f"))
   (setq org-beamer-environments-extra '(("onlyenv" "o" "\\begin{onlyenv}%a{%h}" "\\end{onlyenv}")
                                         ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
                                         ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}")
