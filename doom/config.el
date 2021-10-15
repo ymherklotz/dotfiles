@@ -556,6 +556,10 @@
       coq-compile-keep-going nil
       coq-compile-quick 'no-quick)
 
+;; Removes performance problems with opening coq files.
+(after! core-editor
+  (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
+
 (setq coq-may-use-prettify nil
       company-coq-prettify-symbols nil)
 
