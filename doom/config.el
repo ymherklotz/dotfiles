@@ -83,7 +83,7 @@
 (define-key y-map (kbd "p")   #'password-store-copy)
 (define-key y-map (kbd "i")   #'password-store-insert)
 (define-key y-map (kbd "g")   #'password-store-generate)
-(define-key y-map (kbd "r")   #'toggle-rot13-mode)
+;(define-key y-map (kbd "r")   #'toggle-rot13-mode)
 (define-key y-map (kbd "c")   #'calendar)
 (define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
 (define-key y-map (kbd "d")   #'y/insert-date)
@@ -229,6 +229,7 @@
         org-hide-emphasis-markers t
         org-adapt-indentation nil
         org-cycle-separator-lines 2
+        org-goto-interface 'outline-path-completion
         org-structure-template-alist '(("a" . "export ascii")
                                        ("c" . "center")
                                        ("C" . "comment")
@@ -501,6 +502,16 @@
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
 
+(after! pdf-tools
+  (pdf-tools-install))
+
+(after! latex
+  (setq TeX-view-program-selection '((output-pdf "PDF Tools"))
+        TeX-source-correlate-start-server t)
+  (setq-default TeX-command-extra-options "-shell-escape")
+  (add-hook 'TeX-after-compilation-finished-functions
+            #'TeX-revert-document-buffer))
+
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
@@ -526,9 +537,7 @@
 ;; Set up dictionaries
 (setq ispell-dictionary "en_GB")
 
-(use-package! flyspell
-  :hook (text-mode . flyspell-mode)
-  :config
+(after! flyspell
   (define-key flyspell-mode-map (kbd "C-.") nil)
   (define-key flyspell-mode-map (kbd "C-,") nil))
 
@@ -630,17 +639,20 @@
 ;;(use-package! alectryon
 ;;  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
 
+(use-package! alectryon)
+
 (use-package! org-zettelkasten
   :config
   (add-hook 'org-mode-hook #'org-zettelkasten-mode)
 
   (defun org-zettelkasten-search-current-id ()
-  "Use `consult-ripgrep' to search for the current ID in all files."
-  (interactive)
-  (let ((current-id (org-entry-get nil "CUSTOM_ID")))
-    (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
+    "Use `consult-ripgrep' to search for the current ID in all files."
+    (interactive)
+    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
+      (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
 
-  (define-key org-zettelkasten-mode-map (kbd "s") #'org-zettelkasten-search-current-id))
+  (define-key org-zettelkasten-mode-map (kbd "r") #'org-zettelkasten-search-current-id)
+  (setq org-zettelkasten-directory "~/Dropbox/zk"))
 
 (use-package! ox-hugo
   :after ox)
@@ -948,3 +960,35 @@ https://yannherklotz.com")
 
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
+
+(use-package! boogie-friends)
+
+(use-package! isar-mode
+  :mode "\\.thy\\'")
+
+(use-package isar-goal-mode)
+
+(use-package lsp-isar
+  :after lsp-mode
+  :commands lsp-isar-define-client-and-start
+  :init
+  (add-hook 'isar-mode-hook #'lsp-isar-define-client-and-start)
+  (add-hook 'lsp-isar-init-hook 'lsp-isar-open-output-and-progress-right-spacemacs)
+  :config
+  (setq lsp-isar-path-to-isabelle "~/projects/isabelle-emacs")
+  (setq lsp-isabelle-options (list "-d" "\$AFP")))
+
+(use-package session-async)
+
+(defun ymhg/reset-coq-windows ()
+  "Resets the Goald and Response windows."
+  (interactive)
+  (other-frame 1)
+  (delete-other-windows)
+  (split-window-below)
+  (switch-to-buffer "*goals*")
+  (other-window 1)
+  (switch-to-buffer "*response*")
+  (other-frame 2))
+
+(define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)

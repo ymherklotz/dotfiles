@@ -2,7 +2,7 @@ IMAPAccount imperial
 Host outlook.office365.com
 Port 993
 User ymh15@ic.ac.uk
-PassCmd "pass show imperial/ymh15"
+PassCmd "pass show imperial/emacs-app"
 SSLType IMAPS
 
 IMAPAccount mailbox

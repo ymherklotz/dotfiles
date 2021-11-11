@@ -42,3 +42,11 @@ bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 bindkey -M emacs '^P' history-substring-search-up
 bindkey -M emacs ^N history-substring-search-down
+
+if [[ -z $TMUX ]]; then
+    function start_tmux {
+        tmux new -d -s vericert -c ~/projects/vericert
+        tmux new -d -s main -c ~
+    }
+    tmux attach || { start_tmux && tmux attach }
+fi
