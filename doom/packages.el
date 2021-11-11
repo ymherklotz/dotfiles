@@ -35,6 +35,7 @@
 ;; Extra language mobdes
 (package! yaml-mode)
 (package! slime)
+(package! pollen-mode)
 
 ;; Nix
 (package! direnv)

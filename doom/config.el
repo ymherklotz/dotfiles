@@ -565,6 +565,9 @@
       coq-compile-keep-going nil
       coq-compile-quick 'no-quick)
 
+(after! company-mode
+  (setq company-global-modes (append company-global-modes '(org-mode))))
+
 ;; Removes performance problems with opening coq files.
 (after! core-editor
   (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
