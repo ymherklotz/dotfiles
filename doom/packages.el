@@ -15,7 +15,7 @@
 (package! elfeed-org)
 
 ;; Latex stuff
-(package! pdf-tools)
+;;(package! pdf-tools)
 
 ;; Bibtex stuff
 (package! ebib)
