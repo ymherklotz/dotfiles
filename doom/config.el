@@ -535,11 +535,12 @@
   (remove-hook 'ebib-notes-new-note-hook #'org-narrow-to-subtree))
 
 ;; Set up dictionaries
-(setq ispell-dictionary "en_GB")
+(setq ispell-dictionary "british")
 
 (after! flyspell
   (define-key flyspell-mode-map (kbd "C-.") nil)
-  (define-key flyspell-mode-map (kbd "C-,") nil))
+  (define-key flyspell-mode-map (kbd "C-,") nil)
+  (setq flyspell-mouse-map (make-sparse-keymap)))
 
 ;; Set up zettelkasten mode
 (use-package! zettelkasten
@@ -623,7 +624,6 @@
 (after! writeroom-mode (setq +zen-text-scale 1))
 
 (setq pdf-view-use-scaling t)
-
 (setq doc-view-resolution 300)
 
 (after! tuareg-mode
@@ -642,7 +642,8 @@
 ;;(use-package! alectryon
 ;;  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
 
-(use-package! alectryon)
+;;(use-package! alectryon
+;;  :init (setq-default flyspell-prog-text-faces nil))
 
 (use-package! org-zettelkasten
   :config
