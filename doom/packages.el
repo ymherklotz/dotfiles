@@ -12,7 +12,7 @@
   :recipe (:host github :repo "nobiot/org-transclusion"))
 (package! org-zettelkasten
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
-(package! elfeed-org)
+;;(package! elfeed-org)
 
 ;; Latex stuff
 ;;(package! pdf-tools)
@@ -42,16 +42,16 @@
 
 ;; Misc dependencies
 (package! hungry-delete)
-(package! elfeed)
+;;(package! elfeed)
 
 ;; Chatting
-(package! plz
-  :recipe (:host github :repo "alphapapa/plz.el"))
-(package! ement
-  :recipe (:host github :repo "alphapapa/ement.el"))
-(package! erc-hl-nicks)
-(package! alert)
-(package! znc)
+;;(package! plz
+;;  :recipe (:host github :repo "alphapapa/plz.el"))
+;;(package! ement
+;;  :recipe (:host github :repo "alphapapa/ement.el"))
+;;(package! erc-hl-nicks)
+;;(package! alert)
+;;(package! znc)
 
 ;; Coq
 (package! alectryon) ;; Coq documentation tool
@@ -81,9 +81,10 @@
 
 ;; Temp fixes
 ;; https://github.com/hlissner/doom-emacs/issues/5667#issuecomment-948229579
-(package! gitconfig-mode
-  :recipe (:host github :repo "magit/git-modes"
-           :files ("gitconfig-mode.el")))
-(package! gitignore-mode
-  :recipe (:host github :repo "magit/git-modes"
-           :files ("gitignore-mode.el")))
+;;(package! gitconfig-mode
+;;  :recipe (:host github :repo "magit/git-modes"
+;;           :files ("gitconfig-mode.el")))
+;;(package! gitignore-mode
+;;  :recipe (:host github :repo "magit/git-modes"
+;;           :files ("gitignore-mode.el")))
+;;
