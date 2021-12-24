@@ -3,6 +3,7 @@
 
 ;; `org-mode' dependencies
 (package! org-ref)
+(package! ol-notmuch)
 ;; `org-bullets' replacement
 (package! org-superstar)
 (package! ox-reveal)
@@ -36,6 +37,9 @@
 (package! yaml-mode)
 (package! slime)
 (package! pollen-mode)
+
+(package! tree-sitter)
+(package! tree-sitter-langs)
 
 ;; Nix
 (package! direnv)
