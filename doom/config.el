@@ -97,8 +97,6 @@
 ;; Mac configuration
 (when (eq system-type 'darwin)
   (progn (setq mac-right-option-modifier 'none
-               mac-option-key-is-meta nil
-               mac-command-key-is-meta t
                mac-command-modifier 'meta
                mac-option-modifier nil)
 
@@ -809,6 +807,7 @@ https://yannherklotz.com")
 
   (setq notmuch-fcc-dirs
       '(("yann@yannherklotz.com"          . "mailbox/Sent -inbox +sent -unread +mailbox -new")
+        ("git@ymhg.org"                   . "mailbox/Sent -inbox +sent -unread +mailbox -new")
         ("yann.herklotz15@imperial.ac.uk" . "\"imperial/Sent Items\" -inbox +sent -unread +imperial -new"))))
 
 (use-package! orderless
@@ -996,3 +995,11 @@ https://yannherklotz.com")
   (other-frame 2))
 
 (define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)
+
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package! ol-notmuch :after org)
