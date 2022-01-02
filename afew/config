@@ -1,9 +1,52 @@
+[MailMover]
+folders = mailbox/Inbox mailbox/Trash mailbox/Spam
+rename = True
+max_age = 15
+mailbox/Inbox = 'not tag:inbox or tag:archive':mailbox/Archive 'tag:spam':mailbox/Spam 'tag:deleted':mailbox/Trash
+mailbox/Trash = 'not tag:deleted and tag:inbox':mailbox/Inbox 'not tag:deleted and tag:spam':mailbox/Spam 'not tag:deleted and tag:archive':mailbox/Archive
+mailbox/Spam = 'not tag:spam and tag:inbox':mailbox/Inbox 'not tag:spam and tag:deleted':mailbox/Trash 'not tag:spam and tag:archive':mailbox/Archive
+
 [SpamFilter]
+
 [KillThreadsFilter]
+
 [ListMailsFilter]
+
 [ArchiveSentMailsFilter]
+
 [FolderNameFilter]
-folder_transforms = "Sent Items":sent "Archive1":archive "Deleted Items":deleted
+folder_transforms = "Sent Items":sent "Archive1":archive "Deleted Items":deleted Trash:deleted
 maildir_separator = /
 folder_lowercases = True
+
+[Filter.1]
+message = Remove temporary Anacron messages.
+query = from:"anacron" or from:"cron daemon"
+tags = -new;-inbox;+cron
+
+[Filter.2]
+message = Remove call for paper spam.
+query = (subject:call and (subject:"papers?" or subject:"sessions?")) or from:saiconference.com
+tags = -new;-inbox;+callforpaper
+
+[Filter.3]
+message = Remove IEEE messages.
+query = from:"^IEEE"
+tags = -new;-inbox;+ieee
+
+[Filter.4]
+message = Imperial noise.
+query = from:"library notices" or from:"Fownes, Joanna" or from:"Victoria Scott" or from:"Graduate School" or from:"ACM Learning Center" or from:"CGCU Secretary" or from:"DoCSoc" or subject:"^[HiPEAC Members]" or (subject:"^Your Casual pay form for" or subject:"^claim for") or from:"email.teams.microsoft.com"
+tags = -new;-inbox;+imperial-noise
+
+[Filter.5]
+message = Clean up mailbox.
+query = tag:sircmpwn-public-inbox
+tags = -sircmpwn-public-inbox;+lists;+lists/~sircmpwn/public-inbox
+
+[Filter.6]
+message = Clean up postmaster.
+query = tag:postmaster
+tags = -inbox;-new;-unread
+
 [InboxFilter]
