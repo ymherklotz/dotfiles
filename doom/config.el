@@ -1,7 +1,7 @@
 (setq doom-font (font-spec :family "Iosevka" :size 16))
 (when (eq system-type 'darwin)
-  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 12))
-  (setq doom-serif-font (font-spec :family "Alegreya" :size 12)))
+  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
+  (setq doom-serif-font (font-spec :family "Alegreya" :size 20)))
 
 (setq org-directory "~/Dropbox/org/")
 
@@ -76,6 +76,10 @@
   (ace-swap-window)
   (aw-flip-window))
 
+(defun ymhg/pass (query)
+  "Return the password as a string from QUERY."
+  (s-trim (shell-command-to-string (concat "pass show " query))))
+
 ;; Define a custom key map for other useful commands.
 (define-prefix-command 'y-map)
 (global-set-key (kbd "C-c y") 'y-map)
@@ -87,12 +91,14 @@
 (define-key y-map (kbd "c")   #'calendar)
 (define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
 (define-key y-map (kbd "d")   #'y/insert-date)
-(define-key y-map (kbd "s")   (lambda () (interactive)
-                                (let ((org-agenda-files '("~/Dropbox/zk/hls.org"
-                                                          "~/Dropbox/zk/computing.org"
-                                                          "~/Dropbox/zk/verification.org"
-                                                          "~/Dropbox/zk/mathematics.org"
-                                                          "~/Dropbox/zk/hardware.org"))) (org-search-view))))
+(define-key y-map (kbd "s")
+  (lambda () (interactive)
+    (let ((org-agenda-files
+           '("~/Dropbox/zk/hls.org"
+             "~/Dropbox/zk/computing.org"
+             "~/Dropbox/zk/verification.org"
+             "~/Dropbox/zk/mathematics.org"
+             "~/Dropbox/zk/hardware.org"))) (org-search-view))))
 
 ;; Mac configuration
 (when (eq system-type 'darwin)
@@ -464,6 +470,8 @@
   (setq appt-message-warning-time 15)
   (run-at-time 10 nil #'appt-activate 1))
 
+(use-package! elpher)
+
 ;; Set up org ref for PDFs
 (use-package! org-ref
   :demand
@@ -548,7 +556,8 @@
 (use-package! elfeed-org
   :config
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org")))
+  (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
+  (run-at-time nil (* 8 60 60) #'elfeed-update))
 
 ;; Proof general configuration
 (setq proof-splash-enable nil
@@ -605,24 +614,7 @@
   (show-smartparens-global-mode +1)
   (smartparens-global-mode 1))
 
-;;(use-package! ormolu
-;;  :hook (haskell-mode . ormolu-format-on-save-mode)
-;;  :bind
-;;  (:map haskell-mode-map
-;;   ("C-c r" . ormolu-format-buffer)))
-
-(use-package! lsp-haskell
- :config
- (setq lsp-haskell-process-path-hie "haskell-language-server-wrapper")
- ;; Comment/uncomment this line to see interactions between lsp client/server.
- ;;(setq lsp-log-io t)
-)
-
-
 (after! writeroom-mode (setq +zen-text-scale 1))
-
-(setq pdf-view-use-scaling t)
-(setq doc-view-resolution 300)
 
 (after! tuareg-mode
   (add-hook 'tuareg-mode-hook
@@ -630,18 +622,7 @@
               (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
               (add-hook 'before-save-hook #'ocamlformat-before-save))))
 
-(use-package! ox-reveal
-  :after org)
-
-(use-package! direnv
-  :config
-  (direnv-mode))
-
-;;(use-package! alectryon
-;;  :load-path "/Users/yannherklotz/Projects/alectryon/etc/elisp")
-
-;;(use-package! alectryon
-;;  :init (setq-default flyspell-prog-text-faces nil))
+(use-package! direnv :config (direnv-mode))
 
 (use-package! org-zettelkasten
   :config
@@ -656,8 +637,8 @@
   (define-key org-zettelkasten-mode-map (kbd "r") #'org-zettelkasten-search-current-id)
   (setq org-zettelkasten-directory "~/Dropbox/zk"))
 
-(use-package! ox-hugo
-  :after ox)
+(use-package! ox-hugo :after ox)
+(use-package! ox-reveal :after org)
 
 (defun sci-hub-pdf-url (doi)
   "Get url to the pdf from SCI-HUB using DOI."
@@ -688,52 +669,6 @@
   "Get the bibtex from DOI."
   (shell-command (concat "curl -L -H \"Accept: application/x-bibtex; charset=utf-8\" "
                          "https://doi.org/" doi)))
-
-(use-package erc
-  :commands (erc erc-tls)
-  :bind (:map erc-mode-map
-              ("C-c r" . reset-erc-track-mode))
-  :preface
-  (defun irc ()
-    (interactive)
-    (erc :server "ee-ymh15.ee.ic.ac.uk" :port 12844 :nick "ymherklotz"
-             :password "ymherklotz/freenode:xxx"))
-
-  (defun ymhg/erc-notify (nickname message)
-  "Displays a notification message for ERC."
-  (let* ((channel (buffer-name))
-         (nick (erc-hl-nicks-trim-irc-nick nickname))
-         (title (if (string-match-p (concat "^" nickname) channel)
-                    nick
-                  (concat nick " (" channel ")")))
-         (msg (s-trim (s-collapse-whitespace message))))
-    (alert (concat nick ": " msg) :title title)))
-  :hook ((ercn-notify . ymhg/erc-notify))
-  :config
-  (setq erc-autojoin-timing 'ident)
-  (setq erc-fill-function 'erc-fill-static)
-  (setq erc-fill-static-center 22)
-  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-  (setq erc-lurker-hide-list '("JOIN" "PART" "QUIT"))
-  (setq erc-lurker-threshold-time 43200)
-  (setq erc-prompt-for-password nil)
-  (setq erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
-                                  "324" "329" "332" "333" "353" "477"))
-  (setq erc-fill-column 100)
-  (add-to-list 'erc-modules 'notifications)
-  (add-to-list 'erc-modules 'spelling)
-  (erc-services-mode 1)
-  (erc-update-modules)
-  (erc-track-minor-mode 1)
-  (erc-track-mode 1))
-
-(use-package erc-hl-nicks
-  :after erc)
-
-(use-package znc
-  :after erc
-  :config
-  (setq znc-servers '(("ee-ymh15.ee.ic.ac.uk" 12843 t ((freenode "ymherklotz" "xxx"))))))
 
 (use-package alert
   :custom
@@ -802,13 +737,15 @@ https://yannherklotz.com")
           (:name "flagged" :query "tag:flagged" :key "f")
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
-          (:name "mailbox" :query "tag:mailbox not tag:deleted not tag:sent" :key "m")
-          (:name "imperial" :query "tag:imperial not tag:deleted not tag:sent" :key "i")))
+          (:name "mailbox" :query "(tag:mailbox and tag:inbox) not tag:deleted not tag:sent" :key "m")
+          (:name "imperial" :query "(tag:imperial and tag:inbox) not tag:deleted not tag:sent" :key "i")))
 
   (setq notmuch-fcc-dirs
       '(("yann@yannherklotz.com"          . "mailbox/Sent -inbox +sent -unread +mailbox -new")
         ("git@ymhg.org"                   . "mailbox/Sent -inbox +sent -unread +mailbox -new")
         ("yann.herklotz15@imperial.ac.uk" . "\"imperial/Sent Items\" -inbox +sent -unread +imperial -new"))))
+
+(after! shr (setq shr-use-fonts nil))
 
 (use-package! orderless
   :custom (completion-styles '(substring orderless)))
@@ -966,23 +903,6 @@ https://yannherklotz.com")
 
 (use-package! boogie-friends)
 
-(use-package! isar-mode
-  :mode "\\.thy\\'")
-
-(use-package isar-goal-mode)
-
-(use-package lsp-isar
-  :after lsp-mode
-  :commands lsp-isar-define-client-and-start
-  :init
-  (add-hook 'isar-mode-hook #'lsp-isar-define-client-and-start)
-  (add-hook 'lsp-isar-init-hook 'lsp-isar-open-output-and-progress-right-spacemacs)
-  :config
-  (setq lsp-isar-path-to-isabelle "~/projects/isabelle-emacs")
-  (setq lsp-isabelle-options (list "-d" "\$AFP")))
-
-(use-package session-async)
-
 (defun ymhg/reset-coq-windows ()
   "Resets the Goald and Response windows."
   (interactive)
@@ -996,10 +916,25 @@ https://yannherklotz.com")
 
 (define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)
 
-(use-package! tree-sitter
-  :config
-  (require 'tree-sitter-langs)
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
 (use-package! ol-notmuch :after org)
+
+(use-package! elfeed-score
+  :after elfeed
+  :config
+  (elfeed-score-enable)
+  (define-key elfeed-search-mode-map "=" elfeed-score-map))
+
+(use-package! circe
+  :config
+  (setq circe-network-options
+        `(("sojy" :host "irc.ymhg.org" :port 6697 :tls t
+           :sasl-username "ymherklotz"
+           :sasl-password ,(ymhg/pass "hetzner.com/leika.ymhg.org/irc")
+           :nick "ymherklotz"))))
+
+(use-package! rcirc
+  :config
+  (setq rcirc-server-alist
+        `(("irc.ymhg.org" :port 6697 :encryption tls
+           :server-alias "sojy" :user-name "ymherklotz"
+           :password ,(ymhg/pass "hetzner.com/leika.ymhg.org/irc")))))

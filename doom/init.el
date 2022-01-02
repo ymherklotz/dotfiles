@@ -23,6 +23,7 @@
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
        ;;ivy               ; a search engine for love and life
+       vertico
 
        :ui
        ;;deft              ; notational velocity for Emacs
@@ -101,7 +102,7 @@
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :lang
-       agda                ; types of types of types of types...
+       ;;agda              ; types of types of types of types...
        assembly            ; assembly for fun or debugging
        cc                  ; C/C++/Obj-C madness
        clojure             ; java with a lisp
@@ -130,7 +131,7 @@
        ;;lean
        ;;factor
        ledger              ; an accounting system in Emacs
-       lua                 ; one-based indices? one-based indices
+       ;;lua               ; one-based indices? one-based indices
        markdown            ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        nix                 ; I hereby declare "nix geht mehr!"
@@ -177,4 +178,6 @@
        ;;literate
        (default +bindings +smartparens)
 
-       :os (:if IS-MAC macos))
+       :os
+       (:if IS-MAC macos)
+       tty)
