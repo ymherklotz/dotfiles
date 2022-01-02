@@ -8,6 +8,7 @@
 (package! org-superstar)
 (package! ox-reveal)
 (package! ox-tufte)
+(package! ox-gfm)
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
 (package! org-zettelkasten
@@ -41,6 +42,7 @@
 (package! hungry-delete)
 
 ;; Coq
+;;(package! alectryon) ;; Coq documentation tool
 
 ;; Teaching
 (package! boogie-friends)

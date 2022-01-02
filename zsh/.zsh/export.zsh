@@ -82,3 +82,8 @@ export MGLS_LICENSE_FILE=1717@ee-llic01.ee.ic.ac.uk
 export LM_LICENSE_FILE=2100@ee-llic01.ee.ic.ac.uk:7193@ee-llic01.ee.ic.ac.uk:5280@ee-llic01.ee.ic.ac.uk:7182@ee-llic01.ee.ic.ac.uk:1717@ee-llic01.ee.ic.ac.uk
 
 export QMK_HOME=$HOME/projects/qmk_firmware
+
+0file() { curl -F"file=@$1" https://envs.sh ; }
+0pb() { curl -F"file=@-;" https://envs.sh ; }
+0url() { curl -F"url=$1" https://envs.sh ; }
+0short() { curl -F"shorten=$1" https://envs.sh ; }

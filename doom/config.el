@@ -454,7 +454,12 @@
   (setq org-beamer-environments-extra '(("onlyenv" "o" "\\begin{onlyenv}%a{%h}" "\\end{onlyenv}")
                                         ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
                                         ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}")
-                                        ("minipage" "o" "\\begin{minipage}[t]%o[t]{1.0\\textwidth}" "\\end{minipage}"))))
+                                        ("minipage" "o" "\\begin{minipage}[t]%o[t]{1.0\\textwidth}" "\\end{minipage}")))
+
+  (add-to-list 'org-latex-packages-alist '("" "tikz" t))
+  (eval-after-load "preview"
+    '(add-to-list 'preview-default-preamble
+                  "\\PreviewEnvironment{tikzpicture}" t)))
 
 (use-package! ox-tufte
   :after org)
@@ -623,6 +628,8 @@
               (add-hook 'before-save-hook #'ocamlformat-before-save))))
 
 (use-package! direnv :config (direnv-mode))
+
+(use-package! ox-gfm)
 
 (use-package! org-zettelkasten
   :config
