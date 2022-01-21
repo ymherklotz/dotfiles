@@ -2,12 +2,9 @@
 (disable-packages! undo-tree org-bullets helm pretty-code company-coq)
 
 ;; `org-mode' dependencies
-(package! org-ref)
 (package! ol-notmuch)
 ;; `org-bullets' replacement
 (package! org-superstar)
-(package! ox-reveal)
-(package! ox-tufte)
 (package! ox-gfm)
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
@@ -32,17 +29,11 @@
 (package! yaml-mode)
 (package! pollen-mode)
 
-;;(package! tree-sitter)
-;;(package! tree-sitter-langs)
-
 ;; Nix
 (package! direnv)
 
 ;; Misc dependencies
 (package! hungry-delete)
-
-;; Coq
-;;(package! alectryon) ;; Coq documentation tool
 
 ;; Teaching
 (package! boogie-friends)
@@ -56,4 +47,3 @@
 ;; Themes
 (package! color-theme-sanityinc-tomorrow)
 (package! modus-themes)
-(package! elpher)

@@ -1,6 +1,6 @@
 (setq doom-font (font-spec :family "Iosevka" :size 16))
 (when (eq system-type 'darwin)
-  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
+ (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
   (setq doom-serif-font (font-spec :family "Alegreya" :size 20)))
 
 (setq org-directory "~/Dropbox/org/")
@@ -91,6 +91,7 @@
 (define-key y-map (kbd "c")   #'calendar)
 (define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
 (define-key y-map (kbd "d")   #'y/insert-date)
+(define-key y-map (kbd "C-g") #'org-zettelkasten-goto-id)
 (define-key y-map (kbd "s")
   (lambda () (interactive)
     (let ((org-agenda-files
@@ -250,7 +251,11 @@
   ;;(customize-set-variable 'org-blank-before-new-entry
   ;;                        '((heading . nil)
   ;;                          (plain-list-item . nil)))
-  )
+  (require 'oc)
+  (require 'oc-biblatex)
+  (setq org-cite-export-processors '((latex biblatex)
+                                     (t basic))
+        org-cite-global-bibliography '("~/Dropbox/bibliography/references.bib")))
 
 (use-package! org-contacts
   :after org
@@ -259,6 +264,7 @@
 
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
+  (setq org-element-use-cache nil)
   ;; Set agenda files, refile targets and todo keywords.
   (setq org-startup-indented nil)
   (setq org-log-done 'time
@@ -357,8 +363,6 @@
 
   (setq org-export-with-broken-links t)
   (require 'org-habit)
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
 
   (require 'calendar)
   (setq calendar-mark-diary-entries-flag t)
@@ -434,7 +438,6 @@
 
   (require 'ox-beamer)
   (require 'ox-latex)
-  (require 'ox-texinfo)
   (add-to-list 'org-latex-classes
                '("beamer"
                  "\\documentclass\[presentation\]\{beamer\}"
@@ -461,9 +464,6 @@
     '(add-to-list 'preview-default-preamble
                   "\\PreviewEnvironment{tikzpicture}" t)))
 
-(use-package! ox-tufte
-  :after org)
-
 (use-package appt
   :config
   (setq appt-display-diary nil)
@@ -474,20 +474,6 @@
   (setq appt-warning-time-regexp "appt \\([0-9]+\\)")
   (setq appt-message-warning-time 15)
   (run-at-time 10 nil #'appt-activate 1))
-
-(use-package! elpher)
-
-;; Set up org ref for PDFs
-(use-package! org-ref
-  :demand
-  :init
-  (setq org-ref-completion-library 'org-ref-ivy-cite)
-  :config
-  (setq org-ref-bibliography-notes "~/Dropbox/bibliography/notes.org"
-        org-ref-default-bibliography '("~/Dropbox/bibliography/references.bib")
-        org-ref-pdf-directory "~/Dropbox/bibliography/papers"
-        org-ref-bib-html "")
-  (setq reftex-default-bibliography '("~/Dropbox/bibliography/references.bib")))
 
 (use-package! org-transclusion
   :after org
@@ -508,7 +494,7 @@
 
 ;; Set up org registers to quickly jump to files that I use often.
 (set-register ?l (cons 'file "~/.emacs.d/loader.org"))
-(set-register ?m (cons 'file "~/Dropbox/org/main.org"))
+(set-register ?m (cons 'file "~/Dropbox/org/meetings.org"))
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
@@ -642,10 +628,33 @@
       (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
 
   (define-key org-zettelkasten-mode-map (kbd "r") #'org-zettelkasten-search-current-id)
-  (setq org-zettelkasten-directory "~/Dropbox/zk"))
+  (setq org-zettelkasten-directory "~/Dropbox/zk")
+
+  (defun org-zettelkasten-goto-id (id)
+    "Go to an ID."
+    (interactive "sID: #")
+    (cond ((string-prefix-p "1" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/hls.org::#" id "]]")))
+          ((string-prefix-p "2" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/computing.org::#" id "]]")))
+          ((string-prefix-p "3" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/verification.org::#" id "]]")))
+          ((string-prefix-p "4" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/mathematics.org::#" id "]]")))
+          ((string-prefix-p "5" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/hardware.org::#" id "]]"))))))
 
 (use-package! ox-hugo :after ox)
-(use-package! ox-reveal :after org)
 
 (defun sci-hub-pdf-url (doi)
   "Get url to the pdf from SCI-HUB using DOI."
@@ -910,19 +919,6 @@ https://yannherklotz.com")
 
 (use-package! boogie-friends)
 
-(defun ymhg/reset-coq-windows ()
-  "Resets the Goald and Response windows."
-  (interactive)
-  (other-frame 1)
-  (delete-other-windows)
-  (split-window-below)
-  (switch-to-buffer "*goals*")
-  (other-window 1)
-  (switch-to-buffer "*response*")
-  (other-frame 2))
-
-(define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)
-
 (use-package! ol-notmuch :after org)
 
 (use-package! elfeed-score
@@ -939,9 +935,15 @@ https://yannherklotz.com")
            :sasl-password ,(ymhg/pass "hetzner.com/leika.ymhg.org/irc")
            :nick "ymherklotz"))))
 
-(use-package! rcirc
-  :config
-  (setq rcirc-server-alist
-        `(("irc.ymhg.org" :port 6697 :encryption tls
-           :server-alias "sojy" :user-name "ymherklotz"
-           :password ,(ymhg/pass "hetzner.com/leika.ymhg.org/irc")))))
+(defun ymhg/reset-coq-windows ()
+  "Resets the Goald and Response windows."
+  (interactive)
+  (other-frame 1)
+  (delete-other-windows)
+  (split-window-below)
+  (switch-to-buffer "*goals*")
+  (other-window 1)
+  (switch-to-buffer "*response*")
+  (other-frame 2))
+
+(define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)

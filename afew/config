@@ -19,6 +19,11 @@ folder_transforms = "Sent Items":sent "Archive1":archive "Deleted Items":deleted
 maildir_separator = /
 folder_lowercases = True
 
+[HeaderMatchingFilter.1]
+header = To
+pattern = (?P<name>[a-zA-Z.]*)@ymhg\.org
+tags = +{name}
+
 [Filter.1]
 message = Remove temporary Anacron messages.
 query = from:"anacron" or from:"cron daemon"
@@ -45,8 +50,13 @@ query = tag:sircmpwn-public-inbox
 tags = -sircmpwn-public-inbox;+lists;+lists/~sircmpwn/public-inbox
 
 [Filter.6]
-message = Clean up postmaster.
-query = tag:postmaster
-tags = -inbox;-new;-unread
+message = Clean up clutter.
+query = tag:postmaster or tag:amazon.co.uk or tag:shopping
+tags = -inbox;-new;-unread;+clutter
+
+[Filter.7]
+message = Clean up mailing lists from inbox
+query = tag:lists
+tags = -inbox;-new
 
 [InboxFilter]
