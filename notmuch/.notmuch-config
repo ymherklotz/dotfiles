@@ -31,7 +31,7 @@ path=/home/ymherklotz/.mail
 [user]
 name=Yann Herklotz
 primary_email=yann@yannherklotz.com
-other_email=ymh15@ic.ac.uk;yann.herklotz15@imperial.ac.uk;ymh15@imperial.ac.uk;yann.herklotz15@ic.ac.uk
+other_email=ymh15@ic.ac.uk;yann.herklotz15@imperial.ac.uk;git@ymhg.org
 
 # Configuration for "notmuch new"
 #

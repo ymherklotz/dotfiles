@@ -223,10 +223,11 @@
   :mode ("\\.org\\'" . org-mode)
   :init
   (map! :map org-mode-map
-        "M-n"   #'outline-next-visible-heading
-        "M-p"   #'outline-previous-visible-heading
-        "C-c ]" #'ebib-insert-citation
-        "C-,"   nil)
+        "M-n"     #'outline-next-visible-heading
+        "M-p"     #'outline-previous-visible-heading
+        "C-c ]"   #'ebib-insert-citation
+        "C-,"     nil
+        "C-c C-." #'org-time-stamp-inactive)
   (setq org-src-window-setup 'current-window
         org-return-follows-link t
         org-confirm-babel-evaluate nil
@@ -705,6 +706,10 @@
          (last-day-of-month
           (calendar-last-day-of-month month year)))
     (= day last-day-of-month)))
+
+(use-package! calc
+  :config
+  (add-to-list 'math-tzone-names '("AOE" 12 0)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq message-fill-column 80)
