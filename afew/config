@@ -24,6 +24,11 @@ header = To
 pattern = (?P<name>[a-zA-Z.]*)@ymhg\.org
 tags = +{name}
 
+[HeaderMatchingFilter.2]
+header = To
+pattern = <langproc-.*@noreply\.github\.com>
+tags = -inbox;-new;+git;+langproc
+
 [Filter.1]
 message = Remove temporary Anacron messages.
 query = from:"anacron" or from:"cron daemon"

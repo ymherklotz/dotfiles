@@ -707,7 +707,7 @@
           (calendar-last-day-of-month month year)))
     (= day last-day-of-month)))
 
-(use-package! calc
+(use-package! calc-forms
   :config
   (add-to-list 'math-tzone-names '("AOE" 12 0)))
 
@@ -746,6 +746,8 @@ https://yannherklotz.com")
         (notmuch-show-tag (list "-deleted"))
       (notmuch-show-tag (list "+deleted" "-unread") beg end)))
 
+  (setq notmuch-archive-tags '("-inbox" "-unread" "+archive"))
+
   (map!
    :map notmuch-show-mode-map
    "d" #'ymhg/notmuch-show-delete-mail)
@@ -754,17 +756,20 @@ https://yannherklotz.com")
    "d" #'ymhg/notmuch-search-delete-mail)
 
   (setq notmuch-saved-searches
-        '((:name "inbox" :query "tag:inbox not tag:deleted" :key "n")
+        '((:name "inbox" :query "date:last_month..this_month and tag:inbox not tag:deleted" :key "n")
           (:name "flagged" :query "tag:flagged" :key "f")
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
-          (:name "mailbox" :query "(tag:mailbox and tag:inbox) not tag:deleted not tag:sent" :key "m")
-          (:name "imperial" :query "(tag:imperial and tag:inbox) not tag:deleted not tag:sent" :key "i")))
+          (:name "mailbox" :query "date:last_month..this_month and (tag:mailbox and tag:inbox) and not tag:deleted and not tag:sent" :key "m")
+          (:name "imperial" :query "date:last_month..this_month and (tag:imperial and tag:inbox) and not tag:deleted and not tag:sent" :key "i")
+          (:name "all recent" :query "date:last_month..this_month" :key "r")))
 
   (setq notmuch-fcc-dirs
       '(("yann@yannherklotz.com"          . "mailbox/Sent -inbox +sent -unread +mailbox -new")
         ("git@ymhg.org"                   . "mailbox/Sent -inbox +sent -unread +mailbox -new")
-        ("yann.herklotz15@imperial.ac.uk" . "\"imperial/Sent Items\" -inbox +sent -unread +imperial -new"))))
+        ("yann.herklotz15@imperial.ac.uk" . "\"imperial/Sent Items\" -inbox +sent -unread +imperial -new")))
+
+  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox"))))
 
 (after! shr (setq shr-use-fonts nil))
 
@@ -952,3 +957,7 @@ https://yannherklotz.com")
   (other-frame 2))
 
 (define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)
+
+(use-package! browse-url
+  :config
+  (setq browse-url-chrome-program "brave"))
