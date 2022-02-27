@@ -1,0 +1,18 @@
+[user]
+	name = Yann Herklotz
+	email = git@yannherklotz.com
+	signingkey = CA654D3756F79496
+
+[advice]
+	detachedHead = false
+
+[sendemail]
+	from = Yann Herklotz <git@yannherklotz.com>
+	smtpuser =
+	smtpserver = "/usr/local/bin/msmtp"
+	smtpencryption = tls
+	chainreplyto = false
+	confirm = auto
+
+[commit]
+	gpgsign = true

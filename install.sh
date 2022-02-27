@@ -68,6 +68,7 @@ for i in "$@"; do
     tmux)     TMUX_INST=1; NOT_ALL=1;;
     zathura)  ZATHURA=1;   NOT_ALL=1;;
     zsh)      ZSH=1;       NOT_ALL=1;;
+    git)      GIT=1;       NOT_ALL=1;;
 
     *)
       print_help
@@ -75,6 +76,11 @@ for i in "$@"; do
 
   esac
 done
+
+if [[ ! -z $GIT ]] || [[ -z $NOT_ALL ]]; then
+    echo "Installing git config..."
+    ln_configs git/.gitconfig ~/.gitconfig
+fi
 
 if [[ ! -z $EMACS ]] || [[ -z $NOT_ALL ]]; then
   echo "Installing emacs config..."
