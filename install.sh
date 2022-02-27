@@ -23,7 +23,7 @@ function print_help {
 
 function ln_configs {
   if [[ $FORCE -eq 1 ]]; then
-    rm -rI $2
+    rm -f $2
   fi
   ln $EXTRA_OPTS ${SCRIPT_DIR}/$1 $2
 }
