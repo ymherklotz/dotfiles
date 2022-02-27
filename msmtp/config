@@ -13,7 +13,7 @@ passwordeval   "pass show mailbox/ymherklotz@mailbox.org"
 account        git
 host           smtp.mailbox.org
 port           587
-from           git@ymhg.org
+from           git@yannherklotz.com
 user           ymherklotz@mailbox.org
 passwordeval   "pass show mailbox/ymherklotz@mailbox.org"
 
