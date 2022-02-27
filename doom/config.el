@@ -352,8 +352,7 @@
 ;;        "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.min.js\"></script>
 ;;<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/tocbot/4.11.1/tocbot.css\">
 ;;<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
-  (setq org-html-head-extra "<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
-        org-html-head-include-default-style nil
+  (setq org-html-head-include-default-style nil
         org-html-head-include-scripts nil
         org-html-postamble-format
         '(("en" ""))
@@ -479,7 +478,8 @@
 (use-package! org-transclusion
   :after org
   :config
-  (setq org-transclusion-exclude-elements '(property-drawer headline)))
+  (setq org-transclusion-exclude-elements nil)
+  (advice-remove 'org-link-search '+org--recenter-after-follow-link-a))
 
 (use-package! org-superstar
   :hook (org-mode . org-superstar-mode)
@@ -709,7 +709,8 @@
 
 (use-package! calc-forms
   :config
-  (add-to-list 'math-tzone-names '("AOE" 12 0)))
+  (add-to-list 'math-tzone-names '("AOE" 12 0))
+  (add-to-list 'math-tzone-names '("IST" (float -55 -1) 0)))
 
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq message-fill-column 80)
@@ -888,15 +889,6 @@ https://yannherklotz.com")
   (setq xref-show-xrefs-function #'consult-xref
         xref-show-definitions-function #'consult-xref)
   :config
-
-  (consult-customize
-   consult-theme
-   :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   consult--source-file consult--source-project-file consult--source-bookmark
-   :preview-key (kbd "M-."))
-
   ;; Optionally configure the narrowing key.
   ;; Both < and C-+ work reasonably well.
   (setq consult-narrow-key "<") ;; (kbd "C-+")
