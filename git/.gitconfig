@@ -9,7 +9,7 @@
 [sendemail]
 	from = Yann Herklotz <git@yannherklotz.com>
 	smtpuser =
-	smtpserver = "/usr/local/bin/msmtp"
+	smtpserver = "/usr/bin/msmtp"
 	smtpencryption = tls
 	chainreplyto = false
 	confirm = auto
@@ -22,3 +22,6 @@
 
 [credential]
 	helper = store
+
+[init]
+	defaultBranch = main

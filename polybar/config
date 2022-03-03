@@ -41,8 +41,8 @@ module-margin-left = 1
 module-margin-right = 2
 
 font-0 = Iosevka:style=Regular:pixelsize=10
-font-1 = Font Awesome 5 Free:style=Solid:pixelsize=9
-font-2 = Font Awesome 5 Brands:style=Regular
+font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
+font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
 font-4 = Unifont:fontformat=truetype:size=8:antialias=false
 
@@ -94,8 +94,8 @@ module-margin-left = 1
 module-margin-right = 2
 
 font-0 = Iosevka:style=Regular:pixelsize=10
-font-1 = Font Awesome 5 Free:style=Solid:pixelsize=9
-font-2 = Font Awesome 5 Brands:style=Regular
+font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
+font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
 font-4 = Unifont:fontformat=truetype:size=8:antialias=false
 
@@ -146,8 +146,8 @@ module-margin-left = 1
 module-margin-right = 2
 
 font-0 = Iosevka:style=Regular:pixelsize=10
-font-1 = Font Awesome 5 Free:style=Solid:pixelsize=9
-font-2 = Font Awesome 5 Brands:style=Regular
+font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
+font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
 font-4 = Unifont:fontformat=truetype:size=8:antialias=false
 
@@ -343,7 +343,7 @@ ramp-signal-foreground = ${colors.foreground}
 
 [module/eth]
 type = internal/network
-interface = eno1
+interface = eth0
 interval = 3.0
 
 format-connected-underline = ${colors.primary}
