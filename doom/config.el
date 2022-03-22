@@ -898,6 +898,15 @@ https://yannherklotz.com")
           (when-let (project (project-current))
             (car (project-roots project))))))
 
+(use-package! geiser-chicken
+  :config
+  (setq geiser-chicken-binary "chicken-csi"))
+
+(use-package! geiser
+  :init
+  (map! :map geiser-mode-map "C-." nil)
+  (map! :map geiser-repl-mode-map "C-." nil))
+
 (use-package! emacs
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
