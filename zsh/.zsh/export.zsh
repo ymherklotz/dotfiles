@@ -12,6 +12,7 @@ export EDITOR='emacsclient -nw'
 export VISUAL='emacsclient -c'
 export TERM='xterm-256color'
 export CLICOLOR=1
+export LEDGER_FILE="$HOME/Dropbox/ledger/main.ledger"
 
 #export LFSCSIGS="$HOME/.opam/default/.opam-switch/sources/coq-smtcoq.dev+8.13/src/lfsc/tests/signatures"
 
