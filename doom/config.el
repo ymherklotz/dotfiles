@@ -1,4 +1,4 @@
-(setq doom-font (font-spec :family "Iosevka" :size 16))
+(setq doom-font (font-spec :family "Iosevka Fixed" :size 16))
 (when (eq system-type 'darwin)
  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
   (setq doom-serif-font (font-spec :family "Alegreya" :size 20)))
@@ -92,6 +92,10 @@
 (define-key y-map (kbd "C-r") #'ymhg/reload-keywords)
 (define-key y-map (kbd "d")   #'y/insert-date)
 (define-key y-map (kbd "C-g") #'org-zettelkasten-goto-id)
+(define-key y-map (kbd "C-t") #'org-babel-detangle)
+(define-key y-map (kbd "C-l") #'org-agenda-open-link)
+(define-key y-map (kbd "C-p") #'org-previous-link)
+(define-key y-map (kbd "C-n") #'org-next-link)
 (define-key y-map (kbd "s")
   (lambda () (interactive)
     (let ((org-agenda-files
@@ -257,6 +261,13 @@
   (setq org-cite-export-processors '((latex biblatex)
                                      (t basic))
         org-cite-global-bibliography '("~/Dropbox/bibliography/references.bib")))
+
+(use-package! org-crypt
+  :after org
+  :config
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance '("crypt"))
+  (setq org-crypt-key "8CEF4104683551E8"))
 
 (use-package! org-contacts
   :after org
@@ -932,18 +943,12 @@ https://yannherklotz.com")
 
 (use-package! ol-notmuch :after org)
 
-(use-package! elfeed-score
-  :after elfeed
-  :config
-  (elfeed-score-enable)
-  (define-key elfeed-search-mode-map "=" elfeed-score-map))
-
 (use-package! circe
   :config
   (setq circe-network-options
-        `(("sojy" :host "irc.ymhg.org" :port 6697 :tls t
-           :sasl-username "ymherklotz"
-           :sasl-password ,(ymhg/pass "hetzner.com/leika.ymhg.org/irc")
+        `(("soju" :host "chat.sr.ht" :port 6697 :tls t
+           :sasl-username "ymherklotz/irc.libera.chat"
+           :sasl-password ,(ymhg/pass "sr.ht/chat.sr.ht")
            :nick "ymherklotz"))))
 
 (defun ymhg/reset-coq-windows ()
@@ -962,3 +967,9 @@ https://yannherklotz.com")
 (use-package! browse-url
   :config
   (setq browse-url-chrome-program "brave"))
+
+(use-package! alectryon
+  :hook (coq-mode . alectryon-mode)
+  :config
+  (map! :map alectryon-mode-map
+        "C-c u t" #'alectryon-toggle))

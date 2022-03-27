@@ -12,6 +12,8 @@
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
 (package! elfeed-score)
 
+(package! alectryon)
+
 ;; Bibtex stuff
 (package! ebib)
 

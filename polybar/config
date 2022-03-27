@@ -40,7 +40,7 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = Iosevka:style=Regular:pixelsize=10
+font-0 = Iosevka Fixed:style=Regular:pixelsize=10
 font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
 font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
@@ -93,7 +93,7 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = Iosevka:style=Regular:pixelsize=10
+font-0 = Iosevka Fixed:style=Regular:pixelsize=10
 font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
 font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
@@ -145,7 +145,7 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = Iosevka:style=Regular:pixelsize=10
+font-0 = Iosevka Fixed:style=Regular:pixelsize=10
 font-1 = Font Awesome 6 Free:style=Solid:pixelsize=9
 font-2 = Font Awesome 6 Brands:style=Regular
 font-3 = Siji:style=Regular:pixelsize=10
