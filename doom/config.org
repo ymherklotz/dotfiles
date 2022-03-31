@@ -1,12 +1,22 @@
+#+title: Org configuration
+#+property: header-args:emacs-lisp :tangle config.el
+
+* Top-Level Configuration
+
+#+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Iosevka Fixed" :size 16))
 (when (eq system-type 'darwin)
  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
   (setq doom-serif-font (font-spec :family "Alegreya" :size 20)))
+#+end_src
 
+#+begin_src emacs-lisp
 (setq org-directory "~/Dropbox/org/")
 
 (setq display-line-numbers-type nil)
+#+end_src
 
+#+begin_src emacs-lisp
 (use-package modus-themes
   :init
   ;; Add all your customizations prior to loading the themes
@@ -21,14 +31,19 @@
   ;; Load the theme of your choice:
   (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
   :bind ("<f6>" . modus-themes-toggle))
+#+end_src
 
+#+begin_src emacs-lisp
 ;; Disable stuff
 (global-prettify-symbols-mode -1)
 (electric-indent-mode -1)
 (menu-bar-mode -1)
 
-;; Add some keybinding customisations.
+#+end_src
 
+* Key Binding Customisations
+
+#+begin_src emacs-lisp
 ;; Stop emacs from freezing when trying to minimize it on a tiling WM.
 (global-unset-key (kbd "C-z"))
 (global-set-key (kbd "M-u")   #'upcase-dwim)
@@ -105,6 +120,15 @@
              "~/Dropbox/zk/mathematics.org"
              "~/Dropbox/zk/hardware.org"))) (org-search-view))))
 
+(defun y/insert-date ()
+  "Insert a timestamp according to locale's date and time format."
+  (interactive)
+  (insert (format-time-string "%c" (current-time))))
+#+end_src
+
+* Mac Specific Customisations
+
+#+begin_src emacs-lisp
 ;; Mac configuration
 (when (eq system-type 'darwin)
   (progn (setq mac-right-option-modifier 'none
@@ -119,12 +143,11 @@
              ('dark (load-theme 'modus-vivendi t))))
 
          (add-hook 'ns-system-appearance-change-functions #'ymhg/apply-theme)))
+#+end_src
 
-(defun y/insert-date ()
-  "Insert a timestamp according to locale's date and time format."
-  (interactive)
-  (insert (format-time-string "%c" (current-time))))
+* Backup Settings
 
+#+begin_src emacs-lisp
 ;; Set backup directories into the tmp folder
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-directory))
@@ -141,7 +164,11 @@
       auto-save-timeout 20              ; number of seconds idle time before auto-save (default: 30)
       auto-save-interval 200            ; number of keystrokes between auto-saves (default: 300)
       )
+#+end_src
 
+* Tramp Settings
+
+#+begin_src emacs-lisp
 (setq tramp-auto-save-directory "/tmp")
 (defvar disable-tramp-backups '(all))
 (eval-after-load "tramp"
@@ -168,8 +195,11 @@
 
      ;; Use my ~/.ssh/config control master settings according to https://puppet.com/blog/speed-up-ssh-by-reusing-connections
      (setq tramp-ssh-controlmaster-options "")))
+#+end_src
 
+* Language Settings
 
+#+begin_src emacs-lisp
 ;; Set sensitive data mode
 (setq auto-mode-alist
       (append
@@ -973,3 +1003,4 @@ https://yannherklotz.com")
   :config
   (map! :map alectryon-mode-map
         "C-c u t" #'alectryon-toggle))
+#+end_src
