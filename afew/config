@@ -46,7 +46,7 @@ tags = -new;-inbox;+ieee
 
 [Filter.4]
 message = Imperial noise.
-query = from:"library notices" or from:"Fownes, Joanna" or from:"Victoria Scott" or from:"Graduate School" or from:"ACM Learning Center" or from:"CGCU Secretary" or from:"DoCSoc" or subject:"^[HiPEAC Members]" or (subject:"^Your Casual pay form for" or subject:"^claim for") or from:"email.teams.microsoft.com"
+query = from:"library notices" or from:"Fownes, Joanna" or from:"Victoria Scott" or from:"Graduate School <graduate.school@imperial.ac.uk>" or from:"ACM Learning Center" or from:"CGCU Secretary" or from:"DoCSoc" or subject:"^[HiPEAC Members]" or (subject:"^Your Casual pay form for" or subject:"^claim for") or from:"email.teams.microsoft.com"
 tags = -new;-inbox;+imperial-noise
 
 [Filter.5]

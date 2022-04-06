@@ -266,10 +266,10 @@
         org-return-follows-link t
         org-confirm-babel-evaluate nil
         org-use-speed-commands t
-        org-hide-emphasis-markers t
+        org-hide-emphasis-markers nil
         org-adapt-indentation nil
         org-cycle-separator-lines 2
-        org-goto-interface 'outline-path-completion
+        org-startup-folded 'content
         org-structure-template-alist '(("a" . "export ascii")
                                        ("c" . "center")
                                        ("C" . "comment")
@@ -395,6 +395,9 @@
 ;;<link rel=\"stylesheet\" type=\"text/css\" href=\"file:///Users/yannherklotz/Projects/orgcss/src/css/org.css\"/>"
   (setq org-html-head-include-default-style nil
         org-html-head-include-scripts nil
+        org-html-doctype "html5"
+        org-html-html5-fancy t
+        org-html-container-element "section"
         org-html-postamble-format
         '(("en" ""))
         org-html-postamble t
@@ -701,7 +704,7 @@
 (defun sci-hub-pdf-url (doi)
   "Get url to the pdf from SCI-HUB using DOI."
   (setq *doi-utils-pdf-url* (concat "https://sci-hub.do/" doi) ;captcha
-        *doi-utils-waiting* t
+        ,*doi-utils-waiting* t
         )
   ;; try to find PDF url (if it exists)
   (url-retrieve (concat "https://sci-hub.do/" doi)
@@ -716,7 +719,7 @@
                         (setq *doi-utils-pdf-url* (concat "https:" foundurl))))
                     (setq *doi-utils-waiting* nil))))
   (while *doi-utils-waiting* (sleep-for 0.1))
-  *doi-utils-pdf-url*)
+  ,*doi-utils-pdf-url*)
 
 (defun download-pdf-from-doi (doi key)
   "Download pdf from doi with KEY name."
@@ -1003,4 +1006,8 @@ https://yannherklotz.com")
   :config
   (map! :map alectryon-mode-map
         "C-c u t" #'alectryon-toggle))
+
+(use-package! ox-tufte
+  :after org
+  :config)
 #+end_src

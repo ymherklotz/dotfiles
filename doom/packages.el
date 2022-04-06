@@ -6,6 +6,8 @@
 ;; `org-bullets' replacement
 (package! org-superstar)
 (package! ox-gfm)
+(package! ox-tufte
+  :recipe (:host nil :repo "https://git.sr.ht/~ymherklotz/ox-tufte"))
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
 (package! org-zettelkasten
