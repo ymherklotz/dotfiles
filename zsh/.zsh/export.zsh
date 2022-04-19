@@ -41,6 +41,7 @@ prepend_path "${HOME}/.local/bin"
 # prepend_path "/usr/local/opt/llvm/bin"
 
 prepend_path "/mnt/data/tools/panda/bambu-9.7-dev/bin"
+prepend_path "/opt/context/tex/texmf-linux-64/bin"
 
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"
