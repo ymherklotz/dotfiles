@@ -38,6 +38,7 @@ prepend_path "${HOME}/.yarn/bin"
 prepend_path "${HOME}/.cargo/bin"
 prepend_path "${HOME}/.cabal/bin"
 prepend_path "${HOME}/.local/bin"
+prepend_path "/opt/context/tex/texmf-osx-64/bin"
 # prepend_path "/usr/local/opt/llvm/bin"
 
 prepend_path "/mnt/data/tools/panda/bambu-9.7-dev/bin"
