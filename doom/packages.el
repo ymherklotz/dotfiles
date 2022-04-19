@@ -1,5 +1,5 @@
 ;; Disabling packages
-(disable-packages! undo-tree org-bullets helm pretty-code company-coq)
+(disable-packages! undo-tree org-bullets helm pretty-code)
 
 ;; `org-mode' dependencies
 (package! ol-notmuch)

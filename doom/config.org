@@ -554,6 +554,13 @@
   (add-hook 'TeX-after-compilation-finished-functions
             #'TeX-revert-document-buffer))
 
+(after! context
+  (setq TeX-command-list
+        (append
+         '(("context"
+            "context --purgeall %s"
+            TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list)))
+
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
@@ -570,6 +577,11 @@
       (add-to-list 'ebib-file-associations '("pdf" . "open"))
     (add-to-list 'ebib-file-associations '("pdf" . nil)))
   (add-to-list 'ebib-citation-commands '(org-mode (("ref" "cite:%(%K%,)"))))
+  (add-to-list 'ebib-citation-commands '(context-mode (("cite" "\\cite[%(%K%,)]")
+                                                       ("authoryear" "\\cite[authoryear][%(%K%,)]")
+                                                       ("authoryears" "\\cite[entry][%(%K%,)]")
+                                                       ("entry" "\\cite[entry][%(%K%,)]")
+                                                       ("authors" "\\cite[authors][%(%K%,)]"))))
 
   (advice-add 'bibtex-generate-autokey :around
               (lambda (orig-func &rest args)
@@ -1022,4 +1034,8 @@ https://yannherklotz.com")
 (use-package! ox-tufte
   :after org
   :config)
+
+(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
+
+(use-package! agda2-mode)
 #+end_src
