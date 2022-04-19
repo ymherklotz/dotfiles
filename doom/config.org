@@ -1005,7 +1005,19 @@ https://yannherklotz.com")
   :hook (coq-mode . alectryon-mode)
   :config
   (map! :map alectryon-mode-map
-        "C-c u t" #'alectryon-toggle))
+        "C-c u t" #'alectryon-toggle
+        "C-c u p" #'ymhg/alectryon-preview)
+  (defun ymhg/alectryon-preview ()
+    "Display an HTML preview of the current buffer."
+    (interactive)
+    (let* ((html-fname (make-temp-file "alectryon" nil ".html"))
+           (args `("-r" "5" "-" ,html-fname)))
+      (apply #'call-process-region nil nil "rst2html5" nil nil nil args)
+      (message "Compilation complete")
+      (browse-url html-fname))))
+
+(use-package! ox-context
+  :after org)
 
 (use-package! ox-tufte
   :after org
