@@ -13,6 +13,7 @@ export VISUAL='emacsclient -c'
 export TERM='xterm-256color'
 export CLICOLOR=1
 export LEDGER_FILE="$HOME/Dropbox/ledger/main.ledger"
+export VAGRANT_HOME=/mnt/orca/vagrant
 
 #export LFSCSIGS="$HOME/.opam/default/.opam-switch/sources/coq-smtcoq.dev+8.13/src/lfsc/tests/signatures"
 
@@ -42,6 +43,7 @@ prepend_path "/opt/context/tex/texmf-osx-64/bin"
 # prepend_path "/usr/local/opt/llvm/bin"
 
 prepend_path "/mnt/data/tools/panda/bambu-9.7-dev/bin"
+prepend_path "/opt/context/tex/texmf-linux-64/bin"
 
 append_path "/opt/Xilinx/Vivado/2019.1/bin"
 append_path "/opt/intelFPGA_lite/18.1/quartus/bin"

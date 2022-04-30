@@ -39,6 +39,7 @@
 (electric-indent-mode -1)
 (menu-bar-mode -1)
 
+(add-hook 'text-mode-hook (lambda () (company-mode -1)))
 #+end_src
 
 * Key Binding Customisations
@@ -51,8 +52,7 @@
 (global-set-key (kbd "M-c")   #'capitalize-dwim)
 (global-set-key (kbd "C-c z") #'quick-calc)
 (global-set-key (kbd "<f5>")  #'revert-buffer)
-(global-set-key (kbd "C-.")   #'other-window)
-(global-set-key (kbd "C-,")   (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "M-,")   (lambda () (interactive) (other-window -1)))
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
@@ -662,7 +662,10 @@
         "M-r" #'sp-split-sexp)
   (require 'smartparens-config)
   (show-smartparens-global-mode +1)
-  (smartparens-global-mode 1))
+  (smartparens-global-mode 1)
+;;(sp-pair "'" nil :actions :rem)
+  (sp-local-pair 'coq-mode "'" nil :actions nil)
+  )
 
 (after! writeroom-mode (setq +zen-text-scale 1))
 
@@ -1021,13 +1024,29 @@ https://yannherklotz.com")
   (when (eq system-type 'darwin)
     (setq alectryon-executable "/nix/store/bvlk3hyrjdgl0sg93rrdr2z71hgza0m9-python3.9-alectryon-1.4.0/bin/alectryon"))
   (map! :map alectryon-mode-map
-        "C-c u t" #'alectryon-toggle))
+        "C-c u t" #'alectryon-toggle
+        "C-c u p" #'ymhg/alectryon-preview)
+  (defun ymhg/alectryon-preview ()
+    "Display an HTML preview of the current buffer."
+    (interactive)
+    (let* ((html-fname (make-temp-file "alectryon" nil ".html"))
+           (args `("-r" "5" "-" ,html-fname)))
+      (apply #'call-process-region nil nil "rst2html5" nil nil nil args)
+      (message "Compilation complete")
+      (browse-url html-fname))))
+
+(use-package! rst
+  :config
+  (add-hook 'rst-mode-hook (lambda () (setq fill-column 80))))
+
+(use-package! ox-context
+  :after org)
 
 (use-package! ox-tufte
   :after org
   :config)
 
-(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
-
-(use-package! agda2-mode)
+;;(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
+;;
+;;(use-package! agda2-mode)
 #+end_src
