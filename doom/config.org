@@ -502,6 +502,8 @@
   (setq org-beamer-environments-extra '(("onlyenv" "o" "\\begin{onlyenv}%a{%h}" "\\end{onlyenv}")
                                         ("onlyenvNH" "o" "\\begin{onlyenv}%a" "\\end{onlyenv}")
                                         ("blockNH" "o" "\\begin{block}%a{}" "\\end{block}")
+                                        ("oeblock" "o" "\\only%a{\\begin{block}%a{%h}" "\\end{block}}")
+                                        ("oeblockNH" "o" "\\only%a{\\begin{block}%a{}" "\\end{block}}")
                                         ("minipage" "o" "\\begin{minipage}[t]%o[t]{1.0\\textwidth}" "\\end{minipage}")))
 
   (add-to-list 'org-latex-packages-alist '("" "tikz" t))
@@ -577,7 +579,7 @@
   (if (eq system-type 'darwin)
       (add-to-list 'ebib-file-associations '("pdf" . "open"))
     (add-to-list 'ebib-file-associations '("pdf" . nil)))
-  (add-to-list 'ebib-citation-commands '(org-mode (("ref" "cite:%(%K%,)"))))
+  (add-to-list 'ebib-citation-commands '(org-mode (("ref" "[cite:@%(%K%,)]"))))
   (add-to-list 'ebib-citation-commands '(context-mode (("cite" "\\cite[%(%K%,)]")
                                                        ("authoryear" "\\cite[authoryear][%(%K%,)]")
                                                        ("authoryears" "\\cite[entry][%(%K%,)]")
@@ -623,7 +625,7 @@
       coq-compile-quick 'no-quick)
 
 (after! company-mode
-  (setq company-global-modes (append company-global-modes '(org-mode))))
+  (setq company-idle-delay 1))
 
 ;; Removes performance problems with opening coq files.
 (after! core-editor
@@ -1020,6 +1022,8 @@ https://yannherklotz.com")
 (use-package! alectryon
   :hook (coq-mode . alectryon-mode)
   :config
+  (when (eq system-type 'darwin)
+    (setq alectryon-executable "/nix/store/bvlk3hyrjdgl0sg93rrdr2z71hgza0m9-python3.9-alectryon-1.4.0/bin/alectryon"))
   (map! :map alectryon-mode-map
         "C-c u t" #'alectryon-toggle
         "C-c u p" #'ymhg/alectryon-preview)
