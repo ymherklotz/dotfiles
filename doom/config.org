@@ -58,6 +58,7 @@
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
 (global-set-key (kbd "M-=")   #'count-words)
 (global-set-key (kbd "C-x m") #'+notmuch/compose)
+(global-set-key (kbd "C-M-b") #'scroll-other-window-down)
 
 ;; Set undo-only correctly
 (global-set-key (kbd "C-\\") 'undo-only)
@@ -1041,6 +1042,9 @@ https://yannherklotz.com")
 (use-package! ox-tufte
   :after org
   :config)
+
+(use-package! scroll-other-window
+  :hook (context-mode . sow-mode))
 
 ;;(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
 ;;
