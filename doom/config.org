@@ -1054,6 +1054,11 @@ https://yannherklotz.com")
 (use-package! scroll-other-window
   :hook (ConTeXt-mode . sow-mode))
 
+(use-package! cdlatex
+  :init
+  (setq cdlatex-command-alist nil)
+  (setq cdlatex-math-modify-alist nil))
+
 ;;(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
 ;;
 ;;(use-package! agda2-mode)

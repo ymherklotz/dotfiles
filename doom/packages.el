@@ -10,6 +10,7 @@
   :recipe (:host nil :repo "https://git.sr.ht/~ymherklotz/ox-tufte"))
 (package! scroll-other-window
   :recipe (:host nil :repo "https://git.sr.ht/~ymherklotz/scroll-other-window"))
+(package! cdlatex)
 (package! ox-context
   :recipe (:host github :repo "Jason-S-Ross/ox-context"))
 (package! org-transclusion
