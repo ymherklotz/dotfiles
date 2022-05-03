@@ -566,7 +566,9 @@
         (append
          '(("context"
             "context --purgeall %s"
-            TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list)))
+            TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list))
+  (map! :map ConTeXt-mode-map
+        "C-c ]"   #'ebib-insert-citation))
 
 ;; Bibtex stuff
 (use-package! ebib
@@ -586,7 +588,7 @@
   (add-to-list 'ebib-citation-commands '(org-mode (("ref" "[cite:@%(%K%,)]"))))
   (add-to-list 'ebib-citation-commands '(context-mode (("cite" "\\cite[%(%K%,)]")
                                                        ("authoryear" "\\cite[authoryear][%(%K%,)]")
-                                                       ("authoryears" "\\cite[entry][%(%K%,)]")
+                                                       ("authoryears" "\\cite[authoryears][%(%K%,)]")
                                                        ("entry" "\\cite[entry][%(%K%,)]")
                                                        ("authors" "\\cite[authors][%(%K%,)]"))))
 
