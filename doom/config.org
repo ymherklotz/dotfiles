@@ -1055,6 +1055,7 @@ https://yannherklotz.com")
   :hook (ConTeXt-mode . sow-mode))
 
 (use-package! cdlatex
+  :hook (ConTeXt-mode . turn-on-cdlatex)
   :init
   (setq cdlatex-command-alist nil)
   (setq cdlatex-math-modify-alist nil))
