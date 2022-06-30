@@ -55,11 +55,16 @@ query = tag:sircmpwn-public-inbox
 tags = -sircmpwn-public-inbox;+lists;+lists/~sircmpwn/public-inbox
 
 [Filter.6]
+message = New Yorker clean up
+query = from:"newyorker@newsletter.newyorker.com"
+tags = -new;-inbox;+newyorker
+
+[Filter.7]
 message = Clean up clutter.
 query = tag:postmaster or tag:amazon.co.uk or tag:shopping
 tags = -inbox;-new;-unread;+clutter
 
-[Filter.7]
+[Filter.8]
 message = Clean up mailing lists from inbox
 query = tag:lists
 tags = -inbox;-new

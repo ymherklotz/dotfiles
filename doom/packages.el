@@ -11,6 +11,7 @@
 (package! scroll-other-window
   :recipe (:host nil :repo "https://git.sr.ht/~ymherklotz/scroll-other-window"))
 (package! cdlatex)
+(package! citeproc)
 (package! ox-context
   :recipe (:host github :repo "Jason-S-Ross/ox-context"))
 (package! org-transclusion

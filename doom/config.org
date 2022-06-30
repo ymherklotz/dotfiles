@@ -52,7 +52,8 @@
 (global-set-key (kbd "M-c")   #'capitalize-dwim)
 (global-set-key (kbd "C-c z") #'quick-calc)
 (global-set-key (kbd "<f5>")  #'revert-buffer)
-(global-set-key (kbd "M-,")   (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-.")   (lambda () (interactive) (other-window -1)))
+(global-set-key (kbd "C-,")   #'other-window)
 (global-set-key (kbd "C-c l") #'org-store-link)
 (global-set-key (kbd "C-c a") #'org-agenda)
 (global-set-key (kbd "C-c /") #'avy-goto-word-1)
@@ -120,6 +121,22 @@
              "~/Dropbox/zk/verification.org"
              "~/Dropbox/zk/mathematics.org"
              "~/Dropbox/zk/hardware.org"))) (org-search-view))))
+
+(setq browse-url-handlers
+      '(("\\`mailto:"                     . browse-url--mailto)
+        ("\\`man:"                        . browse-url--man)
+        ("wikipedia\\.org"                . eww-browse-url)
+        ("yannherklotz\\.com"             . eww-browse-url)
+        ("ymhg\\.org"                     . eww-browse-url)
+        ("archlinux\\.org"                . eww-browse-url)
+        ("sachachua\\.com"                . eww-browse-url)
+        ("comonad\\.com"                  . eww-browse-url)
+        ("drewdevault\\.com"              . eww-browse-url)
+        ("wordpress\\.com"                . eww-browse-url)
+        ("mathbabe\\.org"                 . eww-browse-url)
+        ("ethz\\.ch"                      . eww-browse-url)
+        ("pragmaticemacs\\.com"           . eww-browse-url)
+        (browse-url--non-html-file-url-p  . browse-url-emacs)))
 
 (defun y/insert-date ()
   "Insert a timestamp according to locale's date and time format."
@@ -289,9 +306,13 @@
   ;;                          (plain-list-item . nil)))
   (require 'oc)
   (require 'oc-biblatex)
+  (require 'oc-csl)
   (setq org-cite-export-processors '((latex biblatex)
-                                     (t basic))
+                                     (t csl))
+        org-cite-csl-styles-dir "~/projects/csl-styles"
         org-cite-global-bibliography '("~/Dropbox/bibliography/references.bib")))
+
+(use-package! citeproc)
 
 (use-package! org-attach
   :config
@@ -590,7 +611,7 @@
                                                        ("authoryear" "\\cite[authoryear][%(%K%,)]")
                                                        ("authoryears" "\\cite[authoryears][%(%K%,)]")
                                                        ("entry" "\\cite[entry][%(%K%,)]")
-                                                       ("authors" "\\cite[authors][%(%K%,)]"))))
+                                                       ("author" "\\cite[author][%(%K%,)]"))))
 
   (advice-add 'bibtex-generate-autokey :around
               (lambda (orig-func &rest args)
@@ -749,6 +770,14 @@
   "Download pdf from doi with KEY name."
   (url-copy-file (sci-hub-pdf-url doi)
                  (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+
+(defun download-pdf-from-link (link key)
+  (url-copy-file link
+                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+
+(defun download-pdf-from-downloads (key)
+  (copy-file (concat "~/Downloads/" key ".pdf")
+             (concat "~/Dropbox/bibliography/papers/" key ".pdf") t))
 
 (defun get-bib-from-doi (doi)
   "Get the bibtex from DOI."
