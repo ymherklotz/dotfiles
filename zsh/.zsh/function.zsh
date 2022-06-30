@@ -28,3 +28,7 @@ wal-tile-l() {
     feh --bg-fill "$(< "${HOME}/.cache/wal/wal")"
     $HOME/.local/bin/betterlock -u "$(< "${HOME}/.cache/wal/wal")"
 }
+
+latestqr() {
+  ls -aS $HOME/Desktop | tail -n1 | tr \\n \\0 | xargs -0 -I% zbarimg --raw -q $HOME/Desktop/%
+}

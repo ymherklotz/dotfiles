@@ -590,7 +590,9 @@
             TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list))
   (map! :map ConTeXt-mode-map
         "C-c ]"   #'ebib-insert-citation))
+#+end_src
 
+#+begin_src emacs-lisp
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
@@ -616,8 +618,75 @@
   (advice-add 'bibtex-generate-autokey :around
               (lambda (orig-func &rest args)
                 (replace-regexp-in-string ":" "" (apply orig-func args))))
-  (remove-hook 'ebib-notes-new-note-hook #'org-narrow-to-subtree))
+  (remove-hook 'ebib-notes-new-note-hook #'org-narrow-to-subtree)
 
+  (map! :map ebib-index-mode-map
+        "D"   #'ebib-download-pdf-from-doi))
+
+(defun sci-hub-pdf-url (doi)
+  "Get url to the pdf from SCI-HUB using DOI."
+  (setq *doi-utils-pdf-url* (concat "https://sci-hub.hkvisa.net/" doi) ;captcha
+        ,*doi-utils-waiting* t
+        )
+  ;; try to find PDF url (if it exists)
+  (url-retrieve (concat "https://sci-hub.hkvisa.net/" doi)
+                (lambda (_)
+                  (goto-char (point-min))
+                  (while (search-forward-regexp
+                          "\\(https:\\|sci-hub.hkvisa.net/downloads\\).+download=true'" nil t)
+                    (let ((foundurl (match-string 0)))
+                      (message foundurl)
+                      (if (string-match "https:" foundurl)
+                          (setq *doi-utils-pdf-url* foundurl)
+                        (setq *doi-utils-pdf-url* (concat "https:" foundurl))))
+                    (setq *doi-utils-waiting* nil))))
+  (while *doi-utils-waiting* (sleep-for 0.1))
+  (replace-regexp-in-string "\\\\" "" *doi-utils-pdf-url*))
+
+(defun acm-pdf-url (doi)
+  "Retrieve a DOI pdf from the ACM."
+  (concat "https://dl.acm.org/doi/pdf/" doi))
+
+(defun download-pdf-from-doi (doi key &optional publisher)
+  "Download pdf from doi with KEY name."
+  (let ((pub (or publisher "")))
+    (url-copy-file (cond
+                    ((or (string-match "ACM" pub)
+                         (string-match "Association for Computing Machinery" pub))
+                     (acm-pdf-url doi))
+                    (t (sci-hub-pdf-url doi)))
+                   (concat "~/Dropbox/bibliography/papers/" key ".pdf"))))
+
+(defun download-pdf-from-doi (doi key)
+  "Download pdf from doi with KEY name."
+  (url-copy-file (sci-hub-pdf-url doi)
+                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+
+(defun download-pdf-from-link (link key)
+  (url-copy-file link
+                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+
+(defun download-pdf-from-downloads (key)
+  (copy-file (concat "~/Downloads/" key ".pdf")
+             (concat "~/Dropbox/bibliography/papers/" key ".pdf") t))
+
+(defun get-bib-from-doi (doi)
+  "Get the bibtex from DOI."
+  (shell-command (concat "curl -L -H \"Accept: application/x-bibtex; charset=utf-8\" "
+                         "https://doi.org/" doi)))
+
+(defun ebib-download-pdf-from-doi ()
+  "Download a PDF for the current entry."
+  (interactive)
+  (let* ((key (ebib--get-key-at-point))
+         (doi (ebib-get-field-value "doi" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (publisher (ebib-get-field-value "publisher" key ebib--cur-db 'noerror 'unbraced 'xref)))
+    (unless (and key doi)
+      (error "[Ebib] No DOI found in doi field"))
+    (download-pdf-from-doi doi key publisher)))
+#+end_src
+
+#+begin_src emacs-lisp
 ;; Set up dictionaries
 (setq ispell-dictionary "british")
 
@@ -652,14 +721,12 @@
       coq-compile-quick 'no-quick)
 
 (after! company-mode
-  (setq company-idle-delay 1))
+  (setq company-idle-delay 1
+        company-coq-disabled-features '(prettify-symbols hello company-defaults spinner compile-command)))
 
 ;; Removes performance problems with opening coq files.
 (after! core-editor
   (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
-
-(setq coq-may-use-prettify nil
-      company-coq-prettify-symbols nil)
 
 (use-package! smartparens
   :config
@@ -745,44 +812,6 @@
                     "/hardware.org::#" id "]]"))))))
 
 (use-package! ox-hugo :after ox)
-
-(defun sci-hub-pdf-url (doi)
-  "Get url to the pdf from SCI-HUB using DOI."
-  (setq *doi-utils-pdf-url* (concat "https://sci-hub.do/" doi) ;captcha
-        ,*doi-utils-waiting* t
-        )
-  ;; try to find PDF url (if it exists)
-  (url-retrieve (concat "https://sci-hub.do/" doi)
-                (lambda (_)
-                  (goto-char (point-min))
-                  (while (search-forward-regexp
-                          "\\(https://\\|//sci-hub.do/downloads\\).+download=true'" nil t)
-                    (let ((foundurl (match-string 0)))
-                      (message foundurl)
-                      (if (string-match "https:" foundurl)
-                          (setq *doi-utils-pdf-url* foundurl)
-                        (setq *doi-utils-pdf-url* (concat "https:" foundurl))))
-                    (setq *doi-utils-waiting* nil))))
-  (while *doi-utils-waiting* (sleep-for 0.1))
-  ,*doi-utils-pdf-url*)
-
-(defun download-pdf-from-doi (doi key)
-  "Download pdf from doi with KEY name."
-  (url-copy-file (sci-hub-pdf-url doi)
-                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
-
-(defun download-pdf-from-link (link key)
-  (url-copy-file link
-                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
-
-(defun download-pdf-from-downloads (key)
-  (copy-file (concat "~/Downloads/" key ".pdf")
-             (concat "~/Dropbox/bibliography/papers/" key ".pdf") t))
-
-(defun get-bib-from-doi (doi)
-  "Get the bibtex from DOI."
-  (shell-command (concat "curl -L -H \"Accept: application/x-bibtex; charset=utf-8\" "
-                         "https://doi.org/" doi)))
 
 (use-package alert
   :custom
@@ -895,8 +924,11 @@ https://yannherklotz.com")
   ;; Must be in the :init section of use-package such that the mode gets
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode))
+#+end_src
 
+** Embark
 
+#+begin_src emacs-lisp
 (use-package! embark
   :bind
   (("C-;" . embark-act))
@@ -916,7 +948,11 @@ https://yannherklotz.com")
   ;; auto-updating embark collect buffer
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
 
+** Consult
+
+#+begin_src emacs-lisp
 ;; Example configuration for Consult
 (use-package! consult
   ;; Replace bindings. Lazily loaded due by `use-package'.
@@ -994,7 +1030,11 @@ https://yannherklotz.com")
         (lambda ()
           (when-let (project (project-current))
             (car (project-roots project))))))
+#+end_src
 
+** Scheme
+
+#+begin_src emacs-lisp
 (use-package! geiser-chicken
   :config
   (setq geiser-chicken-binary "chicken-csi"))
@@ -1003,7 +1043,11 @@ https://yannherklotz.com")
   :init
   (map! :map geiser-mode-map "C-." nil)
   (map! :map geiser-repl-mode-map "C-." nil))
+#+end_src
 
+** Emacs
+
+#+begin_src emacs-lisp
 (use-package! emacs
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
@@ -1095,3 +1139,5 @@ https://yannherklotz.com")
 ;;
 ;;(use-package! agda2-mode)
 #+end_src
+
+*
