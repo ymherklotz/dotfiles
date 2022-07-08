@@ -647,20 +647,41 @@
   "Retrieve a DOI pdf from the ACM."
   (concat "https://dl.acm.org/doi/pdf/" doi))
 
-(defun download-pdf-from-doi (doi key &optional publisher)
+(defun ieee-pdf-url (doi)
+  "Retrieve a DOI pdf from the IEEE."
+  (when (string-match "\\.\\([0-9]*\\)$" doi)
+    (let ((doi-bit (match-string 1 doi)))
+      (concat "https://ieeexplore.ieee.org/stampPDF/getPDF.jsp?tp=&arnumber=" doi-bit "&ref="))))
+
+(defun springer-pdf-url (doi)
+  "Retrieve a DOI pdf from the Springer."
+  (concat "https://link.springer.com/content/pdf/" doi ".pdf"))
+
+(defun arxiv-pdf-url (epr)
+  (concat "https://arxiv.org/pdf/" epr ".pdf"))
+
+(defun download-pdf-from-doi (key &optional doi publisher eprint journal organization url)
   "Download pdf from doi with KEY name."
-  (let ((pub (or publisher "")))
+  (let ((pub (or publisher ""))
+        (epr (or eprint ""))
+        (jour (or journal ""))
+        (org (or organization ""))
+        (link (or url "")))
     (url-copy-file (cond
-                    ((or (string-match "ACM" pub)
-                         (string-match "Association for Computing Machinery" pub))
+                    ((not doi) link)
+                    ((or (string-match "ACM" (s-upcase pub))
+                         (string-match "association for computing machinery" (s-downcase pub)))
                      (acm-pdf-url doi))
+                    ((string-match "arxiv" (s-downcase pub))
+                     (arxiv-pdf-url epr))
+                    ((or (string-match "IEEE" (s-upcase pub))
+                         (string-match "IEEE" (s-upcase jour))
+                         (string-match "IEEE" (s-upcase org)))
+                     (ieee-pdf-url doi))
+                    ((string-match "springer" (s-downcase pub))
+                     (springer-pdf-url doi))
                     (t (sci-hub-pdf-url doi)))
                    (concat "~/Dropbox/bibliography/papers/" key ".pdf"))))
-
-(defun download-pdf-from-doi (doi key)
-  "Download pdf from doi with KEY name."
-  (url-copy-file (sci-hub-pdf-url doi)
-                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
 
 (defun download-pdf-from-link (link key)
   (url-copy-file link
@@ -680,10 +701,24 @@
   (interactive)
   (let* ((key (ebib--get-key-at-point))
          (doi (ebib-get-field-value "doi" key ebib--cur-db 'noerror 'unbraced 'xref))
-         (publisher (ebib-get-field-value "publisher" key ebib--cur-db 'noerror 'unbraced 'xref)))
-    (unless (and key doi)
-      (error "[Ebib] No DOI found in doi field"))
-    (download-pdf-from-doi doi key publisher)))
+         (publisher (ebib-get-field-value "publisher" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (eprinttype (ebib-get-field-value "eprinttype" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (eprint (ebib-get-field-value "eprint" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (journal (ebib-get-field-value "journal" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (journaltitle (ebib-get-field-value "journaltitle" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (organization (ebib-get-field-value "organization" key ebib--cur-db 'noerror 'unbraced 'xref))
+         (url (ebib-get-field-value "url" key ebib--cur-db 'noerror 'unbraced 'xref)))
+    (unless key
+      (error "[Ebib] No key assigned to entry"))
+    (download-pdf-from-doi key doi (or publisher eprinttype) eprint (or journal journaltitle) organization url)))
+
+(defun ebib-check-file ()
+  "Download a PDF for the current entry."
+  (interactive)
+  (let ((key (ebib--get-key-at-point)))
+    (unless (file-exists-p (concat "~/Dropbox/bibliography/papers/" key ".pdf"))
+      (error "[Ebib] No PDF found."))
+    t))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -705,26 +740,35 @@
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
   (run-at-time nil (* 8 60 60) #'elfeed-update))
+#+end_src
 
-;; Proof general configuration
-(setq proof-splash-enable nil
-      proof-auto-action-when-deactivating-scripting 'retract
-      proof-delete-empty-windows nil
-      proof-multiple-frames-enable nil
-      proof-three-window-enable nil
-      proof-auto-raise-buffers nil
-      coq-compile-before-require nil
-      coq-compile-vos t
-      coq-compile-parallel-in-background t
-      coq-max-background-compilation-jobs 4
-      coq-compile-keep-going nil
-      coq-compile-quick 'no-quick)
+** Coq configuration
 
-(after! company-mode
+#+begin_src emacs-lisp
+(use-package! proof-general
+  :config
+  (setq proof-splash-enable nil
+        proof-auto-action-when-deactivating-scripting 'retract
+        proof-delete-empty-windows nil
+        proof-multiple-frames-enable nil
+        proof-three-window-enable nil
+        proof-auto-raise-buffers nil
+        coq-compile-before-require nil
+        coq-compile-vos t
+        coq-compile-parallel-in-background t
+        coq-max-background-compilation-jobs 4
+        coq-compile-keep-going nil
+        coq-compile-quick 'no-quick))
+
+(use-package! company-coq
+  :after coq
+  :init
   (setq company-idle-delay 1
         company-coq-disabled-features '(prettify-symbols hello company-defaults spinner compile-command)))
+#+end_src
 
-;; Removes performance problems with opening coq files.
+#+begin_src emacs-lisp
+;;;; Removes performance problems with opening coq files.
 (after! core-editor
   (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
 
@@ -1090,7 +1134,7 @@ https://yannherklotz.com")
   (switch-to-buffer "*goals*")
   (other-window 1)
   (switch-to-buffer "*response*")
-  (other-frame 2))
+  (other-frame 1))
 
 (define-key y-map (kbd "o")   #'ymhg/reset-coq-windows)
 
