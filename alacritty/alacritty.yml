@@ -1,0 +1,143 @@
+font:
+  size: 11
+  normal:
+    family: Iosevka YMHG
+    style: Regular
+  bold:
+    family: Iosevka YMHG
+    style: Bold
+  italic:
+    family: Iosevka YMHG
+    style: Italic
+
+window:
+  decorations: none
+  padding:
+    x: 10
+    y: 10
+
+schemes:
+  modus-operandi: &light
+    # Default colors
+    primary:
+      background: '#ffffff'
+      foreground: '#000000'
+
+      dim_foreground:    '#282828'
+      bright_foreground: '#505050'
+      dim_background:    '#f8f8f8'
+      bright_background: '#f0f0f0'
+
+    # Cursor colors
+    cursor:
+      text:   '#ffffff'
+      cursor: '#721045'
+
+    # Normal colors
+    normal:
+      black:   '#000000'
+      red:     '#a60000'
+      green:   '#005e00'
+      yellow:  '#813e00'
+      blue:    '#0030a6'
+      magenta: '#721045'
+      cyan:    '#00538b'
+      white:   '#ffffff'
+
+    # Bright colors
+    bright:
+      black:   '#505050'
+      red:     '#972500'
+      green:   '#315b00'
+      yellow:  '#70480f'
+      blue:    '#223fbf'
+      magenta: '#8f0075'
+      cyan:    '#30517f'
+      white:   '#f0f0f0'
+
+    # Dim colors
+    dim:
+      black:   '#282828'
+      red:     '#a0132f'
+      green:   '#145c33'
+      yellow:  '#863927'
+      blue:    '#0000bb'
+      magenta: '#5317ac'
+      cyan:    '#005a5f'
+      white:   '#f8f8f8'
+
+  modus-vivendi: &dark
+    # Default colors
+    primary:
+      background: '#000000'
+      foreground: '#ffffff'
+
+      dim_foreground:    '#e0e6f0'
+      bright_foreground: '#a8a8a8'
+      dim_background:    '#110b11'
+      bright_background: '#181a20'
+
+    # Cursor colors
+    cursor:
+      text:   '#000000'
+      cursor: '#feacd0'
+
+    # Normal colors
+    normal:
+      black:   '#ffffff'
+      red:     '#ff8059'
+      green:   '#44bc44'
+      yellow:  '#eecc00'
+      blue:    '#29aeff'
+      magenta: '#feacd0'
+      cyan:    '#00d3d0'
+      white:   '#000000'
+
+    # Bright colors
+    bright:
+      black:   '#a8a8a8'
+      red:     '#f4923b'
+      green:   '#80d200'
+      yellow:  '#cfdf30'
+      blue:    '#72a4ff'
+      magenta: '#f78fe7'
+      cyan:    '#4ae8fc'
+      white:   '#181a20'
+
+    # Dim colors
+    dim:
+      black:   '#e0e6f0'
+      red:     '#ff9977'
+      green:   '#00cd68'
+      yellow:  '#f0ce43'
+      blue:    '#00bdfa'
+      magenta: '#b6a0ff'
+      cyan:    '#6ae4b9'
+      white:   '#110b11'
+
+colors: *dark
+
+key_bindings:
+- { key: A, mods: Command, chars: "\x1ba" }
+- { key: B, mods: Command, chars: "\x1bb" }
+- { key: D, mods: Command, chars: "\x1bd" }
+- { key: E, mods: Command, chars: "\x1be" }
+- { key: F, mods: Command, chars: "\x1bf" }
+- { key: G, mods: Command, chars: "\x1bg" }
+- { key: H, mods: Command, chars: "\x1bh" }
+- { key: I, mods: Command, chars: "\x1bi" }
+- { key: J, mods: Command, chars: "\x1bj" }
+- { key: K, mods: Command, chars: "\x1bk" }
+- { key: L, mods: Command, chars: "\x1bl" }
+- { key: M, mods: Command, chars: "\x1bm" }
+- { key: N, mods: Command, chars: "\x1bn" }
+- { key: O, mods: Command, chars: "\x1bo" }
+- { key: P, mods: Command, chars: "\x1bp" }
+- { key: R, mods: Command, chars: "\x1br" }
+- { key: S, mods: Command, chars: "\x1bs" }
+- { key: T, mods: Command, chars: "\x1bt" }
+- { key: U, mods: Command, chars: "\x1bu" }
+- { key: W, mods: Command, chars: "\x1bw" }
+- { key: X, mods: Command, chars: "\x1bx" }
+- { key: Y, mods: Command, chars: "\x1by" }
+- { key: Z, mods: Command, chars: "\x1bz" }
