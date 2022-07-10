@@ -4,7 +4,7 @@
 * Top-Level Configuration
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "Iosevka Fixed" :size 16))
+(setq doom-font (font-spec :family "Iosevka YMHG Medium" :size 16))
 (when (eq system-type 'darwin)
  (setq doom-variable-pitch-font (font-spec :family "Alegreya" :size 20))
   (setq doom-serif-font (font-spec :family "Alegreya" :size 20)))
@@ -592,14 +592,18 @@
         "C-c ]"   #'ebib-insert-citation))
 #+end_src
 
+** Ebib
+
 #+begin_src emacs-lisp
 ;; Bibtex stuff
 (use-package! ebib
   :bind (("C-c y b" . ebib))
   :init
+  (defun ymhg/ebib-create-identifier (key _) key)
+  (add-to-list 'ebib-notes-template-specifiers '(?k . ymhg/ebib-create-identifier))
   (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
-        ebib-notes-directory "~/Dropbox/bibliography/notes/"
-        ebib-notes-template "#+TITLE: Notes on: %T\n\n>|<"
+        ebib-notes-default-file "~/Dropbox/bibliography/notes.org"
+        ebib-notes-template "* %T\n:PROPERTIES:\n%K\n:NOTER_DOCUMENT: papers/%k.pdf\n:END:\n%%?\n"
         ebib-keywords (expand-file-name "~/Dropbox/bibliography/keywords.txt")
         ebib-reading-list-file "~/Dropbox/bibliography/reading_list.org"
         ebib-notes-storage 'multiple-notes-per-file)
@@ -662,10 +666,10 @@
 
 (defun download-pdf-from-doi (key &optional doi publisher eprint journal organization url)
   "Download pdf from doi with KEY name."
-  (let ((pub (or publisher ""))
-        (epr (or eprint ""))
+  (let ((pub  (or publisher ""))
+        (epr  (or eprint ""))
         (jour (or journal ""))
-        (org (or organization ""))
+        (org  (or organization ""))
         (link (or url "")))
     (url-copy-file (cond
                     ((not doi) link)
@@ -681,15 +685,15 @@
                     ((string-match "springer" (s-downcase pub))
                      (springer-pdf-url doi))
                     (t (sci-hub-pdf-url doi)))
-                   (concat "~/Dropbox/bibliography/papers/" key ".pdf"))))
+                   (concat (car ebib-file-search-dirs) "/" key ".pdf"))))
 
 (defun download-pdf-from-link (link key)
   (url-copy-file link
-                 (concat "~/Dropbox/bibliography/papers/" key ".pdf")))
+                 (concat (car ebib-file-search-dirs) "/" key ".pdf")))
 
 (defun download-pdf-from-downloads (key)
   (copy-file (concat "~/Downloads/" key ".pdf")
-             (concat "~/Dropbox/bibliography/papers/" key ".pdf") t))
+             (concat (car ebib-file-search-dirs) "/" key ".pdf") t))
 
 (defun get-bib-from-doi (doi)
   "Get the bibtex from DOI."
@@ -716,7 +720,7 @@
   "Download a PDF for the current entry."
   (interactive)
   (let ((key (ebib--get-key-at-point)))
-    (unless (file-exists-p (concat "~/Dropbox/bibliography/papers/" key ".pdf"))
+    (unless (file-exists-p (concat (car ebib-file-search-dirs) "/" key ".pdf"))
       (error "[Ebib] No PDF found."))
     t))
 #+end_src
@@ -764,7 +768,7 @@
   :after coq
   :init
   (setq company-idle-delay 1
-        company-coq-disabled-features '(prettify-symbols hello company-defaults spinner compile-command)))
+        company-coq-disabled-features '(prettify-symbols hello company-defaults spinner smart-subscripts snippets compile-command)))
 #+end_src
 
 #+begin_src emacs-lisp

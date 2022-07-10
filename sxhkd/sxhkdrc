@@ -130,8 +130,11 @@ super + {Left,Down,Up,Right}
 # Media
 #
 
-super + alt + shift + ctrl + {a,r,s,t}
-    playerctl {play-pause,stop,previous,next}
+# super + alt + shift + ctrl + {a,r,s,t}
+#     playerctl {play-pause,stop,previous,next}
+
+super + shift + {h,m,o}
+    spt playback {--previous,--toggle,--next}
 
 super + alt + shift + ctrl + {w,q}
     light -{A,U} 5
