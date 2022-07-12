@@ -465,10 +465,10 @@
   (setq diary-mail-days 2)
   (setq diary-abbreviated-year-flag nil)
 
-  (add-hook 'diary-sort-entries #'diary-list-entries-hook)
-
   (add-hook 'calendar-today-visible-hook #'calendar-mark-today)
-  (add-hook 'diary-list-entries-hook 'diary-sort-entries t)
+  (add-hook 'diary-list-entries-hook #'diary-fix-timezone t)
+  (add-hook 'diary-list-entries-hook #'diary-sort-entries t)
+
 
   (add-hook 'diary-list-entries-hook 'diary-include-other-diary-files)
   (add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
@@ -502,6 +502,57 @@
            (= (calendar-day-of-week date) dayname)
            (not (calendar-check-holidays date)))
           entry)))
+
+  (defun diary-fix-timezone ()
+    (let ((eqtimezone (string=
+                       (replace-regexp-in-string
+                        "\n" ""
+                        (shell-command-to-string "date +%z"))
+                       (replace-regexp-in-string
+                        "\n" ""
+                        (shell-command-to-string "TZ=\"Europe/London\" date +%z")))))
+      (setq diary-entries-list
+            (mapcar (lambda (entry)
+                      (pcase entry
+                        (`(,date ,time ,sdate . ,rest)
+                         (let ((dt (diary-entry-time time))
+                               (string-date (apply (lambda (a b c) (format "%d-%d-%d" c a b)) date)))
+                           (if (or eqtimezone (= dt diary-unknown-time))
+                               entry
+                             (let* ((tr (org-tz-conv (concat string-date " " (number-to-string dt)) "Europe/London" "from"))
+                                    (split (split-string tr "[- ]"))
+                                    (year (car split))
+                                    (month (cadr split))
+                                    (day (caddr split))
+                                    (hour (cadddr split)))
+                               (cons (mapcar #'string-to-number (list month day year))
+                                     (cons (concat hour (replace-regexp-in-string "^[^ ]+" "" time))
+                                           (cons (format "%s-%s-%s" year month day) rest)))))))))
+                    diary-entries-list))))
+
+  (defun org-tz-conv (stamp tz way)
+    "Convert a STAMP to or from TZ depending on WAY.
+
+This function uses the date command line tool to do it."
+    (let* ((current-tz-offset (replace-regexp-in-string
+                               "\n" ""
+                               (shell-command-to-string "date +%z")))
+           (stamp1    (concat (replace-regexp-in-string "[<>]" "" stamp)))
+           (date-cmd-p0  "TZ=%s date -d \"%s\"")
+           (date-cmd-p1  "date --date=\"TZ=\\\"%s\\\" %s\"")
+           (date-cmd-p2  " +\"%F %H:%M\"")
+           (date-cmd-from  (concat (format date-cmd-p1 tz stamp1) date-cmd-p2))
+           (date-cmd-to    (concat (format date-cmd-p0 tz
+                                           (concat stamp1 " " current-tz-offset))
+                                   date-cmd-p2))
+
+           (shell-result-from (shell-command-to-string date-cmd-from))
+           (shell-result-to   (shell-command-to-string date-cmd-to))
+
+           (result-from (replace-regexp-in-string "\n" "" shell-result-from))
+           (result-to   (replace-regexp-in-string "\n" "" shell-result-to)))
+      (cond ((string-equal way "from") result-from)
+            ((string-equal way "to") result-to))))
 
   (require 'ox-extra)
   (ox-extras-activate '(ignore-headlines))
