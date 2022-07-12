@@ -12,11 +12,31 @@ User ymherklotz@mailbox.org
 PassCmd "pass show mailbox/ymherklotz@mailbox.org"
 SSLType IMAPS
 
+IMAPAccount live_leika
+Host outlook.office365.com
+Port 993
+User leika10@hotmail.fr
+PassCmd "pass show live.com/leika10@hotmail.fr_app"
+SSLType IMAPS
+
+IMAPAccount live_yannherklotz
+Host outlook.office365.com
+Port 993
+User yann.herklotz@hotmail.fr
+PassCmd "pass show live.com/yann.herklotz@hotmail.fr_app"
+SSLType IMAPS
+
 IMAPStore imperial-remote
 Account imperial
 
 IMAPStore mailbox-remote
 Account mailbox
+
+IMAPStore live_leika-remote
+Account live_leika
+
+IMAPStore live_yannherklotz-remote
+Account live_yannherklotz
 
 MaildirStore imperial-local
 Subfolders Verbatim
@@ -27,6 +47,16 @@ MaildirStore mailbox-local
 Subfolders Verbatim
 Path ~/.mail/mailbox/
 Inbox ~/.mail/mailbox/Inbox
+
+MaildirStore live_leika-local
+Subfolders Verbatim
+Path ~/Dropbox/mail/live_leika
+Inbox ~/Dropbox/mail/live_leika/Inbox
+
+MaildirStore live_yannherklotz-local
+Subfolders Verbatim
+Path ~/Dropbox/mail/live_yannherklotz
+Inbox ~/Dropbox/mail/live_yannherklotz/Inbox
 
 Channel imperial
 Far :imperial-remote:
@@ -40,6 +70,24 @@ Expunge Both
 Channel mailbox
 Far :mailbox-remote:
 Near :mailbox-local:
+Patterns *
+Create Both
+SyncState *
+ExpireUnread no
+Expunge Both
+
+Channel live_leika
+Far :live_leika-remote:
+Near :live_leika-local:
+Patterns *
+Create Both
+SyncState *
+ExpireUnread no
+Expunge Both
+
+Channel live_yannherklotz
+Far :live_yannherklotz-remote:
+Near :live_yannherklotz-local:
 Patterns *
 Create Both
 SyncState *

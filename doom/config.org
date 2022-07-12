@@ -600,7 +600,6 @@
   :bind (("C-c y b" . ebib))
   :init
   (defun ymhg/ebib-create-identifier (key _) key)
-  (add-to-list 'ebib-notes-template-specifiers '(?k . ymhg/ebib-create-identifier))
   (setq ebib-preload-bib-files '("~/Dropbox/bibliography/references.bib")
         ebib-notes-default-file "~/Dropbox/bibliography/notes.org"
         ebib-notes-template "* %T\n:PROPERTIES:\n%K\n:NOTER_DOCUMENT: papers/%k.pdf\n:END:\n%%?\n"
@@ -608,6 +607,7 @@
         ebib-reading-list-file "~/Dropbox/bibliography/reading_list.org"
         ebib-notes-storage 'multiple-notes-per-file)
   :config
+  (add-to-list 'ebib-notes-template-specifiers '(?k . ymhg/ebib-create-identifier))
   (add-to-list 'ebib-file-search-dirs "~/Dropbox/bibliography/papers")
   (if (eq system-type 'darwin)
       (add-to-list 'ebib-file-associations '("pdf" . "open"))
