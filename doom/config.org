@@ -14,6 +14,27 @@
 (setq org-directory "~/Dropbox/org/")
 
 (setq display-line-numbers-type nil)
+;; Remove the ring for emacs
+(setq ring-bell-function 'ignore)
+;; Automatically refresh files
+(global-auto-revert-mode 1)
+(setq auto-revert-verbose nil)
+
+;; Set sentence to end with double space
+(setq sentence-end-double-space t)
+;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode', which is a personal
+;; preference.
+(setq-default fill-column 100)
+;;(remove-hook 'text-mode-hook #'auto-fill-mode)
+(add-hook 'text-mode-hook #'auto-fill-mode)
+;;(add-hook 'text-mode-hook #'+word-wrap-mode)
+;;(add-hook 'text-mode-hook #'visual-fill-column-mode)
+;;;; Removes performance problems with opening coq files.
+(after! core-editor
+  (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
+
+;; Projectile compilation buffer not there anymore for some reason
+(setq compilation-buffer-name-function #'compilation--default-buffer-name)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -42,7 +63,7 @@
 (add-hook 'text-mode-hook (lambda () (company-mode -1)))
 #+end_src
 
-* Key Binding Customisations
+** Key Binding Customisations
 
 #+begin_src emacs-lisp
 ;; Stop emacs from freezing when trying to minimize it on a tiling WM.
@@ -144,7 +165,7 @@
   (insert (format-time-string "%c" (current-time))))
 #+end_src
 
-* Mac Specific Customisations
+** Mac Specific Customisations
 
 #+begin_src emacs-lisp
 ;; Mac configuration
@@ -163,7 +184,7 @@
          (add-hook 'ns-system-appearance-change-functions #'ymhg/apply-theme)))
 #+end_src
 
-* Backup Settings
+** Backup Settings
 
 #+begin_src emacs-lisp
 ;; Set backup directories into the tmp folder
@@ -184,7 +205,29 @@
       )
 #+end_src
 
-* Tramp Settings
+** Whitespace Settings
+
+#+begin_src emacs-lisp
+;; Configure activation for whitespace mode
+(use-package! whitespace
+  :bind (("C-x w" . whitespace-mode))
+  :init
+  (setq whitespace-style '(newline newline-mark))
+  (setq whitespace-display-mappings '((newline-mark 10 [?¬ 10]))))
+
+;; Configure expand-region mode.
+(use-package! expand-region
+  :bind ("M-o" . er/expand-region))
+
+;; Delete all whitespace until the first non-whitespace character.
+(use-package! hungry-delete
+  :config
+  (global-hungry-delete-mode)
+  ;; disable hungry delete in minibuffer-mode: https://github.com/abo-abo/swiper/issues/2761
+  (add-to-list 'hungry-delete-except-modes 'minibuffer-mode))
+#+end_src
+
+* Tramp
 
 #+begin_src emacs-lisp
 (setq tramp-auto-save-directory "/tmp")
@@ -217,59 +260,19 @@
 
 * Language Settings
 
+** Magit
+
 #+begin_src emacs-lisp
-;; Set sensitive data mode
-(setq auto-mode-alist
-      (append
-       (list ;;'("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
-        '("\\.sv\\'" . verilog-mode))
-       auto-mode-alist))
-
-(after! verilog-mode
-  (setq verilog-simulator "iverilog"))
-
-;; Remove the ring for emacs
-(setq ring-bell-function 'ignore)
-
-;; Automatically refresh files
-(global-auto-revert-mode 1)
-(setq auto-revert-verbose nil)
-
-;; Set sentence to end with double space
-(setq sentence-end-double-space t)
-
-;; Remove automatic `auto-fill-mode', and replace it by `visual-line-mode', which is a personal
-;; preference.
-(setq-default fill-column 100)
-;;(remove-hook 'text-mode-hook #'auto-fill-mode)
-(add-hook 'text-mode-hook #'auto-fill-mode)
-;;(add-hook 'text-mode-hook #'+word-wrap-mode)
-;;(add-hook 'text-mode-hook #'visual-fill-column-mode)
-
 ;; Set up magit when C-c g is called
 (use-package! magit
   :bind (("C-x g" . magit-status))
   :config
   (add-hook 'magit-status-sections-hook #'magit-insert-modules 90))
+#+end_src
 
-;; Configure activation for whitespace mode
-(use-package! whitespace
-  :bind (("C-x w" . whitespace-mode))
-  :init
-  (setq whitespace-style '(newline newline-mark))
-  (setq whitespace-display-mappings '((newline-mark 10 [?¬ 10]))))
+** Org mode
 
-;; Configure expand-region mode.
-(use-package! expand-region
-  :bind ("M-o" . er/expand-region))
-
-;; Delete all whitespace until the first non-whitespace character.
-(use-package! hungry-delete
-  :config
-  (global-hungry-delete-mode)
-  ;; disable hungry delete in minibuffer-mode: https://github.com/abo-abo/swiper/issues/2761
-  (add-to-list 'hungry-delete-except-modes 'minibuffer-mode))
-
+#+begin_src emacs-lisp
 ;; Org configuration
 (use-package! org
   :mode ("\\.org\\'" . org-mode)
@@ -622,7 +625,11 @@ This function uses the date command line tool to do it."
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
+#+end_src
 
+** Latex/Context
+
+#+begin_src emacs-lisp
 (after! pdf-tools
   (pdf-tools-install))
 
@@ -641,6 +648,77 @@ This function uses the date command line tool to do it."
             TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list))
   (map! :map ConTeXt-mode-map
         "C-c ]"   #'ebib-insert-citation))
+
+(use-package! ox-gfm :after ox)
+(use-package! ox-hugo :after ox)
+
+(use-package! elfeed-org
+  :config
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
+  (run-at-time nil (* 8 60 60) #'elfeed-update))
+#+end_src
+
+*** Zettelkasten
+
+#+begin_src emacs-lisp
+(use-package! org-zettelkasten
+  :config
+  (add-hook 'org-mode-hook #'org-zettelkasten-mode)
+
+  (defun org-zettelkasten-search-current-id ()
+    "Use `consult-ripgrep' to search for the current ID in all files."
+    (interactive)
+    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
+      (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
+
+  (define-key org-zettelkasten-mode-map (kbd "r") #'org-zettelkasten-search-current-id)
+  (setq org-zettelkasten-directory "~/Dropbox/zk")
+
+  (defun org-zettelkasten-goto-id (id)
+    "Go to an ID."
+    (interactive "sID: #")
+    (cond ((string-prefix-p "1" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/hls.org::#" id "]]")))
+          ((string-prefix-p "2" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/computing.org::#" id "]]")))
+          ((string-prefix-p "3" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/verification.org::#" id "]]")))
+          ((string-prefix-p "4" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/mathematics.org::#" id "]]")))
+          ((string-prefix-p "5" id)
+           (org-link-open-from-string
+            (concat "[[file:" org-zettelkasten-directory
+                    "/hardware.org::#" id "]]"))))))
+#+end_src
+
+#+begin_src emacs-lisp
+;; Set up zettelkasten mode
+(use-package! zettelkasten
+  :bind-keymap
+  ("C-c k" . zettelkasten-mode-map))
+#+end_src
+
+** Verilog
+
+#+begin_src emacs-lisp
+;; Set sensitive data mode
+(setq auto-mode-alist
+      (append
+       (list ;;'("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
+        '("\\.sv\\'" . verilog-mode))
+       auto-mode-alist))
+
+(after! verilog-mode
+  (setq verilog-simulator "iverilog"))
 #+end_src
 
 ** Ebib
@@ -776,6 +854,18 @@ This function uses the date command line tool to do it."
     t))
 #+end_src
 
+** Ocaml
+
+#+begin_src emacs-lisp
+(after! tuareg-mode
+  (add-hook 'tuareg-mode-hook
+            (lambda ()
+              (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
+              (add-hook 'before-save-hook #'ocamlformat-before-save))))
+#+end_src
+
+** Spell check
+
 #+begin_src emacs-lisp
 ;; Set up dictionaries
 (setq ispell-dictionary "british")
@@ -784,17 +874,6 @@ This function uses the date command line tool to do it."
   (define-key flyspell-mode-map (kbd "C-.") nil)
   (define-key flyspell-mode-map (kbd "C-,") nil)
   (setq flyspell-mouse-map (make-sparse-keymap)))
-
-;; Set up zettelkasten mode
-(use-package! zettelkasten
-  :bind-keymap
-  ("C-c k" . zettelkasten-mode-map))
-
-(use-package! elfeed-org
-  :config
-  (elfeed-org)
-  (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
-  (run-at-time nil (* 8 60 60) #'elfeed-update))
 #+end_src
 
 ** Coq configuration
@@ -822,121 +901,9 @@ This function uses the date command line tool to do it."
         company-coq-disabled-features '(prettify-symbols hello company-defaults spinner smart-subscripts snippets compile-command)))
 #+end_src
 
+** Mail
+
 #+begin_src emacs-lisp
-;;;; Removes performance problems with opening coq files.
-(after! core-editor
-  (add-to-list 'doom-detect-indentation-excluded-modes 'coq-mode))
-
-(use-package! smartparens
-  :config
-  (map! :map smartparens-mode-map
-        "M-[" #'sp-backward-unwrap-sexp
-        "M-]" #'sp-unwrap-sexp
-        "C-M-f" #'sp-forward-sexp
-        "C-M-b" #'sp-backward-sexp
-        "C-M-d" #'sp-down-sexp
-        "C-M-a" #'sp-backward-down-sexp
-        "C-M-e" #'sp-up-sexp
-        "C-M-u" #'sp-backward-up-sexp
-        "C-M-t" #'sp-transpose-sexp
-        "C-M-n" #'sp-next-sexp
-        "C-M-p" #'sp-previous-sexp
-        "C-M-k" #'sp-kill-sexp
-        "C-M-w" #'sp-copy-sexp
-        "C-)" #'sp-forward-slurp-sexp
-        "C-}" #'sp-forward-barf-sexp
-        "C-(" #'sp-backward-slurp-sexp
-        "C-{" #'sp-backward-barf-sexp
-        "M-D" #'sp-splice-sexp
-        "C-]" #'sp-select-next-thing-exchange
-        "C-<left_bracket>" #'sp-select-previous-thing
-        "C-M-]" #'sp-select-next-thing
-        "M-F" #'sp-forward-symbol
-        "M-B" #'sp-backward-symbol
-        "M-r" #'sp-split-sexp)
-  (require 'smartparens-config)
-  (show-smartparens-global-mode +1)
-  (smartparens-global-mode 1)
-;;(sp-pair "'" nil :actions :rem)
-  (sp-local-pair 'coq-mode "'" nil :actions nil)
-  )
-
-(after! writeroom-mode (setq +zen-text-scale 1))
-
-(after! tuareg-mode
-  (add-hook 'tuareg-mode-hook
-            (lambda ()
-              (define-key tuareg-mode-map (kbd "C-M-<tab>") #'ocamlformat)
-              (add-hook 'before-save-hook #'ocamlformat-before-save))))
-
-(use-package! direnv :config (direnv-mode))
-
-(use-package! ox-gfm)
-
-(use-package! org-zettelkasten
-  :config
-  (add-hook 'org-mode-hook #'org-zettelkasten-mode)
-
-  (defun org-zettelkasten-search-current-id ()
-    "Use `consult-ripgrep' to search for the current ID in all files."
-    (interactive)
-    (let ((current-id (org-entry-get nil "CUSTOM_ID")))
-      (consult-ripgrep org-zettelkasten-directory (concat "[\\[:]." current-id "\\]#"))))
-
-  (define-key org-zettelkasten-mode-map (kbd "r") #'org-zettelkasten-search-current-id)
-  (setq org-zettelkasten-directory "~/Dropbox/zk")
-
-  (defun org-zettelkasten-goto-id (id)
-    "Go to an ID."
-    (interactive "sID: #")
-    (cond ((string-prefix-p "1" id)
-           (org-link-open-from-string
-            (concat "[[file:" org-zettelkasten-directory
-                    "/hls.org::#" id "]]")))
-          ((string-prefix-p "2" id)
-           (org-link-open-from-string
-            (concat "[[file:" org-zettelkasten-directory
-                    "/computing.org::#" id "]]")))
-          ((string-prefix-p "3" id)
-           (org-link-open-from-string
-            (concat "[[file:" org-zettelkasten-directory
-                    "/verification.org::#" id "]]")))
-          ((string-prefix-p "4" id)
-           (org-link-open-from-string
-            (concat "[[file:" org-zettelkasten-directory
-                    "/mathematics.org::#" id "]]")))
-          ((string-prefix-p "5" id)
-           (org-link-open-from-string
-            (concat "[[file:" org-zettelkasten-directory
-                    "/hardware.org::#" id "]]"))))))
-
-(use-package! ox-hugo :after ox)
-
-(use-package alert
-  :custom
-  (alert-default-style 'osx-notifier))
-
-(use-package ledger-mode)
-
-;; Bug fixes
-
-;; Projectile compilation buffer not there anymore for some reason
-(setq compilation-buffer-name-function #'compilation--default-buffer-name)
-
-(defun diary-last-day-of-month (date)
-  "Return `t` if DATE is the last day of the month."
-  (let* ((day (calendar-extract-day date))
-         (month (calendar-extract-month date))
-         (year (calendar-extract-year date))
-         (last-day-of-month
-          (calendar-last-day-of-month month year)))
-    (= day last-day-of-month)))
-
-(use-package! calc-forms
-  :config
-  (add-to-list 'math-tzone-names '("AOE" 12 0))
-  (add-to-list 'math-tzone-names '("IST" (float -55 -1) 0)))
-
 (setq message-send-mail-function 'message-send-mail-with-sendmail)
 (setq message-fill-column 80)
 
@@ -998,6 +965,69 @@ https://yannherklotz.com")
   (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox"))))
 
 (after! shr (setq shr-use-fonts nil))
+#+end_src
+
+** Smartparens
+
+#+begin_src emacs-lisp
+(use-package! smartparens
+  :config
+  (map! :map smartparens-mode-map
+        "M-[" #'sp-backward-unwrap-sexp
+        "M-]" #'sp-unwrap-sexp
+        "C-M-f" #'sp-forward-sexp
+        "C-M-b" #'sp-backward-sexp
+        "C-M-d" #'sp-down-sexp
+        "C-M-a" #'sp-backward-down-sexp
+        "C-M-e" #'sp-up-sexp
+        "C-M-u" #'sp-backward-up-sexp
+        "C-M-t" #'sp-transpose-sexp
+        "C-M-n" #'sp-next-sexp
+        "C-M-p" #'sp-previous-sexp
+        "C-M-k" #'sp-kill-sexp
+        "C-M-w" #'sp-copy-sexp
+        "C-)" #'sp-forward-slurp-sexp
+        "C-}" #'sp-forward-barf-sexp
+        "C-(" #'sp-backward-slurp-sexp
+        "C-{" #'sp-backward-barf-sexp
+        "M-D" #'sp-splice-sexp
+        "C-]" #'sp-select-next-thing-exchange
+        "C-<left_bracket>" #'sp-select-previous-thing
+        "C-M-]" #'sp-select-next-thing
+        "M-F" #'sp-forward-symbol
+        "M-B" #'sp-backward-symbol
+        "M-r" #'sp-split-sexp)
+  (require 'smartparens-config)
+  (show-smartparens-global-mode +1)
+  (smartparens-global-mode 1)
+;;(sp-pair "'" nil :actions :rem)
+  (sp-local-pair 'coq-mode "'" nil :actions nil))
+#+end_src
+
+#+begin_src emacs-lisp
+(after! writeroom-mode (setq +zen-text-scale 1))
+
+(use-package! direnv :config (direnv-mode))
+
+(use-package alert
+  :custom
+  (alert-default-style 'osx-notifier))
+
+(use-package ledger-mode)
+
+(defun diary-last-day-of-month (date)
+  "Return `t` if DATE is the last day of the month."
+  (let* ((day (calendar-extract-day date))
+         (month (calendar-extract-month date))
+         (year (calendar-extract-year date))
+         (last-day-of-month
+          (calendar-last-day-of-month month year)))
+    (= day last-day-of-month)))
+
+(use-package! calc-forms
+  :config
+  (add-to-list 'math-tzone-names '("AOE" 12 0))
+  (add-to-list 'math-tzone-names '("IST" (float -55 -1) 0)))
 
 (use-package! orderless
   :custom (completion-styles '(substring orderless)))
@@ -1010,16 +1040,11 @@ https://yannherklotz.com")
   :init
   (savehist-mode))
 
-;; Enable richer annotations using the Marginalia package
 (use-package! marginalia
-  ;; Either bind `marginalia-cycle` globally or only in the minibuffer
   :bind (("M-A" . marginalia-cycle)
          :map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-
-  ;; The :init configuration is always executed (Not lazy!)
   :init
-
   ;; Must be in the :init section of use-package such that the mode gets
   ;; enabled right away. Note that this forces loading the package.
   (marginalia-mode))
