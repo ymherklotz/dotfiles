@@ -1,0 +1,21 @@
+\starttypescript[mono] [iosevka]
+  \definefontsynonym[Iosevka-Regular]    [name:iosevkaslabmedium]
+  \definefontsynonym[Iosevka-Italic]     [name:iosevkaslabmediumitalic]
+  \definefontsynonym[Iosevka-Bold]       [name:iosevkaslabbold]
+  \definefontsynonym[Iosevka-BoldItalic] [name:iosevkaslabbolditalic]
+\stoptypescript
+
+\starttypescript[mono] [iosevka]
+  \setups[font:fallback:mono]
+  \definefontsynonym[Mono]           [Iosevka-Regular]    [features=default]
+  \definefontsynonym[MonoItalic]     [Iosevka-Italic]     [features=default]
+  \definefontsynonym[MonoBold]       [Iosevka-Bold]       [features=default]
+  \definefontsynonym[MonoBoldItalic] [Iosevka-BoldItalic] [features=default]
+\stoptypescript
+
+\starttypescript [ymhg]
+  \definetypeface [ymhg] [rm] [serif] [libertinus] [default]
+  \definetypeface [ymhg] [ss] [sans]  [libertinus] [default]
+  \definetypeface [ymhg] [tt] [mono]  [iosevka]    [default] [rscale=0.85]
+  \definetypeface [ymhg] [mm] [math]  [libertinus] [default]
+\stoptypescript
