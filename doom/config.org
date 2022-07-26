@@ -541,8 +541,8 @@ This function uses the date command line tool to do it."
                                "\n" ""
                                (shell-command-to-string "date +%z")))
            (stamp1    (concat (replace-regexp-in-string "[<>]" "" stamp)))
-           (date-cmd-p0  "TZ=%s date -d \"%s\"")
-           (date-cmd-p1  "date --date=\"TZ=\\\"%s\\\" %s\"")
+           (date-cmd-p0  "TZ=%s gdate -d \"%s\"")
+           (date-cmd-p1  "gdate --date=\"TZ=\\\"%s\\\" %s\"")
            (date-cmd-p2  " +\"%F %H:%M\"")
            (date-cmd-from  (concat (format date-cmd-p1 tz stamp1) date-cmd-p2))
            (date-cmd-to    (concat (format date-cmd-p0 tz
