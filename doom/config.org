@@ -347,6 +347,7 @@
                                        "~/Dropbox/org/projects.org"
                                        (format-time-string "~/Dropbox/org/%Y-%m.org")
                                        "~/Dropbox/bibliography/reading_list.org")))
+  (setq org-agenda-tag-filter '("-backed"))
   (setq org-refile-targets `(("~/Dropbox/org/main.org" :level . 1)
                              ("~/Dropbox/org/someday.org" :level . 1)
                              ("~/Dropbox/org/projects.org" :maxlevel . 2)
