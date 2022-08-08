@@ -35,6 +35,11 @@
 
 ;; Projectile compilation buffer not there anymore for some reason
 (setq compilation-buffer-name-function #'compilation--default-buffer-name)
+
+;; optimisations from https://200ok.ch/posts/2020-09-29_comprehensive_guide_on_handling_long_lines_in_emacs.html
+(setq-default bidi-paragraph-direction 'left-to-right)
+(if (version<= "27.1" emacs-version)
+    (setq bidi-inhibit-bpa t))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -333,6 +338,9 @@
   :init
   (setq org-contacts-files '("~/Dropbox/org/contacts.org")))
 
+(use-package org-auto-tangle
+  :hook (org-mode . org-auto-tangle-mode))
+
 ;; Disable org indent mode and remove C-, from the org-mode-map.
 (after! org
   (setq org-element-use-cache nil)
@@ -626,6 +634,59 @@ This function uses the date command line tool to do it."
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
+
+(use-package ob-coq :after ob)
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package! ox-context
+  :after org
+  :config
+  (add-to-list
+   'org-context-presets-alist
+   '("ymhg-article" .
+     (:literal "\\setupwhitespace[none]"
+      :template "article"
+      :snippets
+      ("description-article" "quote-article" "verse-article"
+       "table-article" "title-ymhg" "sectioning-article" "page-numbering-article"))))
+  (add-to-list 'org-context-snippets-alist
+    '("title-ymhg" . "\\setuphead[title][align=middle]
+\\definestartstop[OrgTitlePage]
+\\define\\OrgMakeTitle{%
+  \\startalignment[center]
+   \\blank[force,2*big]
+   \\title{\\documentvariable{metadata:title}}
+   \\doifnot{\\documentvariable{metadata:subtitle}}{}{
+     \\blank[force,1*big]
+     \\tfa \\documentvariable{metadata:subtitle}}
+   \\doifelse{\\documentvariable{metadata:author}}{}{
+   \\blank[2*medium]
+   {\\tfa \\documentvariable{metadata:email}}
+   }{
+      \\blank[force,2*medium]
+      {\\it by \\documentvariable{metadata:author}}, on \\documentvariable{metadata:date}
+   }
+   \\blank[3*medium]
+  \\stopalignment}
+\\setupsectionblock[frontpart][page=no]
+\\setupsectionblock[bodypart][page=no]
+\\setuppagenumbering[location={footer,middle}]"))
+  (setq org-context-headline-command
+        '("OrgHeadline" . "\\def\\OrgHeadline#1[#2]{%
+  \\getparameters
+    [OrgHeadline]
+    [Todo=,
+     TodoType=,
+     Priority=,
+     Text=,
+     Tags=,
+     #2]%
+  \\doifnot{\\OrgHeadlineTodo}{}{{\\sansbold{\\smallcaps{\\OrgHeadlineTodo}}\\space}}%
+  \\doifnot{\\OrgHeadlinePriority}{}{{\\inframed{\\OrgHeadlinePriority}\\space}}%
+  \\OrgHeadlineText%
+  \\doifnot{\\OrgHeadlineTags}{}{{\\hfill\\tt\\OrgHeadlineTags}}%
+}")))
 #+end_src
 
 ** Latex/Context
@@ -715,7 +776,10 @@ This function uses the date command line tool to do it."
 (setq auto-mode-alist
       (append
        (list ;;'("\\.\\(vcf\\|gpg\\)\\'" . sensitive-minor-mode)
-        '("\\.sv\\'" . verilog-mode))
+        '("\\.sv\\'" . verilog-mode)
+        '("\\.mkiv\\'" . context-mode)
+        '("\\.mkii\\'" . context-mode)
+        '("\\.mkxl\\'" . context-mode))
        auto-mode-alist))
 
 (after! verilog-mode
@@ -897,7 +961,7 @@ This function uses the date command line tool to do it."
 
 (use-package! company-coq
   :after coq
-  :init
+  :config
   (setq company-idle-delay 1
         company-coq-disabled-features '(prettify-symbols hello company-defaults spinner smart-subscripts snippets compile-command)))
 #+end_src
@@ -1244,9 +1308,6 @@ https://yannherklotz.com")
   :config
   (add-hook 'rst-mode-hook (lambda () (setq fill-column 80))))
 
-(use-package! ox-context
-  :after org)
-
 (use-package! ox-tufte
   :after org
   :config)
@@ -1264,5 +1325,3 @@ https://yannherklotz.com")
 ;;
 ;;(use-package! agda2-mode)
 #+end_src
-
-*

@@ -3,6 +3,10 @@
 
 ;; `org-mode' dependencies
 (package! ol-notmuch)
+(package! org-contrib
+  :recipe (:host nil :repo "https://git.sr.ht/~bzg/org-contrib")
+  :pin "c6aef31ccfc7c4418c3b51e98f7c3bd8e255f5e6")
+(package! org-contacts)
 ;; `org-bullets' replacement
 (package! org-superstar)
 (package! ox-gfm)
@@ -18,6 +22,9 @@
   :recipe (:host github :repo "nobiot/org-transclusion"))
 (package! org-zettelkasten
   :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+(package! org-auto-tangle
+  :recipe (:host github :repo "yilkalargaw/org-auto-tangle")
+  :pin "bce665c79fc29f1e80f1eae7db7e91c56b0788fc")
 (package! elfeed-score)
 
 (package! alectryon)
