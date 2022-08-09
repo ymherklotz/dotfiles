@@ -6,7 +6,7 @@
 (package! org-contrib
   :recipe (:host nil :repo "https://git.sr.ht/~bzg/org-contrib")
   :pin "c6aef31ccfc7c4418c3b51e98f7c3bd8e255f5e6")
-(package! org-contacts)
+;;(package! org-contacts)
 ;; `org-bullets' replacement
 (package! org-superstar)
 (package! ox-gfm)
@@ -64,3 +64,5 @@
 ;; Themes
 (package! color-theme-sanityinc-tomorrow)
 (package! modus-themes)
+
+(package! mmm-mode)

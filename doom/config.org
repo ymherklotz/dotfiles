@@ -634,8 +634,6 @@ This function uses the date command line tool to do it."
 (set-register ?i (cons 'file "~/Dropbox/org/inbox.org"))
 (set-register ?p (cons 'file "~/Dropbox/org/projects.org"))
 (set-register ?c (cons 'file (format-time-string "~/Dropbox/org/%Y-%m.org")))
-
-(use-package ob-coq :after ob)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -719,6 +717,19 @@ This function uses the date command line tool to do it."
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "~/Dropbox/org/elfeed.org"))
   (run-at-time nil (* 8 60 60) #'elfeed-update))
+
+(use-package! mmm-mode
+  :config
+  (mmm-add-classes
+   '((embedded-lua
+      :submode lua-mode
+      :front "\\\\startluacode"
+      :back "\\\\stopluacode")))
+
+  (mmm-add-mode-ext-class 'ConTeXt-mode nil 'embedded-lua)
+  ;;(setq mmm-never-modes
+  ;;      (append '(ediff-mode) '(text-mode) mmm-never-modes))
+  )
 #+end_src
 
 *** Zettelkasten
