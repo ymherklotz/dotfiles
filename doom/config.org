@@ -720,16 +720,26 @@ This function uses the date command line tool to do it."
 
 (use-package! mmm-mode
   :config
-  (mmm-add-classes
+  (mmm-add-group
+   'fancy-context
    '((embedded-lua
       :submode lua-mode
       :front "\\\\startluacode"
-      :back "\\\\stopluacode")))
+      :back "\\\\stopluacode")
+     (embedded-C
+      :submode c-mode
+      :front "\\\\starthlC"
+      :back "\\\\stophlC")
+     ))
 
-  (mmm-add-mode-ext-class 'ConTeXt-mode nil 'embedded-lua)
+  (mmm-add-mode-ext-class 'ConTeXt-en/PS nil 'fancy-context)
+  (setq mmm-global-mode 'maybe)
   ;;(setq mmm-never-modes
   ;;      (append '(ediff-mode) '(text-mode) mmm-never-modes))
   )
+
+(require 'mmm-auto)
+
 #+end_src
 
 *** Zettelkasten
