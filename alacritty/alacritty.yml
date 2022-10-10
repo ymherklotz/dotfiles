@@ -1,5 +1,5 @@
 font:
-  size: 14
+  size: 11
   normal:
     family: Iosevka YMHG
     style: Medium
@@ -115,7 +115,7 @@ schemes:
       cyan:    '#6ae4b9'
       white:   '#110b11'
 
-colors: *light
+colors: *dark
 
 key_bindings:
 - { key: A, mods: Command, chars: "\x1ba" }

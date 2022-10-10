@@ -21,7 +21,8 @@
 (package! org-transclusion
   :recipe (:host github :repo "nobiot/org-transclusion"))
 (package! org-zettelkasten
-  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten"))
+  :recipe (:host github :repo "ymherklotz/emacs-zettelkasten")
+  :pin "7278052cb451178a2f1ffc61569156ca0adcc34a")
 (package! org-auto-tangle
   :recipe (:host github :repo "yilkalargaw/org-auto-tangle")
   :pin "bce665c79fc29f1e80f1eae7db7e91c56b0788fc")
@@ -64,5 +65,8 @@
 ;; Themes
 (package! color-theme-sanityinc-tomorrow)
 (package! modus-themes)
+
+(package! ef-themes
+  :recipe (:host nil :repo "https://git.sr.ht/~protesilaos/ef-themes"))
 
 (package! mmm-mode)
