@@ -28,6 +28,9 @@
   :pin "bce665c79fc29f1e80f1eae7db7e91c56b0788fc")
 (package! elfeed-score)
 
+(package! ef-themes
+  :recipe (:host nil :repo "https://git.sr.ht/~protesilaos/ef-themes"))
+
 (package! alectryon)
 
 ;; Bibtex stuff

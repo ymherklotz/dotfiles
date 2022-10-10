@@ -48,13 +48,24 @@
 #+begin_src emacs-lisp
 (use-package ef-themes
   :defer nil
+  :bind ("<f6>" . ef-themes-select)
   :config
   (custom-theme-set-faces! ef-themes-collection
     '(proof-locked-face :inherit hl-line)
     '(proof-queue-face :inherit region))
+  (setq ef-themes-height-0 2.0736
+        ef-themes-height-1 1.728
+        ef-themes-height-2 1.44
+        ef-themes-height-3 1.2
+        ef-themes-height-4 1.0
+        ef-themes-height-5 1.0
+        ef-themes-height-6 1.0
+        ef-themes-height-7 1.0
+        ef-themes-height-8 1.0)
   (setq doom-theme 'ef-autumn))
 
 (use-package modus-themes
+  :defer nil
   :init
   ;; Add all your customizations prior to loading the themes
   (setq modus-themes-region '(bg-only no-extend))
@@ -199,9 +210,7 @@
            "Load theme, taking current system APPEARANCE into consideration."
            (mapc #'disable-theme custom-enabled-themes)
            (pcase appearance
-             ;;('light (load-theme 'modus-operandi t))
-             ;;('dark (load-theme 'modus-vivendi t))
-             ('light (load-theme 'ef-spring t))
+             ('light (load-theme 'ef-day t))
              ('dark (load-theme 'ef-autumn t))))
 
          (add-hook 'ns-system-appearance-change-functions #'ymhg/apply-theme)))
@@ -761,6 +770,10 @@ This function uses the date command line tool to do it."
       :submode c-mode
       :front "\\\\starthlC"
       :back "\\\\stophlC")
+     (embedded-metapost
+      :submode metapost-mode
+      :front "\\\\startuseMPgraphic"
+      :back "\\\\stopuseMPgraphic")
      ))
 
   (mmm-add-mode-ext-class 'ConTeXt-en/PS nil 'fancy-context)
