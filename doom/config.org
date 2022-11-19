@@ -747,7 +747,8 @@ This function uses the date command line tool to do it."
             "context --purgeall %s"
             TeX-run-command nil t :help "Run ConTeXt")) TeX-command-list))
   (map! :map ConTeXt-mode-map
-        "C-c ]"   #'ebib-insert-citation))
+        "C-c ]"   #'ebib-insert-citation)
+  (add-hook 'ConTeXt-mode-hook #'reftex-mode))
 
 (use-package! ox-gfm :after ox)
 (use-package! ox-hugo :after ox)
@@ -1000,6 +1001,20 @@ This function uses the date command line tool to do it."
 ;; Set up dictionaries
 (setq ispell-dictionary "british")
 
+(use-package! spell-fu
+  :config
+  (add-hook 'spell-fu-mode-hook
+            (lambda ()
+              (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "en_GB"))
+              (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "de_DE"))
+              (spell-fu-dictionary-add (spell-fu-get-ispell-dictionary "fr_FR"))
+              (spell-fu-dictionary-add
+               (spell-fu-get-personal-dictionary "fr-personal" "~/.aspell.en_GB.pws"))
+              (spell-fu-dictionary-add
+               (spell-fu-get-personal-dictionary "de-personal" "~/.aspell.de_DE.pws"))
+              (spell-fu-dictionary-add
+               (spell-fu-get-personal-dictionary "fr-personal" "~/.aspell.fr_FR.pws")))))
+
 (after! flyspell
   (define-key flyspell-mode-map (kbd "C-.") nil)
   (define-key flyspell-mode-map (kbd "C-,") nil)
@@ -1094,7 +1109,8 @@ https://yannherklotz.com")
 
   (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox"))))
 
-(after! shr (setq shr-use-fonts nil))
+(after! shr (setq shr-use-fonts nil
+                  shr-max-image-proportion 0.5))
 #+end_src
 
 ** Smartparens
@@ -1381,6 +1397,11 @@ https://yannherklotz.com")
   :init
   (setq cdlatex-command-alist nil)
   (setq cdlatex-math-modify-alist nil))
+
+(use-package! boogie-friends
+  :config
+  (setq flycheck-dafny-executable (executable-find "dafny"))
+  (setq dafny-verification-backend 'cli))
 
 ;;(add-to-list 'load-path "/usr/local/Cellar/agda/2.6.2.2/cabal/store/ghc-8.10.7/Agd-2.6.2.2-3bca6588/share/emacs-mode")
 ;;

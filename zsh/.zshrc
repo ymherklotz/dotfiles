@@ -28,7 +28,8 @@ setopt HIST_FIND_NO_DUPS
 #if [ -d ~/.cache/wal ]; then (cat ~/.cache/wal/sequences &) fi
 
 #export MINIMAL_MAGIC_ENTER=no
-PS1="%n@%m %1~ %# "
+autoload -U colors && colors
+PS1="%{$fg[magenta]%}%n%{$reset_color%}@%{$fg[cyan]%}%m %{$fg[green]%}%1~%{$reset_color%} %# "
 
 # Sourcing everything
 #if [ -e /usr/share/fzf/key-bindings.zsh ]; then source /usr/share/fzf/key-bindings.zsh; fi

@@ -3,6 +3,7 @@ alias em='emacsclient -nw -a ""'
 alias ls='exa'
 alias ff='firefox'
 alias vim=nvim
+alias open=xdg-open
 # alias lspasscp='lpass show -c --password $(lpass ls  | fzf | awk '{print $(NF)}' | sed 's/\\]//g')'
 
 # fixing pdflatex

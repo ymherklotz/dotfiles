@@ -46,5 +46,14 @@ xrandr --output DP-1 --rotate normal --auto --output DVI-1-0 --rotate right --ri
 feh --bg-center /home/ymherklotz/images/wp1.jpg /home/ymherklotz/images/wp3.jpg /home/ymherklotz/images/wp2.jpg
 xsetroot -cursor_name left_ptr
 
+tmux new-session -d -n main -s vericert -c /home/ymherklotz/projects/vericert
+tmux new-window -d -n test
+
+tmux new-session -d -n main -s gsa -c /home/ymherklotz/projects/compcertgsa
+tmux new-window -d -n test
+
+tmux new-session -d -n main -s server -c /home/ymherklotz
+tmux new-window -d -n test
+
 #exec i3
 exec bspwm
