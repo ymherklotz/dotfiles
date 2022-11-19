@@ -25,7 +25,6 @@ function latestqr -d "Return the string corresponding to the latest QR code."
 end
 
 function open; xdg-open $argv; end
-function ls; exa $argv; end
 function ll; ls -lah $argv; end
 function vim; nvim $argv; end
 
