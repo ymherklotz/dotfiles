@@ -1,0 +1,40 @@
+#!/bin/bash
+
+date
+mbsync imperial mailbox
+
+notmuch new
+
+notmuch tag --batch <<EOF
+
++imperial -- tag:new and folder:/^imperial/
++mailbox -- tag:new and folder:/^mailbox/
+
++archive -- tag:new and (folder:imperial/Archive or folder:imperial/Archive1 or folder:mailbox/Archive)
+
+-new +sent -- tag:new and (folder:"imperial/Sent Items" or folder:mailbox/Sent)
+-new +deleted -- tag:new and (folder:"imperial/Deleted Items" or folder:mailbox/Trash)
+
+-new +cron -- tag:new and (from:anacron or from:"cron daemon")
+
+-new +callforpaper -- tag:new and ((subject:call and (subject:paper or subject:session)) or from:saiconference.com)
+
+-new +ieee -- tag:new and from:/^IEEE/
+
+-new +imperial-noise -- tag:new and (from:"library notices" or from:"Fownes, Joanna" or from:"Victoria Scott" or from:"Graduate School <graduate.school@imperial.ac.uk>" or from:"ACM Learning Center" or from:"CGCU Secretary" or from:"DoCSoc" or subject:"[HiPEAC Members]" or (subject:"Your Casual pay form for" or subject:"claim for") or from:"email.teams.microsoft.com")
+
+-new +newyorker -- tag:new and from:"newyorker@newsletter.newyorker.com"
+
++me -- tag:new and (to:yann@ymhg.org or to:yann@yannherklotz.com)
++git -- tag:new and to:git@yannherklotz.com
+
+-new +amazon.co.uk -- tag:new and to:amazon.co.uk@ymhg.org
+
++list -- tag:new and List:*
+-new +list/ntg-context -- tag:new and List:ntg-context.ntg.nl
+-new +list/dev-context -- tag:new and List:dev-context.ntg.nl
+-new +list/emacs-devel -- tag:new and List:emacs-devel.gnu.org
+
+-new +inbox -- tag:new
+
+EOF
