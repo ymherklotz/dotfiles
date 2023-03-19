@@ -85,3 +85,6 @@ exclude_tags=deleted;spam;
 #
 [maildir]
 synchronize_flags=true
+
+[index]
+header.List=List-Id

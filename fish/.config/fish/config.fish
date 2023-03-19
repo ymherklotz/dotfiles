@@ -16,6 +16,7 @@ set -x LM_LICENSE_FILE 2100@ee-llic01.ee.ic.ac.uk:7193@ee-llic01.ee.ic.ac.uk:528
 source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
 
 fish_add_path $HOME/.nix-profile/bin
+fish_add_path $HOME/.local/bin
 fish_add_path /usr/local/bin
 
 function latestqr -d "Return the string corresponding to the latest QR code."
