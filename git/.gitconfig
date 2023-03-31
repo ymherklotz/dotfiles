@@ -1,7 +1,7 @@
 [user]
 	name = Yann Herklotz
 	email = git@yannherklotz.com
-	signingkey = CA654D3756F79496
+	signingkey = 852C9E32302D38F4
 
 [advice]
 	detachedHead = false
