@@ -2,8 +2,9 @@ IMAPAccount imperial
 Host outlook.office365.com
 Port 993
 User ymh15@ic.ac.uk
-PassCmd "pass show imperial/emacs-app"
 SSLType IMAPS
+PassCmd "/Users/ymherklotz/.local/bin/mutt_oauth2.py /Users/ymherklotz/.local/share/mutt_oauth2/tokenfile"
+AuthMechs XOAUTH2
 
 IMAPAccount mailbox
 Host imap.mailbox.org

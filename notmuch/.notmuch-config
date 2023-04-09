@@ -11,7 +11,7 @@
 # configured here named ".notmuch".
 #
 [database]
-path=/home/ymherklotz/.mail
+path=/Users/ymherklotz/.mail
 
 # User configuration
 #
