@@ -5,6 +5,7 @@
 
 [advice]
 	detachedHead = false
+	skippedCherryPicks = false
 
 [sendemail]
 	from = Yann Herklotz <git@yannherklotz.com>
