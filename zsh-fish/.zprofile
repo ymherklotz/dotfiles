@@ -16,6 +16,9 @@ export SNPS_LICENSE_FILE=7182@ee-llic01.ee.ic.ac.uk
 export MGLS_LICENSE_FILE=1717@ee-llic01.ee.ic.ac.uk
 export LM_LICENSE_FILE=2100@ee-llic01.ee.ic.ac.uk:7193@ee-llic01.ee.ic.ac.uk:5280@ee-llic01.ee.ic.ac.uk:7182@ee-llic01.ee.ic.ac.uk:1717@ee-llic01.ee.ic.ac.uk
 
+export QSYS_ROOTDIR="/mnt/data/tools/intel/QuartusLite/18.1/quartus/sopc_builder/bin"
+export INTELFPGAOCLSDKROOT="/mnt/data/tools/intel/QuartusStandard/19.1/hld"
+
 [ -f /usr/local/bin/brew ] && eval "$(/usr/local/bin/brew shellenv)"
 [ -f $HOME/.cargo/env ] && source $HOME/.cargo/env
 [ -f /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ] \
